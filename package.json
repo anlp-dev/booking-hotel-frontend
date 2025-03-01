@@ -12,9 +12,13 @@
   },
   "proxy": "http://127.0.0.1:9999",
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
     "@date-io/date-fns": "^3.0.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@mui/base": "^5.0.0-beta.61",
     "@mui/icons-material": "^6.1.7",
     "@mui/lab": "^6.0.0-beta.16",
@@ -52,10 +56,13 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.9",
     "vite": "^5.4.10"
   }
 }
