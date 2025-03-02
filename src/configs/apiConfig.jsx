@@ -1,4 +1,4 @@
-const API_BASE_URL_DEPLOY = '';
+const API_URL = 'http://localhost:9999';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -10,7 +10,7 @@ const getAuthHeaders = (token) => ({
 });
 
 const apiConfig = {
-    baseUrl: API_BASE_URL_DEPLOY,
+    baseUrl: API_URL,
     headers,
     getAuthHeaders,
 };

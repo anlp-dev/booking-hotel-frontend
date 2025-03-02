@@ -6,6 +6,7 @@ import HomeAdmin from "./HomeAdmin.jsx";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import LogRequest from "./LogRequest.jsx";
 import ManageUser from "./UserManagement.jsx";
+import RoleBaseRoute from "../../security/RoleBaseRoute.jsx";
 
 
 export default function Dashboard() {
@@ -21,7 +22,11 @@ export default function Dashboard() {
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <Routes>
                         <Route path="/homeAdmin" element={<HomeAdmin />} />
-                        <Route path="/logRequest" element={<LogRequest />} />
+                        <Route path="/logRequest" element={
+                            <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
+                                <LogRequest/>
+                            </RoleBaseRoute>
+                        }/>
                         <Route path="/manageUser" element={<ManageUser/>}/>
                     </Routes>
                 </Box>
