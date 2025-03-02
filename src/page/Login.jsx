@@ -15,6 +15,10 @@ import {keyframes, styled} from '@mui/material/styles';
 import {useNavigate} from "react-router-dom";
 import Loading from "../components/loading/Loading.jsx";
 import {notifySuccess, notifyError, notifyInfo} from "../components/notification/ToastNotification.jsx";
+import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+import axios from "axios";
+import {jwtDecode} from "jwt-decode";
+import FacebookIcon from "@mui/icons-material/Facebook";
 
 const fadeIn = keyframes(`from {
         opacity: 0;
@@ -140,6 +144,25 @@ const Login = () => {
 
         return isValid;
     };
+
+    const loginGoogle = async (credentialResponse) => {
+        const decoded = jwtDecode(credentialResponse?.credential);
+
+        console.log(decoded);
+
+        alert("Tài khoản của bạn không được phép đăng nhập vào hệ thống.");
+
+
+    }
+
+    const onSuccess = (response) => {
+        console.log(response);
+    }
+
+    const onFailure = (error) => {
+        console.log(error);
+    }
+
     return (
         <>
             <CssBaseline enableColorScheme/>
@@ -220,13 +243,68 @@ const Login = () => {
                             variant="body2"
                             sx={{alignSelf: 'center'}}
                         >
-                            Quên mật khẩu
-                        </Link>
+                            Chưa có tài khoản?{' '}
+                            <Link
+                                href="/register"
+                                variant="body2"
+                                sx={{color: '#2988BC', fontWeight: 600}}
+                            >
+                                Đăng ký ngay
+                            </Link>
+                        </Typography>
+
+                        <Box sx={{display: 'flex', alignItems: 'center', mt: 2}}>
+                            <Box sx={{flex: 1, height: '1px', bgcolor: 'divider'}}/>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{mx: 2}}
+                            >
+                                hoặc
+                            </Typography>
+                            <Box sx={{flex: 1, height: '1px', bgcolor: 'divider'}}/>
+                        </Box>
+
+                        <Box sx={{display: 'flex', gap: 1, mt: 1}}>
+                            <GoogleLogin
+                                onSuccess={credentialResponse =>
+                                    loginGoogle(credentialResponse)
+                                }
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                                useOneTap
+                            />
+                            <Button
+                                variant="outlined"
+                                startIcon={<FacebookIcon />}
+                                sx={{
+                                    backgroundColor: "#1877F2",
+                                    marginLeft: 2,
+                                    color: "white",
+                                    textTransform: "none",
+                                    fontSize: "13px",
+                                    height: 40,
+                                }}
+                            >
+                                Login with Facebook
+                            </Button>
+                        </Box>
                     </Box>
                 </Card>
-            </SignInContainer>
+              </SignInContainer>
+
+                <Typography
+                    variant="body2"
+                    color="white"
+                    align="center"
+                    sx={{mt: 4, opacity: 0.8, zIndex: 1}}
+                >
+                    © 2025 LuxStay. Tất cả các quyền được bảo lưu.
+                </Typography>
+            </LoginContainer>
         </>
-    )
-}
+    );
+};
 
 export default Login;
