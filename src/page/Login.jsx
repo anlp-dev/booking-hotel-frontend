@@ -251,7 +251,7 @@ const Login = () => {
                             >
                                 Đăng ký ngay
                             </Link>
-                        </Typography>
+                        </Link>
 
                         <Box sx={{display: 'flex', alignItems: 'center', mt: 2}}>
                             <Box sx={{flex: 1, height: '1px', bgcolor: 'divider'}}/>
@@ -292,7 +292,6 @@ const Login = () => {
                         </Box>
                     </Box>
                 </Card>
-              </SignInContainer>
 
                 <Typography
                     variant="body2"
@@ -302,7 +301,7 @@ const Login = () => {
                 >
                     © 2025 LuxStay. Tất cả các quyền được bảo lưu.
                 </Typography>
-            </LoginContainer>
+            </SignInContainer>
         </>
     );
 };
