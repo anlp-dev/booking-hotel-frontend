@@ -20,6 +20,7 @@ import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import AuthService from "../services/AuthService.jsx";
 
 // Giả lập các icon - trong dự án thực tế sẽ import từ thư viện icon
 const PersonIcon = () => <span role="img" aria-label="person">👤</span>;
@@ -127,26 +128,30 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (userNameError || passwordError) {
+        if (!validateInputs()) {
             return;
         }
         const data = new FormData(event.currentTarget);
         try {
             setIsLoading(true);
-            console.log(data);
-            notifyInfo('Đang đăng nhập...');
-            // Mô phỏng thời gian đăng nhập
-            setTimeout(() => {
-                notifySuccess('Đăng nhập thành công!');
-                navigate('/dashboard');
-            }, 2000);
+            const resData = await AuthService.login(data);
+            if (resData.status === 200) {
+                const decode = jwtDecode(resData.data);
+                localStorage.setItem("role", decode.role);
+                if (decode.role === "SUPER_ADMIN") {
+                    navigate("/admin/homeAdmin");
+                    notifySuccess('Đăng nhập thành công!');
+                } else {
+                    navigate("/403");
+                    notifyError("Bạn không có quyền truy cập!");
+                }
+            } else {
+                notifyError("Đăng nhập thất bại!");
+            }
         } catch (e) {
-            notifyError(e.message || 'Đăng nhập thất bại');
-            console.log(e.message);
+            notifyError(e.message);
         } finally {
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 2000);
+            setIsLoading(false);
         }
     };
 
