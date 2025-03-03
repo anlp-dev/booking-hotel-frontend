@@ -1,170 +1,274 @@
-import "../../static/css/styles.css";
-import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "antd";
+import React from 'react';
+import {
+  Layout,
+  Button,
+  Typography,
+  Card,
+  Row,
+  Col,
+  Carousel,
+  Tabs,
+  Space,
+  Divider,
+  Tag
+} from 'antd';
+import {
+  CalendarOutlined,
+  RightOutlined,
+  GiftOutlined,
+  TagOutlined,
+  ScheduleOutlined,
+  HomeOutlined,
+  BankOutlined,
+  CompassOutlined
+} from '@ant-design/icons';
+import '../../static/css/styles.css';
 
-// const promotions = [
-//   {
-//     id: 1,
-//     img: "https://cdn6.agoda.net/images/blt2/wcActivitiesPaydayCampaign-NV-20250217/Hong_Kong_Disneyland/Web/en-us.png",
-//     title: "Nhận mọi ưu đãi của quý khách tại đây!",
-//   },
-//   {
-//     id: 2,
-//     img: "https://cdn6.agoda.net/images/blt2/wcActivitiesPaydayCampaign-NV-20250217/Aquaria_KLCC/Web/en-us.png",
-//     title: "Giảm thêm 15% mừng xuân",
-//   },
-//   {
-//     id: 3,
-//     img: "https://7304094.fs1.hubspotusercontent-na1.net/hubfs/7304094/flight_ops/marketing%20campaigns/Eva%20Air/upto15bundle/mspa/en-us.png",
-//     title: "Ưu đãi độc quyền tại Abu Dhabi",
-//   },
-//   {
-//     id: 4,
-//     img: "https://cdn6.agoda.net/images/blt2/wcActivtiesEG-NV-20240514/Web/vi-vn.png",
-//     title: "Ưu đãi độc quyền tại Abu Dhabi",
-//   },
-// ];
+const { Content } = Layout;
+const { Title, Text, Paragraph } = Typography;
+const { TabPane } = Tabs;
+
+// Uncomment and use this data for the carousel
+const promotions = [
+  {
+    id: 1,
+    img: "https://cdn6.agoda.net/images/blt2/wcActivitiesPaydayCampaign-NV-20250217/Hong_Kong_Disneyland/Web/en-us.png",
+    title: "Nhận mọi ưu đãi của quý khách tại đây!",
+  },
+  {
+    id: 2,
+    img: "https://cdn6.agoda.net/images/blt2/wcActivitiesPaydayCampaign-NV-20250217/Aquaria_KLCC/Web/en-us.png",
+    title: "Giảm thêm 15% mừng xuân",
+  },
+  {
+    id: 3,
+    img: "https://7304094.fs1.hubspotusercontent-na1.net/hubfs/7304094/flight_ops/marketing%20campaigns/Eva%20Air/upto15bundle/mspa/en-us.png",
+    title: "Ưu đãi độc quyền tại Abu Dhabi",
+  },
+  {
+    id: 4,
+    img: "https://cdn6.agoda.net/images/blt2/wcActivtiesEG-NV-20240514/Web/vi-vn.png",
+    title: "Ưu đãi độc quyền tại Abu Dhabi",
+  },
+];
+
+// Accommodation types data
+const accommodationTypes = [
+  {
+    id: 1,
+    img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624608378.jpg?k=d1b48b5c6f96884d97b31b7582fe3c0f15c4dff3228c23754a1ae828cc0d8e0c&o=&hp=1",
+    title: "Resort",
+    icon: <BankOutlined />
+  },
+  {
+    id: 2,
+    img: "https://www.hotelescenter.es/wp-content/blogs.dir/1601/files/home//header-home-mb.jpg",
+    title: "Khách sạn",
+    icon: <HomeOutlined />
+  },
+  {
+    id: 3,
+    img: "https://pro-static.h10hotels.com/gallery/T2D3/07_OCSHotel7.jpg",
+    title: "Căn hộ",
+    icon: <BankOutlined />
+  },
+  {
+    id: 4,
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoWnQ76KGgDhoCCgWvQ6wbre_FUi8_kDnkzA&s",
+    title: "Biệt thự",
+    icon: <HomeOutlined />
+  },
+  {
+    id: 5,
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ALU4st0khcyisgNPy1E7ghXitdDJ-fRJGA&s",
+    title: "Nhà nghỉ B&B",
+    icon: <HomeOutlined />
+  },
+];
 
 function MainContent() {
   return (
-    <div>
-      <div className="main-content-home">
-        <img src="https://forever.travel-assets.com/flex/flexmanager/images/2025/01/28/PD2_00227_HCOM_ICA_DUBAI_BAB_AL_SHAMS_0771.jpg?impolicy=fcrop&w=1200&h=675&q=mediumHigh" />
-        <div className="main-content-home-title">
-          Chốn dừng chân lý tưởng chờ đón bạn
-        </div>
-        <div className="main-content-home-content">
-          <div className="main-content-home-content-choose">
-            <Button>Chỗ Ở Qua Đêm</Button>
-            <Button>Chỗ Ở Trong Ngày</Button>
-          </div>
-          <div className="main-content-home-content-choose-2">
-            <Button>
-              <FontAwesomeIcon icon={faCalendarDays} />
-              <span>Ngày nhận phòng</span>
-            </Button>
-            <Button>
-              <FontAwesomeIcon icon={faCalendarDays} />
-              <span>Ngày trả phòng</span>
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Content style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+        {/* Hero Section */}
+        <div style={{
+          position: 'relative',
+          marginBottom: '48px',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        }}>
+          <img
+              src="https://forever.travel-assets.com/flex/flexmanager/images/2025/01/28/PD2_00227_HCOM_ICA_DUBAI_BAB_AL_SHAMS_0771.jpg?impolicy=fcrop&w=1200&h=675&q=mediumHigh"
+              alt="Beach destination"
+              style={{ width: '100%', height: '500px', objectFit: 'cover' }}
+          />
 
-      <div className="discount-home">
-        <img src="https://a.travel-assets.com/egds/marks/mod_hotels.svg"></img>
-        <span>
-          Thành viên tiết kiệm 10% trở lên tại hơn 100.000 khách sạn trên toàn
-          thế giới khi đăng nhập
-        </span>
-        <Button>Đăng nhập ngay</Button>
-      </div>
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            textAlign: 'center',
+            width: '100%',
+            maxWidth: '800px',
+            padding: '0 24px'
+          }}>
+            <Title level={1} style={{ color: 'white', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', marginBottom: '32px' }}>
+              Chốn dừng chân lý tưởng chờ đón bạn
+            </Title>
 
-      <div className="advertisement-home">
-        <h2>Tìm và đặt nơi lưu trú hoàn hảo</h2>
-        <div className="advertisement-home-1">
-          {/* <svg
-            class="uitk-icon uitk-icon-xlarge"
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M12.723 2.6a1 1 0 0 1-.194 1.094 5.5 5.5 0 0 0 7.777 7.776 1 1 0 0 1 1.692.743C21.884 17.638 17.45 22 12 22 6.477 22 2 17.523 2 12c0-5.452 4.362-9.884 9.787-9.998a1 1 0 0 1 .936.598zM9.698 4.336a8 8 0 1 0 9.966 9.966 7.5 7.5 0 0 1-9.966-9.966z"
-              clip-rule="evenodd"
-            ></path>
-          </svg> */}
-          <span>Nhận phần thưởng cho mỗi đêm bạn lưu trú</span>
-        </div>
-        <div className="advertisement-home-1">
-          {/* <svg
-            class="uitk-icon uitk-icon-xlarge"
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-          >
-            <path d="M7.494 8.995a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
-            <path
-              fill-rule="evenodd"
-              d="M4.877 2A2.877 2.877 0 0 0 2 4.877v6.975c0 .763.303 1.495.843 2.034l7.27 7.271a2.877 2.877 0 0 0 4.07 0l6.974-6.974a2.877 2.877 0 0 0 0-4.07l-7.27-7.27A2.877 2.877 0 0 0 11.851 2H4.877zM4 4.877c0-.485.393-.878.878-.878h6.975c.233 0 .456.092.621.257l7.27 7.271c.344.343.344.9 0 1.242l-6.974 6.975a.878.878 0 0 1-1.242 0l-7.27-7.271A.879.879 0 0 1 4 11.852V4.877z"
-              clip-rule="evenodd"
-            ></path>
-          </svg> */}
-          <span>Tiết kiệm hơn với Giá thành viên</span>
-        </div>
-        <div className="advertisement-home-1">
-          {/* <svg
-            class="uitk-icon uitk-icon-xlarge"
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-          >
-            <path d="M7 12.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm.5 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm3.5-3.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm.5 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm3.5-3.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm.5 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"></path>
-            <path
-              fill-rule="evenodd"
-              d="M16 4H8V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5V4H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-1V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5V4zM5 6a1 1 0 0 0-1 1v1h16V7a1 1 0 0 0-1-1H5zm15 4H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9z"
-              clip-rule="evenodd"
-            ></path>
-          </svg> */}
-          <span>Lựa chọn hủy miễn phí nếu đổi kế hoạch</span>
-        </div>
-      </div>
+            <Card style={{ padding: '24px', backgroundColor: 'white', borderRadius: '8px' }}>
+              <Tabs defaultActiveKey="1" centered style={{ marginBottom: '24px' }}>
+                <TabPane tab="Chỗ Ở Qua Đêm" key="1" />
+                <TabPane tab="Chỗ Ở Trong Ngày" key="2" />
+              </Tabs>
 
-      {/* Preferred Accommodation */}
-      <div className="main-PreferredAccommodation">
-        <h2>Tìm cho mình nơi lưu trú yêu thích tiếp theo</h2>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Button style={{ width: '100%', height: '48px', fontSize: '16px' }} icon={<CalendarOutlined />}>
+                    Ngày nhận phòng
+                  </Button>
+                </Col>
+                <Col span={12}>
+                  <Button style={{ width: '100%', height: '48px', fontSize: '16px' }} icon={<CalendarOutlined />}>
+                    Ngày trả phòng
+                  </Button>
+                </Col>
+              </Row>
 
-        <div className="main-PreferredAccommodation-img">
-          <div className="main-PreferredAccommodation-img-a">
-            <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/624608378.jpg?k=d1b48b5c6f96884d97b31b7582fe3c0f15c4dff3228c23754a1ae828cc0d8e0c&o=&hp=1"></img>
-            <span>Resort</span>
-          </div>
-          <div className="main-PreferredAccommodation-img-a">
-            <img src="https://www.hotelescenter.es/wp-content/blogs.dir/1601/files/home//header-home-mb.jpg"></img>
-            <span>Resort</span>
-          </div>
-          <div className="main-PreferredAccommodation-img-a">
-            <img src="https://pro-static.h10hotels.com/gallery/T2D3/07_OCSHotel7.jpg"></img>
-            <span>Resort</span>
-          </div>
-          <div className="main-PreferredAccommodation-img-a">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoWnQ76KGgDhoCCgWvQ6wbre_FUi8_kDnkzA&s"></img>
-            <span>Resort</span>
-          </div>
-          <div className="main-PreferredAccommodation-img-a">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ALU4st0khcyisgNPy1E7ghXitdDJ-fRJGA&s"></img>
-            <span>Resort</span>
+              <Button type="primary" style={{ width: '100%', marginTop: '16px', height: '48px', fontSize: '16px' }}>
+                Tìm kiếm
+              </Button>
+            </Card>
           </div>
         </div>
-      </div>
 
-      <div className="promotion-slider">
-        <div className="header-promotion-slider">
-          <h2>Chương trình khuyến mại chỗ ở</h2>
-          <a href="#">Xem tất cả &gt;</a>
-        </div>
-        {/* <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={20}
-          slidesPerView={3}
-          navigation
-          pagination={{ clickable: true }}
+        {/* Membership Banner */}
+        <Card
+            style={{
+              marginBottom: '48px',
+              background: 'linear-gradient(90deg, #1677ff 0%, #69b1ff 100%)',
+              borderRadius: '8px'
+            }}
         >
-          {promotions.map((promo) => (
-            <SwiperSlide key={promo.id}>
-              <div className="slide-item">
-                <img src={promo.img} alt={promo.title} />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper> */}
-      </div>
-    </div>
+          <Row align="middle" gutter={16}>
+            <Col xs={24} md={4} style={{ textAlign: 'center' }}>
+              <img
+                  src="https://a.travel-assets.com/egds/marks/mod_hotels.svg"
+                  alt="Hotels logo"
+                  style={{ height: '64px' }}
+              />
+            </Col>
+            <Col xs={24} md={14}>
+              <Text style={{ color: 'white', fontSize: '18px' }}>
+                Thành viên tiết kiệm 10% trở lên tại hơn 100.000 khách sạn trên toàn thế giới khi đăng nhập
+              </Text>
+            </Col>
+            <Col xs={24} md={6} style={{ textAlign: 'right' }}>
+              <Button type="primary" ghost style={{ borderColor: 'white', color: 'white' }} size="large">
+                Đăng nhập ngay
+              </Button>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* Features Section */}
+        <div style={{ marginBottom: '48px', textAlign: 'center' }}>
+          <Title level={2} style={{ marginBottom: '32px' }}>Tìm và đặt nơi lưu trú hoàn hảo</Title>
+
+          <Row gutter={[32, 24]} justify="center">
+            <Col xs={24} md={8}>
+              <Card hoverable style={{ height: '100%', borderRadius: '8px' }}>
+                <GiftOutlined style={{ fontSize: '48px', color: '#1677ff', marginBottom: '16px' }} />
+                <Paragraph style={{ fontSize: '16px' }}>Nhận phần thưởng cho mỗi đêm bạn lưu trú</Paragraph>
+              </Card>
+            </Col>
+
+            <Col xs={24} md={8}>
+              <Card hoverable style={{ height: '100%', borderRadius: '8px' }}>
+                <TagOutlined style={{ fontSize: '48px', color: '#1677ff', marginBottom: '16px' }} />
+                <Paragraph style={{ fontSize: '16px' }}>Tiết kiệm hơn với Giá thành viên</Paragraph>
+              </Card>
+            </Col>
+
+            <Col xs={24} md={8}>
+              <Card hoverable style={{ height: '100%', borderRadius: '8px' }}>
+                <ScheduleOutlined style={{ fontSize: '48px', color: '#1677ff', marginBottom: '16px' }} />
+                <Paragraph style={{ fontSize: '16px' }}>Lựa chọn hủy miễn phí nếu đổi kế hoạch</Paragraph>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+
+        {/* Preferred Accommodation Section */}
+        <div style={{ marginBottom: '48px' }}>
+          <Title level={2} style={{ marginBottom: '24px' }}>Tìm cho mình nơi lưu trú yêu thích tiếp theo</Title>
+
+          <Row gutter={[16, 16]}>
+            {accommodationTypes.map(item => (
+                <Col xs={12} sm={8} md={4} key={item.id}>
+                  <Card
+                      hoverable
+                      cover={
+                        <div style={{ height: '160px', overflow: 'hidden' }}>
+                          <img
+                              alt={item.title}
+                              src={item.img}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        </div>
+                      }
+                      bodyStyle={{ padding: '12px', textAlign: 'center' }}
+                  >
+                    <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                      {item.icon}
+                      <Text strong>{item.title}</Text>
+                    </Space>
+                  </Card>
+                </Col>
+            ))}
+          </Row>
+        </div>
+
+        {/* Promotions Section */}
+        <div style={{ marginBottom: '48px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <Title level={2} style={{ margin: 0 }}>Chương trình khuyến mại chỗ ở</Title>
+            <Button type="link" icon={<RightOutlined />}>Xem tất cả</Button>
+          </div>
+
+          <Carousel autoplay arrows dots>
+            <div>
+              <Row gutter={16}>
+                {promotions.slice(0, 3).map(promo => (
+                    <Col span={8} key={promo.id}>
+                      <Card
+                          hoverable
+                          cover={<img alt={promo.title} src={promo.img} style={{ height: '180px', objectFit: 'cover' }} />}
+                      >
+                        <Card.Meta title={promo.title} />
+                      </Card>
+                    </Col>
+                ))}
+              </Row>
+            </div>
+            <div>
+              <Row gutter={16}>
+                {promotions.slice(1, 4).map(promo => (
+                    <Col span={8} key={promo.id}>
+                      <Card
+                          hoverable
+                          cover={<img alt={promo.title} src={promo.img} style={{ height: '180px', objectFit: 'cover' }} />}
+                      >
+                        <Card.Meta title={promo.title} />
+                      </Card>
+                    </Col>
+                ))}
+              </Row>
+            </div>
+          </Carousel>
+        </div>
+      </Content>
   );
 }
 

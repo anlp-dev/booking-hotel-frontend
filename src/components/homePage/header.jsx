@@ -1,35 +1,77 @@
-import "../../static/css/styles.css";
+import React from 'react';
+import { Layout, Button, Menu, Space, Dropdown, Badge } from 'antd';
+import { ShoppingCartOutlined, DownOutlined, UserOutlined, QuestionCircleOutlined, CompassOutlined, HomeOutlined } from '@ant-design/icons';
+import '../../static/css/styles.css';
 
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "antd";
+const { Header: AntHeader } = Layout;
 
 function Header() {
-  return (
-    <div className="header-home">
-      <div>
-        <img
-          src="https://vi.hotels.com/_dms/header/logo.svg?locale=vi_VN&siteid=3213&2&6f9ec7db"
-          alt="logo"
-        />
-        <Button>
-          Đặt chuyến đi{" "}
-          <path d="M16.44 9.146a.5.5 0 0 1 .706 0l.708.708a.5.5 0 0 1 0 .707l-5.147 5.146a1 1 0 0 1-1.414 0l-5.147-5.146a.5.5 0 0 1 0-.707l.708-.708a.5.5 0 0 1 .703-.003L12 13.586l4.44-4.44z"></path>
-        </Button>
-      </div>
+    const tripMenu = (
+        <Menu items={[
+            {
+                key: '1',
+                label: 'Khách sạn',
+            },
+            {
+                key: '2',
+                label: 'Vé máy bay',
+            },
+            {
+                key: '3',
+                label: 'Tour du lịch',
+            },
+        ]} />
+    );
 
-      <div className="header-home-a">
-        <a href="">Đăng thông tin nơi lưu trú</a>
-        <a href="#">Hỗ trợ</a>
-        <a href="#">Chuyến đi</a>
-      </div>
-      <div>
-        <Button className="header-home-button1">Đăng nhập</Button>
-        <Button>Tạo tài khoản</Button>
-        <FontAwesomeIcon icon={faCartShopping} style={{ marginLeft: "10px" }} />
-      </div>
-    </div>
-  );
+    return (
+        <AntHeader className="header-container" style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            background: '#fff',
+            padding: '0 24px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
+        }}>
+            {/* Left section with logo and dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img
+                    src="https://vi.hotels.com/_dms/header/logo.svg?locale=vi_VN&siteid=3213&2&6f9ec7db"
+                    alt="logo"
+                    style={{ height: '32px', marginRight: '16px' }}
+                />
+                <Dropdown overlay={tripMenu} placement="bottomLeft">
+                    <Button type="primary">
+                        <Space>
+                            Đặt chuyến đi
+                            <DownOutlined />
+                        </Space>
+                    </Button>
+                </Dropdown>
+            </div>
+
+            {/* Middle section with links */}
+            <div className="header-links" style={{ display: 'flex', gap: '24px' }}>
+                <Button type="link" icon={<HomeOutlined />}>
+                    Đăng thông tin nơi lưu trú
+                </Button>
+                <Button type="link" icon={<QuestionCircleOutlined />}>
+                    Hỗ trợ
+                </Button>
+                <Button type="link" icon={<CompassOutlined />}>
+                    Chuyến đi
+                </Button>
+            </div>
+
+            {/* Right section with user actions */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Button type="default">Đăng nhập</Button>
+                <Button type="primary">Tạo tài khoản</Button>
+                <Badge count={0} showZero={false}>
+                    <Button type="text" icon={<ShoppingCartOutlined style={{ fontSize: '18px' }} />} />
+                </Badge>
+            </div>
+        </AntHeader>
+    );
 }
 
 export default Header;
