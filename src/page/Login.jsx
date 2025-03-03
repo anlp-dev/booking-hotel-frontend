@@ -17,6 +17,10 @@ import {useNavigate} from "react-router-dom";
 import Loading from "../components/loading/Loading.jsx";
 import {notifySuccess, notifyError, notifyInfo} from "../components/notification/ToastNotification.jsx";
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+import axios from "axios";
+import {jwtDecode} from "jwt-decode";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import AuthService from "../services/AuthService.jsx";
 
 // Giả lập các icon - trong dự án thực tế sẽ import từ thư viện icon
 const PersonIcon = () => <span role="img" aria-label="person">👤</span>;
@@ -124,26 +128,30 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (userNameError || passwordError) {
+        if (!validateInputs()) {
             return;
         }
         const data = new FormData(event.currentTarget);
         try {
             setIsLoading(true);
-            console.log(data);
-            notifyInfo('Đang đăng nhập...');
-            // Mô phỏng thời gian đăng nhập
-            setTimeout(() => {
-                notifySuccess('Đăng nhập thành công!');
-                navigate('/dashboard');
-            }, 2000);
+            const resData = await AuthService.login(data);
+            if (resData.status === 200) {
+                const decode = jwtDecode(resData.data);
+                localStorage.setItem("role", decode.role);
+                if (decode.role === "SUPER_ADMIN") {
+                    navigate("/admin/homeAdmin");
+                    notifySuccess('Đăng nhập thành công!');
+                } else {
+                    navigate("/403");
+                    notifyError("Bạn không có quyền truy cập!");
+                }
+            } else {
+                notifyError("Đăng nhập thất bại!");
+            }
         } catch (e) {
-            notifyError(e.message || 'Đăng nhập thất bại');
-            console.log(e.message);
+            notifyError(e.message);
         } finally {
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 2000);
+            setIsLoading(false);
         }
     };
 
@@ -183,8 +191,27 @@ const Login = () => {
         return isValid;
     };
 
+    const loginGoogle = async (credentialResponse) => {
+        const decoded = jwtDecode(credentialResponse?.credential);
+
+        console.log(decoded);
+
+        alert("Tài khoản của bạn không được phép đăng nhập vào hệ thống.");
+
+
+    }
+
+    const onSuccess = (response) => {
+        console.log(response);
+    }
+
+    const onFailure = (error) => {
+        console.log(error);
+    }
+
+
     return (
-        <GoogleOAuthProvider clientId="786437425572-b93mumbqt5jlsrn0sf30rfblvlrqcfsf.apps.googleusercontent.com">
+        <>
             <CssBaseline enableColorScheme/>
             <LoginContainer direction="column" justifyContent="center" alignItems="center">
                 {isLoading && <Loading/>}
@@ -365,19 +392,28 @@ const Login = () => {
                         </Box>
 
                         <Box sx={{display: 'flex', gap: 1, mt: 1}}>
-                            <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
+                            <GoogleLogin
+                                onSuccess={credentialResponse =>
+                                    loginGoogle(credentialResponse)
+                                }
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                                useOneTap
+                            />
                             <Button
-                                fullWidth
                                 variant="outlined"
+                                startIcon={<FacebookIcon />}
                                 sx={{
-                                    borderRadius: '8px',
-                                    py: 1,
-                                    textTransform: 'none',
-                                    borderColor: '#E4E4E4',
-                                    color: '#333'
+                                    backgroundColor: "#1877F2",
+                                    marginLeft: 2,
+                                    color: "white",
+                                    textTransform: "none",
+                                    fontSize: "13px",
+                                    height: 40,
                                 }}
                             >
-                                Facebook
+                                Login with Facebook
                             </Button>
                         </Box>
                     </Box>
@@ -392,7 +428,7 @@ const Login = () => {
                     © 2025 LuxStay. Tất cả các quyền được bảo lưu.
                 </Typography>
             </LoginContainer>
-        </GoogleOAuthProvider>
+        </>
     );
 };
 
