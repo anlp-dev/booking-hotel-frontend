@@ -19,7 +19,7 @@ const mainListItems = [
     {text: 'Trang chủ', icon: <HomeRoundedIcon/>, path: "homeAdmin"},
     {text: 'Thống kê request', icon: <AnalyticsRoundedIcon/>, path: "logRequest"},
     {text: 'Quản trị người dùng', icon: <PeopleRoundedIcon/>, path: "manageUser"},
-    {text: 'Tasks', icon: <AssignmentRoundedIcon/>, path: "tasks"},
+    {text: 'Quản trị quyền', icon: <AssignmentRoundedIcon/>, path: "manageRole"},
 ];
 
 const secondaryListItems = [
