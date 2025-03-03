@@ -8,6 +8,7 @@ import AccessDeniedPage from "./page/403.jsx";
 import ToastNotification from "./components/notification/ToastNotification.jsx";
 
 import Dashboard from "./page/adminScreen/DashboardScreen.jsx";
+import HomePage from './components/homePage/homepage.jsx';
 import RoomDetails from "./components/RoomDetails.jsx";
 import RoleBaseRoute from "./security/RoleBaseRoute.jsx";
 
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/404" element={<NotFoundPage/>}/>
                     <Route path="/403" element={<AccessDeniedPage/>}/>
+                    <Route path='/home' element= {<HomePage/>}/>
                     <Route element={<PrivateRoute />}>
                         <Route path="/admin/*" element={
                             <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
