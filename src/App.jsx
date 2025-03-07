@@ -10,6 +10,7 @@ import Dashboard from "./page/adminScreen/DashboardScreen.jsx";
 import HomePage from "./components/homePage/homepage.jsx";
 import RoomDetails from "./components/RoomDetails.jsx";
 import RoleBaseRoute from "./security/RoleBaseRoute.jsx";
+import Checkout from "./page/customers/Checkout.jsx";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="/403" element={<AccessDeniedPage />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/" element={<HomePage />} />
           <Route element={<PrivateRoute />}>
             <Route
