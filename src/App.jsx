@@ -11,6 +11,7 @@ import HomePage from "./components/homePage/homepage.jsx";
 import RoomDetails from "./components/RoomDetails.jsx";
 import RoleBaseRoute from "./security/RoleBaseRoute.jsx";
 import Checkout from "./page/customers/Checkout.jsx";
+import BookingSuccess from "./page/customers/BookingSuccess.jsx";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="/403" element={<AccessDeniedPage />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/" element={<HomePage />} />
           <Route element={<PrivateRoute />}>
             <Route

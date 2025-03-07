@@ -76,9 +76,25 @@ const Checkout = () => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      message.success('Đặt phòng thành công! Chuyển đến trang thanh toán...');
-      // Navigate to payment page
-      // navigate('/payment');
+      message.success('Đặt phòng thành công!');
+      
+      // Create booking data to pass to success page
+      const bookingData = {
+        bookingId: 'BK-' + Math.floor(100000 + Math.random() * 900000),
+        customerName: values.fullName || 'Khách hàng',
+        email: values.email || 'example@email.com',
+        phone: values.phone || '0912345678',
+        roomType: bookingDetails.roomType,
+        checkIn: bookingDetails.checkIn,
+        checkOut: bookingDetails.checkOut,
+        guests: bookingDetails.guests,
+        totalAmount: bookingDetails.grandTotal,
+        paymentMethod: values.paymentMethod || 'Credit Card',
+        paymentId: 'PAY-' + Math.floor(100000 + Math.random() * 900000)
+      };
+      
+      // Navigate to success page with booking data
+      navigate('/booking-success', { state: { bookingData } });
     }, 1500);
   };
 
