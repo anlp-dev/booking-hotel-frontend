@@ -1,6 +1,5 @@
-import React from 'react';
-import { Layout, Button, Menu, Space, Dropdown, Badge } from 'antd';
-import { ShoppingCartOutlined, DownOutlined, UserOutlined, QuestionCircleOutlined, CompassOutlined, HomeOutlined } from '@ant-design/icons';
+import { Layout, Button, Menu, Space, Dropdown } from 'antd';
+import { DownOutlined, QuestionCircleOutlined, CompassOutlined, HomeOutlined } from '@ant-design/icons';
 import '../../static/css/styles.css';
 
 const { Header: AntHeader } = Layout;
@@ -29,7 +28,7 @@ function Header() {
             justifyContent: 'space-between',
             alignItems: 'center',
             background: '#fff',
-            padding: '0 24px',
+            padding: '0 152px',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
         }}>
             {/* Left section with logo and dropdown */}
@@ -39,9 +38,9 @@ function Header() {
                     alt="logo"
                     style={{ height: '32px', marginRight: '16px' }}
                 />
-                <Dropdown overlay={tripMenu} placement="bottomLeft">
-                    <Button type="primary">
-                        <Space>
+                <Dropdown overlay={tripMenu} placement="bottomLeft" >
+                    <Button type="primary" style={{backgroundColor: '#e61e43', border: 'none', color: 'white'}}>
+                        <Space >
                             Đặt chuyến đi
                             <DownOutlined />
                         </Space>
@@ -51,24 +50,21 @@ function Header() {
 
             {/* Middle section with links */}
             <div className="header-links" style={{ display: 'flex', gap: '24px' }}>
-                <Button type="link" icon={<HomeOutlined />}>
+                <Button style={{color: 'black'}} type="link" icon={<HomeOutlined />}>
                     Đăng thông tin nơi lưu trú
                 </Button>
-                <Button type="link" icon={<QuestionCircleOutlined />}>
+                <Button style={{color: 'black'}} type="link" icon={<QuestionCircleOutlined />}>
                     Hỗ trợ
                 </Button>
-                <Button type="link" icon={<CompassOutlined />}>
+                <Button style={{color: 'black'}} type="link" icon={<CompassOutlined />}>
                     Chuyến đi
                 </Button>
             </div>
 
             {/* Right section with user actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Button type="default">Đăng nhập</Button>
-                <Button type="primary">Tạo tài khoản</Button>
-                <Badge count={0} showZero={false}>
-                    <Button type="text" icon={<ShoppingCartOutlined style={{ fontSize: '18px' }} />} />
-                </Badge>
+                <Button style={{ border: 'none'}} >Đăng nhập</Button>
+                <Button style={{backgroundColor: '#e61e43', border: 'none', color: 'white'}} >Tạo tài khoản</Button>
             </div>
         </AntHeader>
     );
