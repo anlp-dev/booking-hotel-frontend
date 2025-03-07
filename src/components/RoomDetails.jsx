@@ -7,6 +7,7 @@ import {
   StarOutlined,
   UserOutlined,
   WifiOutlined,
+  ShoppingCartOutlined
 } from "@ant-design/icons";
 import styles from "../static/css/RoomDetails.module.css";
 import OverView from "./DetailItems/OverView";
@@ -14,8 +15,10 @@ import FeesAndPolicy from "./DetailItems/FeesAndPolicy";
 import Disabled from "./DetailItems/Disabled";
 import { useState } from "react";
 import ModalDetails from "./DetailItems/ModalDetails";
+import { useNavigate } from "react-router-dom";
 
 const RoomDetails = () => {
+  const navigate = useNavigate();
   const [isModal, setIsModal] = useState(false);
   const onChange = (key) => {
     console.log(key);
@@ -289,6 +292,26 @@ const RoomDetails = () => {
                 formatter: (value) => marks[value] || `${value} đ`, // Hiển thị giá trị từ marks
               }}
             />
+          </div>
+          
+          {/* Checkout Button */}
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <Button 
+              type="primary" 
+              size="large" 
+              icon={<ShoppingCartOutlined />}
+              onClick={() => navigate('/checkout')}
+              style={{ 
+                width: '100%', 
+                height: '50px', 
+                fontSize: '16px', 
+                fontWeight: 'bold',
+                background: '#1890ff',
+                borderRadius: '8px'
+              }}
+            >
+              Tiến hành đặt phòng
+            </Button>
           </div>
         </div>
       </div>

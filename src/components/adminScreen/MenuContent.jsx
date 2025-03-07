@@ -13,6 +13,7 @@ import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import {useLocation} from "react-router-dom";
 
 const mainListItems = [
@@ -20,6 +21,7 @@ const mainListItems = [
     {text: 'Thống kê request', icon: <AnalyticsRoundedIcon/>, path: "logRequest"},
     {text: 'Quản trị người dùng', icon: <PeopleRoundedIcon/>, path: "manageUser"},
     {text: 'Quản trị quyền', icon: <AssignmentRoundedIcon/>, path: "manageRole"},
+    {text: 'Quản lý đặt phòng', icon: <BookOnlineIcon/>, path: "bookingManagement"},
 ];
 
 const secondaryListItems = [
