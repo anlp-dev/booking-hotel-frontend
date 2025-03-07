@@ -8,6 +8,7 @@ import LogRequest from "./LogRequest.jsx";
 import ManageUser from "./UserManagement.jsx";
 import RoleBaseRoute from "../../security/RoleBaseRoute.jsx";
 import RolePermissionManagement from "./RoleManage.jsx";
+import BookingManagement from "./BookingManagement.jsx";
 
 
 export default function Dashboard() {
@@ -34,6 +35,7 @@ export default function Dashboard() {
                             </RoleBaseRoute>
                         }/>
                         <Route path="/manageUser" element={<ManageUser/>}/>
+                        <Route path="/bookingManagement" element={<BookingManagement/>}/>
                     </Routes>
                 </Box>
             </Box>
