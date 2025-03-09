@@ -9,6 +9,7 @@ import ManageUser from "./UserManagement.jsx";
 import RoleBaseRoute from "../../security/RoleBaseRoute.jsx";
 import RolePermissionManagement from "./RoleManage.jsx";
 import BookingManagement from "./BookingManagement.jsx";
+import RouteManagement from "./RouteManagement.jsx";
 
 
 export default function Dashboard() {
@@ -36,6 +37,11 @@ export default function Dashboard() {
                         }/>
                         <Route path="/manageUser" element={<ManageUser/>}/>
                         <Route path="/bookingManagement" element={<BookingManagement/>}/>
+                        <Route path="/routeManagement" element={
+                            <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
+                                <RouteManagement/>
+                            </RoleBaseRoute>
+                        }/>
                     </Routes>
                 </Box>
             </Box>
