@@ -1,4 +1,5 @@
-// eslint-disable-next-line no-unused-vars
+
+
 import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -16,6 +17,7 @@ import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import RouterIcon from '@mui/icons-material/Router';
 import {useLocation} from "react-router-dom";
+import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 
 const mainListItems = [
     {text: 'Trang chủ', icon: <HomeRoundedIcon/>, path: "homeAdmin"},
@@ -24,45 +26,51 @@ const mainListItems = [
     {text: 'Quản trị quyền', icon: <AssignmentRoundedIcon/>, path: "manageRole"},
     {text: 'Quản lý đặt phòng', icon: <BookOnlineIcon/>, path: "bookingManagement"},
     {text: 'Quản lý router', icon: <RouterIcon/>, path: "routeManagement"},
+  { text: "Quản lý phòng ở", icon: <BedroomChildIcon />, path: "manageRoom" },
+
 ];
 
 const secondaryListItems = [
-    {text: 'Settings', icon: <SettingsRoundedIcon/>},
-    {text: 'About', icon: <InfoRoundedIcon/>},
-    {text: 'Feedback', icon: <HelpRoundedIcon/>},
+  { text: "Settings", icon: <SettingsRoundedIcon /> },
+  { text: "About", icon: <InfoRoundedIcon /> },
+  { text: "Feedback", icon: <HelpRoundedIcon /> },
 ];
 
-const MenuContent = ({onMenuItemClick}) => {
-    const location = useLocation();
+const MenuContent = ({ onMenuItemClick }) => {
+  const location = useLocation();
 
-    return (
-        <Stack sx={{flexGrow: 1, p: 1, justifyContent: 'space-between'}}>
-            <List dense>
-                {mainListItems.map((item, index) => {
-                    const isSelected = location.pathname === `/admin/${item.path}`;
-                    return (
-                        <ListItem key={index} disablePadding sx={{display: 'block'}}
-                                  onClick={() => item.path && onMenuItemClick(item.path)}>
-                            <ListItemButton selected={isSelected}>
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text}/>
-                            </ListItemButton>
-                        </ListItem>
-                    )
-                })}
-            </List>
-            <List dense>
-                {secondaryListItems.map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{display: 'block'}}>
-                        <ListItemButton>
-                            <ListItemIcon>{item.icon}</ListItemIcon>
-                            <ListItemText primary={item.text}/>
-                        </ListItemButton>
-                    </ListItem>
-                ))}
-            </List>
-        </Stack>
-    );
-}
+  return (
+    <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
+      <List dense>
+        {mainListItems.map((item, index) => {
+          const isSelected = location.pathname === `/admin/${item.path}`;
+          return (
+            <ListItem
+              key={index}
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => item.path && onMenuItemClick(item.path)}
+            >
+              <ListItemButton selected={isSelected}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
+      <List dense>
+        {secondaryListItems.map((item, index) => (
+          <ListItem key={index} disablePadding sx={{ display: "block" }}>
+            <ListItemButton>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Stack>
+  );
+};
 
 export default MenuContent;
