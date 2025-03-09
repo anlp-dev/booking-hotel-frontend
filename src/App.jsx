@@ -19,7 +19,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
           <Route path="/403" element={<AccessDeniedPage />} />
           <Route path="/" element={<HomePage />} />
           <Route element={<PrivateRoute />}>
