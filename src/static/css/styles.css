@@ -349,5 +349,7 @@
     border-top-left-radius: 10px;
 }
 
+.custom-range-picker input::placeholder {
+    color: black !important;
+  }
 
-  

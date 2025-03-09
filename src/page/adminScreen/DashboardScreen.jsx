@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import Box from "@mui/material/Box";
 import SideMenu from "../../components/adminScreen/SideMenu";
 import HomeAdmin from "./HomeAdmin.jsx";
