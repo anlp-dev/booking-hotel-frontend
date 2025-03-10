@@ -13,6 +13,7 @@ import RoleBaseRoute from "./security/RoleBaseRoute.jsx";
 import Checkout from "./page/customers/Checkout.jsx";
 import BookingSuccess from "./page/customers/BookingSuccess.jsx";
 import BookingHistory from "./page/customers/BookingHistory.jsx";
+import MainContent from "./components/homePage/mainContent.jsx";
 
 function App() {
   return (
@@ -20,6 +21,10 @@ function App() {
       <ToastNotification />
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<HomePage />}>
+            <Route index element={<MainContent />} /> {/* Trang chính */}
+            <Route path="details" element={<RoomDetails />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/404" element={<NotFoundPage />} />
@@ -27,7 +32,6 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/booking-history" element={<BookingHistory />} />
-          <Route path="/" element={<HomePage />} />
           <Route element={<PrivateRoute />}>
             <Route
               path="/admin/*"
@@ -37,7 +41,7 @@ function App() {
                 </RoleBaseRoute>
               }
             />
-            <Route path="/details" element={<RoomDetails />} />
+            {/* <Route path="/details" element={<RoomDetails />} /> */}
           </Route>
         </Routes>
       </BrowserRouter>

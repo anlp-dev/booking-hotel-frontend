@@ -1,15 +1,16 @@
 import "../../static/css/styles.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "./header";
 import Footer from "./footer";
-import MainContent from "./mainContent";
-// import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import { Outlet } from "react-router-dom";
 
 function HomePage() {
   return (
     <div className="">
       <Header />
-      <MainContent />
+      <main>
+        <Outlet /> {/* Nơi hiển thị nội dung của trang con */}
+      </main>
+      {/* <MainContent /> */}
       <Footer />
     </div>
   );

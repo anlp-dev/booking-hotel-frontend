@@ -7,7 +7,7 @@ import {
   StarOutlined,
   UserOutlined,
   WifiOutlined,
-  ShoppingCartOutlined
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import styles from "../static/css/RoomDetails.module.css";
 import OverView from "./DetailItems/OverView";
@@ -293,21 +293,21 @@ const RoomDetails = () => {
               }}
             />
           </div>
-          
+
           {/* Checkout Button */}
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
-            <Button 
-              type="primary" 
-              size="large" 
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <Button
+              type="primary"
+              size="large"
               icon={<ShoppingCartOutlined />}
-              onClick={() => navigate('/checkout')}
-              style={{ 
-                width: '100%', 
-                height: '50px', 
-                fontSize: '16px', 
-                fontWeight: 'bold',
-                background: '#1890ff',
-                borderRadius: '8px'
+              onClick={() => navigate("/checkout")}
+              style={{
+                width: "100%",
+                height: "50px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                background: "#1890ff",
+                borderRadius: "8px",
               }}
             >
               Tiến hành đặt phòng
