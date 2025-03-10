@@ -20,7 +20,7 @@ const NotFoundPage = () => {
             <Typography variant="body1" align="center" sx={{ color: '#666', marginBottom: 2 }}>
                 Rất tiếc, trang bạn đang tìm kiếm không tồn tại.
             </Typography>
-            <Button component={Link} to="/home" variant="contained" color="primary">
+            <Button component={Link} to="/" variant="contained" color="primary">
                 Quay về trang chủ
             </Button>
         </Container>

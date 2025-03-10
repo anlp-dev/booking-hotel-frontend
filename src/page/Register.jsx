@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useFormik } from "formik";
 import Joi from "joi";
-import ReCAPTCHA from "react-google-recaptcha";
 import {
   Box,
   Button,
@@ -13,15 +12,16 @@ import {
   Stack,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import axios from "axios";
 import { keyframes } from "@mui/system";
 import { useNavigate } from "react-router-dom";
+import VerificationSuccessScreen from "../components/successScreen/VerificationSuccessScreen.jsx";
 import {
   notifySuccess,
   notifyError,
-  notifyInfo,
 } from "../components/notification/ToastNotification.jsx";
-
-// Reuse các components/styled từ Login
+import Loading from "../components/loading/Loading.jsx";
+// Các styled components giữ nguyên
 const Card = styled("div")(({ theme }) => ({
   background: "rgba(255, 255, 255, 0.9)",
   borderRadius: "16px",
@@ -29,15 +29,27 @@ const Card = styled("div")(({ theme }) => ({
   padding: theme.spacing(4),
   width: "100%",
   maxWidth: "450px",
-  maxHeight: "600px", // Chiều cao tối đa
-  overflowY: "auto", // Thêm scroll chỉ bên trong card
+  maxHeight: "90vh",
+  overflowY: "auto",
   animation: `${keyframes`
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   `} 0.5s ease-in-out`,
-  zIndex: 10, // Đảm bảo card nằm trên background
+  zIndex: 10,
 }));
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: "8px",
+  padding: "12px",
+  fontWeight: 600,
+  textTransform: "none",
+  fontSize: "1rem",
+  background: "linear-gradient(90deg, #2988BC 0%, #2F496E 100%)",
+  "&:hover": {
+    background: "linear-gradient(90deg, #2F496E 0%, #2988BC 100%)",
+  },
+  transition: "all 0.3s ease",
+}));
 const BlurBackground = styled("div")({
   position: "absolute",
   top: 0,
@@ -46,8 +58,8 @@ const BlurBackground = styled("div")({
   bottom: 0,
   background:
     "url(https://wallpapers.com/images/hd/hotel-background-bppf56oip6k5puj0.jpg) center/cover no-repeat",
-  filter: "blur(5px)", // Thêm blur cho background
-  opacity: 0.6, // Giảm opacity
+  filter: "blur(5px)",
+  opacity: 0.6,
   zIndex: 1,
 });
 
@@ -55,6 +67,8 @@ const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false); // Add loading state
+  const [registrationSuccess, setRegistrationSuccess] = React.useState(false);
   // Custom messages cho Joi validation
   const joiMessages = {
     "string.empty": "Trường này không được để trống",
@@ -85,6 +99,9 @@ const Register = () => {
       const { error } = validationSchema.validate(values, {
         abortEarly: false,
       });
+      if (error) {
+        console.log("Validation Errors:", error.details);
+      }
       return error?.details.reduce(
         (acc, curr) => ({
           ...acc,
@@ -94,15 +111,39 @@ const Register = () => {
       );
     },
     onSubmit: async (values) => {
-      // Xử lý đăng ký
-      notifySuccess("Test tạm UI đã xong");
+      setLoading(true); // Set loading to true when form is submitted
+      try {
+        const response = await axios.post(
+          "http://localhost:9999/register/account",
+          values
+        );
+        console.log("Response:", response);
+        // Kiểm tra nếu đăng ký thành công (giả sử server trả về { success: true })
+        if (response.status) {
+          notifySuccess("Đăng ký thành công!");
+          setRegistrationSuccess(true);
+        } else {
+          notifyError(
+            "Đăng ký thất bại: " +
+              (response.data.message || "Lỗi không xác định")
+          );
+        }
+      } catch (error) {
+        notifyError(error.response.data.message);
+        console.error(error);
+      } finally {
+        setLoading(false); // Set loading to false after API call (success or error)
+      }
     },
   });
 
+  if (registrationSuccess) {
+    return <VerificationSuccessScreen type="waiting" email="" />; // Render success screen after registration
+  }
   // Các styles chung cho TextField
   const textFieldSx = {
     "& .MuiFormHelperText-root": {
-      minHeight: "1.2rem", // Dự trữ không gian cho thông báo lỗi
+      minHeight: "1.2rem",
       transition: "all 0.2s",
     },
   };
@@ -119,39 +160,23 @@ const Register = () => {
         alignItems: "center",
       }}
     >
-      {/* Background làm mờ */}
+      {loading && <Loading />}
       <BlurBackground />
-
       <Card>
-        {/* Tiêu đề */}
         <Typography
           variant="h4"
-          sx={{
-            fontWeight: 700,
-            color: "#2988BC",
-            textAlign: "center",
-            mb: 2,
-          }}
+          sx={{ fontWeight: 700, color: "#2988BC", textAlign: "center", mb: 2 }}
         >
           Đăng ký tài khoản
         </Typography>
-
-        {/* Mô tả */}
         <Typography
           variant="body1"
-          sx={{
-            textAlign: "center",
-            mb: 3,
-            color: "#666",
-          }}
+          sx={{ textAlign: "center", mb: 3, color: "#666" }}
         >
           Tạo tài khoản để bắt đầu trải nghiệm dịch vụ của chúng tôi
         </Typography>
-
-        {/* Form */}
         <form onSubmit={formik.handleSubmit}>
           <Box sx={{ display: "grid", gap: 2 }}>
-            {/* Tên đăng nhập */}
             <TextField
               fullWidth
               label="Tên đăng nhập"
@@ -168,8 +193,6 @@ const Register = () => {
               }}
               sx={textFieldSx}
             />
-
-            {/* Email */}
             <TextField
               fullWidth
               label="Email"
@@ -187,8 +210,6 @@ const Register = () => {
               }}
               sx={textFieldSx}
             />
-
-            {/* Mật khẩu */}
             <TextField
               fullWidth
               label="Mật khẩu"
@@ -211,8 +232,6 @@ const Register = () => {
               }}
               sx={textFieldSx}
             />
-
-            {/* Xác nhận mật khẩu */}
             <TextField
               fullWidth
               label="Xác nhận mật khẩu"
@@ -237,9 +256,7 @@ const Register = () => {
               }}
               sx={textFieldSx}
             />
-
-            {/* Nút Đăng ký */}
-            <Button
+            <StyledButton
               fullWidth
               variant="contained"
               size="large"
@@ -255,35 +272,25 @@ const Register = () => {
               type="submit"
             >
               Đăng ký
-            </Button>
-
-            {/* Liên kết đăng nhập */}
-            <Typography
-              variant="body2"
-              sx={{
-                textAlign: "center",
-                mt: 1,
-                color: "#666",
-              }}
-            >
-              Đã có tài khoản?{" "}
-              <Link
-                href="/"
-                sx={{
-                  color: "#2988BC",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                Đăng nhập ngay
-              </Link>
-            </Typography>
+            </StyledButton>
           </Box>
         </form>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          sx={{ mt: 2 }}
+        >
+          Đã có tài khoản?{" "}
+          <Link
+            href="/login"
+            variant="body2"
+            sx={{ color: "#2988BC", fontWeight: 600 }}
+          >
+            Đăng nhập
+          </Link>
+        </Typography>
       </Card>
-
-      {/* Footer */}
       <Typography
         variant="body2"
         sx={{
