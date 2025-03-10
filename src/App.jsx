@@ -22,7 +22,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="/404" element={<NotFoundPage />} />
           <Route path="/403" element={<AccessDeniedPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
