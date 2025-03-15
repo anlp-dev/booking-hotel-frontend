@@ -26,6 +26,30 @@ export const getRoomList = async () => {
   }
 };
 
+export const getRoomById = async (id) => {
+  3;
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Đã hết hạn đăng nhập !!!");
+    }
+
+    const res = await fetch(`${endpoint}/${id}`, {
+      method: "GET",
+      headers: apiConfig.getAuthHeaders(token),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message);
+    }
+    return data.data;
+  } catch (e) {
+    // throw new Error(e.message);
+    console.log("error: ", e.message);
+  }
+};
+
 export const createRoom = async (roomData) => {
   try {
     const token = localStorage.getItem("token");
