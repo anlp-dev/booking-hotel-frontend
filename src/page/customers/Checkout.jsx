@@ -1,52 +1,48 @@
-import React, { useState } from 'react';
-import { 
-  Layout, 
-  Typography, 
-  Steps, 
-  Card, 
-  Row, 
-  Col, 
-  Form, 
-  Input, 
-  Select, 
-  DatePicker, 
-  Button, 
-  Divider, 
-  List, 
-  Avatar, 
-  Tag, 
-  Space, 
+import { useState } from "react";
+import {
+  Layout,
+  Typography,
+  Steps,
+  Card,
+  Row,
+  Col,
+  Form,
+  Input,
+  Select,
+  Button,
+  Divider,
+  List,
+  Tag,
+  Space,
   Checkbox,
   Alert,
   message,
   Menu,
   Dropdown,
-  Badge
-} from 'antd';
-import { 
-  UserOutlined, 
-  PhoneOutlined, 
-  MailOutlined, 
-  CreditCardOutlined, 
-  HomeOutlined, 
+  Badge,
+} from "antd";
+import {
+  UserOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  HomeOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
-  InfoCircleOutlined,
   LockOutlined,
   SafetyOutlined,
   ShoppingCartOutlined,
   DownOutlined,
   QuestionCircleOutlined,
-  CompassOutlined
-} from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import styles from '../../static/css/Checkout.module.css';
-import PaymentService from '../../services/PaymentService';
+  CompassOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import styles from "../../static/css/Checkout.module.css";
+import PaymentService from "../../services/PaymentService";
 
 const { Title, Text, Paragraph } = Typography;
 const { Header, Content } = Layout;
 const { Option } = Select;
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -61,64 +57,76 @@ const Checkout = () => {
     checkOut: "2023-06-18",
     nights: 3,
     guests: 2,
-    roomImage: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop",
-    amenities: ["Wifi miễn phí", "Điều hòa", "Minibar", "Bể bơi", "Bữa sáng miễn phí"],
+    roomImage:
+      "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop",
+    amenities: [
+      "Wifi miễn phí",
+      "Điều hòa",
+      "Minibar",
+      "Bể bơi",
+      "Bữa sáng miễn phí",
+    ],
     pricePerNight: 1200000,
     totalPrice: 3600000,
     tax: 360000,
     serviceFee: 180000,
-    grandTotal: 4140000
+    grandTotal: 4140000,
   };
 
   const onFinish = async (values) => {
-    try{
+    try {
       setLoading(true);
-      console.log('Form values:', values);
-       // Create booking data to pass to success page
-       const bookingData = {
-        orderId: 'BK-' + Math.floor(100000 + Math.random() * 900000),
+      console.log("Form values:", values);
+      // Create booking data to pass to success page
+      const bookingData = {
+        orderId: "BK-" + Math.floor(100000 + Math.random() * 900000),
         totalPrice: bookingDetails.grandTotal,
         orderInfo: ``,
-        orderType: `Đặt phòng khách sạn`
+        orderType: `Đặt phòng khách sạn`,
       };
-  
+
       bookingData.orderInfo = `Thanh toán phòng ${bookingDetails.hotelName} với mã đặt phòng ${bookingData.orderId}`;
-      bookingData.bankCode = 'NCB';
-      
+      bookingData.bankCode = "NCB";
+
       const resData = await PaymentService.getUrlVnPay(bookingData);
 
-      if(resData.status === 200){
+      if (resData.status === 200) {
         window.location.href = resData.data;
-      }else{
+      } else {
         message.error(resData.message);
       }
-    }catch(e){
+    } catch (e) {
       message.error(e.message);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
 
   // Format currency
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
   };
 
   const tripMenu = (
-    <Menu items={[
-      {
-        key: '1',
-        label: 'Khách sạn',
-      },
-      {
-        key: '2',
-        label: 'Vé máy bay',
-      },
-      {
-        key: '3',
-        label: 'Tour du lịch',
-      },
-    ]} />
+    <Menu
+      items={[
+        {
+          key: "1",
+          label: "Khách sạn",
+        },
+        {
+          key: "2",
+          label: "Vé máy bay",
+        },
+        {
+          key: "3",
+          label: "Tour du lịch",
+        },
+      ]}
+    />
   );
 
   return (
@@ -131,7 +139,7 @@ const Checkout = () => {
               src="https://vi.hotels.com/_dms/header/logo.svg?locale=vi_VN&siteid=3213&2&6f9ec7db"
               alt="logo"
               className={styles.logo}
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
             />
             <Dropdown overlay={tripMenu} placement="bottomLeft">
               <Button type="primary">
@@ -149,9 +157,9 @@ const Checkout = () => {
               size="small"
               current={0}
               items={[
-                { title: 'Thông tin đặt phòng' },
-                { title: 'Thanh toán' },
-                { title: 'Xác nhận' },
+                { title: "Thông tin đặt phòng" },
+                { title: "Thanh toán" },
+                { title: "Xác nhận" },
               ]}
             />
           </div>
@@ -165,28 +173,38 @@ const Checkout = () => {
               Chuyến đi
             </Button>
             <Badge count={1}>
-              <Button type="text" icon={<ShoppingCartOutlined style={{ fontSize: '18px' }} />} />
+              <Button
+                type="text"
+                icon={<ShoppingCartOutlined style={{ fontSize: "18px" }} />}
+              />
             </Badge>
           </div>
         </div>
       </Header>
 
       <Content className={styles.content}>
-        <Title level={2} className={styles.pageTitle}>Xác nhận thông tin đặt phòng</Title>
+        <Title level={2} className={styles.pageTitle}>
+          Xác nhận thông tin đặt phòng
+        </Title>
         <Text type="secondary" className={styles.pageSubtitle}>
-          Vui lòng kiểm tra thông tin đặt phòng và điền thông tin cá nhân để hoàn tất quá trình đặt phòng
+          Vui lòng kiểm tra thông tin đặt phòng và điền thông tin cá nhân để
+          hoàn tất quá trình đặt phòng
         </Text>
 
         <Row gutter={[24, 24]}>
           <Col xs={24} md={16}>
-            <Card title="Thông tin khách hàng" bordered={false} className={styles.card}>
+            <Card
+              title="Thông tin khách hàng"
+              bordered={false}
+              className={styles.card}
+            >
               <Form
                 form={form}
                 layout="vertical"
                 onFinish={onFinish}
                 initialValues={{
-                  country: 'Vietnam',
-                  paymentMethod: 'credit-card'
+                  country: "Vietnam",
+                  paymentMethod: "credit-card",
                 }}
               >
                 <Row gutter={16}>
@@ -194,7 +212,9 @@ const Checkout = () => {
                     <Form.Item
                       name="firstName"
                       label="Họ"
-                      rules={[{ required: true, message: 'Vui lòng nhập họ của bạn' }]}
+                      rules={[
+                        { required: true, message: "Vui lòng nhập họ của bạn" },
+                      ]}
                     >
                       <Input prefix={<UserOutlined />} placeholder="Nhập họ" />
                     </Form.Item>
@@ -203,7 +223,12 @@ const Checkout = () => {
                     <Form.Item
                       name="lastName"
                       label="Tên"
-                      rules={[{ required: true, message: 'Vui lòng nhập tên của bạn' }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập tên của bạn",
+                        },
+                      ]}
                     >
                       <Input prefix={<UserOutlined />} placeholder="Nhập tên" />
                     </Form.Item>
@@ -216,20 +241,31 @@ const Checkout = () => {
                       name="email"
                       label="Email"
                       rules={[
-                        { required: true, message: 'Vui lòng nhập email' },
-                        { type: 'email', message: 'Email không hợp lệ' }
+                        { required: true, message: "Vui lòng nhập email" },
+                        { type: "email", message: "Email không hợp lệ" },
                       ]}
                     >
-                      <Input prefix={<MailOutlined />} placeholder="example@email.com" />
+                      <Input
+                        prefix={<MailOutlined />}
+                        placeholder="example@email.com"
+                      />
                     </Form.Item>
                   </Col>
                   <Col xs={24} md={12}>
                     <Form.Item
                       name="phone"
                       label="Số điện thoại"
-                      rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập số điện thoại",
+                        },
+                      ]}
                     >
-                      <Input prefix={<PhoneOutlined />} placeholder="Nhập số điện thoại" />
+                      <Input
+                        prefix={<PhoneOutlined />}
+                        placeholder="Nhập số điện thoại"
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -237,7 +273,7 @@ const Checkout = () => {
                 <Form.Item
                   name="address"
                   label="Địa chỉ"
-                  rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
+                  rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
                 >
                   <Input prefix={<HomeOutlined />} placeholder="Nhập địa chỉ" />
                 </Form.Item>
@@ -247,7 +283,9 @@ const Checkout = () => {
                     <Form.Item
                       name="city"
                       label="Thành phố"
-                      rules={[{ required: true, message: 'Vui lòng nhập thành phố' }]}
+                      rules={[
+                        { required: true, message: "Vui lòng nhập thành phố" },
+                      ]}
                     >
                       <Input placeholder="Nhập thành phố" />
                     </Form.Item>
@@ -256,7 +294,9 @@ const Checkout = () => {
                     <Form.Item
                       name="country"
                       label="Quốc gia"
-                      rules={[{ required: true, message: 'Vui lòng chọn quốc gia' }]}
+                      rules={[
+                        { required: true, message: "Vui lòng chọn quốc gia" },
+                      ]}
                     >
                       <Select placeholder="Chọn quốc gia">
                         <Option value="Vietnam">Việt Nam</Option>
@@ -270,11 +310,11 @@ const Checkout = () => {
                   </Col>
                 </Row>
 
-                <Form.Item
-                  name="specialRequests"
-                  label="Yêu cầu đặc biệt"
-                >
-                  <Input.TextArea rows={4} placeholder="Nhập yêu cầu đặc biệt (nếu có)" />
+                <Form.Item name="specialRequests" label="Yêu cầu đặc biệt">
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="Nhập yêu cầu đặc biệt (nếu có)"
+                  />
                 </Form.Item>
 
                 <Divider className={styles.divider} />
@@ -282,11 +322,18 @@ const Checkout = () => {
                 <Form.Item
                   name="paymentMethod"
                   label="Phương thức thanh toán"
-                  rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán' }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn phương thức thanh toán",
+                    },
+                  ]}
                 >
                   <Select placeholder="Chọn phương thức thanh toán">
                     <Option value="credit-card">Thẻ tín dụng/ghi nợ</Option>
-                    <Option value="bank-transfer">Chuyển khoản ngân hàng</Option>
+                    <Option value="bank-transfer">
+                      Chuyển khoản ngân hàng
+                    </Option>
                     <Option value="paypal">PayPal</Option>
                     <Option value="momo">Ví MoMo</Option>
                     <Option value="zalopay">ZaloPay</Option>
@@ -308,17 +355,30 @@ const Checkout = () => {
                   rules={[
                     {
                       validator: (_, value) =>
-                        value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản và điều kiện')),
+                        value
+                          ? Promise.resolve()
+                          : Promise.reject(
+                              new Error(
+                                "Vui lòng đồng ý với điều khoản và điều kiện"
+                              )
+                            ),
                     },
                   ]}
                 >
                   <Checkbox>
-                    Tôi đã đọc và đồng ý với <a href="#">điều khoản và điều kiện</a>
+                    Tôi đã đọc và đồng ý với{" "}
+                    <a href="#">điều khoản và điều kiện</a>
                   </Checkbox>
                 </Form.Item>
 
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" loading={loading} block className={styles.submitButton}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    block
+                    className={styles.submitButton}
+                  >
                     Tiếp tục đến thanh toán
                   </Button>
                 </Form.Item>
@@ -327,16 +387,22 @@ const Checkout = () => {
           </Col>
 
           <Col xs={24} md={8}>
-            <Card title="Chi tiết đặt phòng" bordered={false} className={styles.card}>
+            <Card
+              title="Chi tiết đặt phòng"
+              bordered={false}
+              className={styles.card}
+            >
               <div>
-                <img 
-                  src={bookingDetails.roomImage} 
-                  alt={bookingDetails.roomType} 
+                <img
+                  src={bookingDetails.roomImage}
+                  alt={bookingDetails.roomType}
                   className={styles.roomImage}
                 />
               </div>
 
-              <Title level={4} className={styles.hotelName}>{bookingDetails.hotelName}</Title>
+              <Title level={4} className={styles.hotelName}>
+                {bookingDetails.hotelName}
+              </Title>
               <Paragraph>
                 <Tag color="blue">{bookingDetails.roomType}</Tag>
                 <Tag icon={<UserOutlined />}>{bookingDetails.guests} khách</Tag>
@@ -344,13 +410,19 @@ const Checkout = () => {
 
               <Divider className={styles.divider} />
 
-              <Space direction="vertical" style={{ width: '100%' }}>
+              <Space direction="vertical" style={{ width: "100%" }}>
                 <div className={styles.dateInfo}>
-                  <Text><ClockCircleOutlined className={styles.dateIcon} /> Nhận phòng:</Text>
+                  <Text>
+                    <ClockCircleOutlined className={styles.dateIcon} /> Nhận
+                    phòng:
+                  </Text>
                   <Text strong>{bookingDetails.checkIn}</Text>
                 </div>
                 <div className={styles.dateInfo}>
-                  <Text><ClockCircleOutlined className={styles.dateIcon} /> Trả phòng:</Text>
+                  <Text>
+                    <ClockCircleOutlined className={styles.dateIcon} /> Trả
+                    phòng:
+                  </Text>
                   <Text strong>{bookingDetails.checkOut}</Text>
                 </div>
                 <div className={styles.dateInfo}>
@@ -371,15 +443,18 @@ const Checkout = () => {
                     {item}
                   </List.Item>
                 )}
-                style={{ marginBottom: '16px' }}
+                style={{ marginBottom: "16px" }}
               />
 
               <Divider className={styles.divider} />
 
               <Title level={5}>Chi tiết giá</Title>
-              <Space direction="vertical" style={{ width: '100%' }}>
+              <Space direction="vertical" style={{ width: "100%" }}>
                 <div className={styles.priceLine}>
-                  <Text>{formatCurrency(bookingDetails.pricePerNight)} x {bookingDetails.nights} đêm</Text>
+                  <Text>
+                    {formatCurrency(bookingDetails.pricePerNight)} x{" "}
+                    {bookingDetails.nights} đêm
+                  </Text>
                   <Text>{formatCurrency(bookingDetails.totalPrice)}</Text>
                 </div>
                 <div className={styles.priceLine}>
@@ -395,8 +470,12 @@ const Checkout = () => {
               <Divider className={styles.divider} />
 
               <div className={styles.priceLine}>
-                <Title level={4} className={styles.totalPrice}>Tổng cộng</Title>
-                <Title level={4} className={styles.totalPrice}>{formatCurrency(bookingDetails.grandTotal)}</Title>
+                <Title level={4} className={styles.totalPrice}>
+                  Tổng cộng
+                </Title>
+                <Title level={4} className={styles.totalPrice}>
+                  {formatCurrency(bookingDetails.grandTotal)}
+                </Title>
               </div>
 
               <Alert
@@ -404,26 +483,36 @@ const Checkout = () => {
                 description="Miễn phí hủy phòng trước 48 giờ. Hủy phòng sau thời gian này sẽ bị tính phí một đêm."
                 type="warning"
                 showIcon
-                style={{ marginTop: '16px' }}
+                style={{ marginTop: "16px" }}
               />
             </Card>
 
             <Card bordered={false} className={styles.card}>
-              <Space direction="vertical" style={{ width: '100%' }}>
+              <Space direction="vertical" style={{ width: "100%" }}>
                 <div className={styles.securityInfo}>
-                  <SafetyOutlined className={styles.securityIcon} style={{ color: '#52c41a' }} />
+                  <SafetyOutlined
+                    className={styles.securityIcon}
+                    style={{ color: "#52c41a" }}
+                  />
                   <div className={styles.securityText}>
                     <Text strong>Đảm bảo giá tốt nhất</Text>
                     <br />
-                    <Text type="secondary">Chúng tôi đảm bảo bạn sẽ nhận được giá tốt nhất</Text>
+                    <Text type="secondary">
+                      Chúng tôi đảm bảo bạn sẽ nhận được giá tốt nhất
+                    </Text>
                   </div>
                 </div>
                 <div className={styles.securityInfo}>
-                  <LockOutlined className={styles.securityIcon} style={{ color: '#1890ff' }} />
+                  <LockOutlined
+                    className={styles.securityIcon}
+                    style={{ color: "#1890ff" }}
+                  />
                   <div className={styles.securityText}>
                     <Text strong>Thanh toán an toàn</Text>
                     <br />
-                    <Text type="secondary">Thông tin thanh toán của bạn được bảo mật 100%</Text>
+                    <Text type="secondary">
+                      Thông tin thanh toán của bạn được bảo mật 100%
+                    </Text>
                   </div>
                 </div>
               </Space>
@@ -435,4 +524,4 @@ const Checkout = () => {
   );
 };
 
-export default Checkout; 
+export default Checkout;

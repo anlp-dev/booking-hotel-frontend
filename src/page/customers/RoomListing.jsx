@@ -12,7 +12,6 @@ import {
   FormControl,
   Select,
   MenuItem,
-  CircularProgress,
   Button,
   Paper,
   Slider,
@@ -622,13 +621,15 @@ const RoomListing = () => {
             ) : (
               <Grid container spacing={2}>
                 {rooms.map((room) => (
-                  <Grid item xs={12} key={room._id} onClick={() => handleRoomClick(room._id)}>
+                  <Grid
+                    item
+                    xs={12}
+                    key={room._id}
+                    onClick={() => handleRoomClick(room._id)}
+                  >
                     <StyledCard>
                       {room.vip && <VipBadge>VIP Access</VipBadge>}
-                      <Box
-                        position="relative"
-                        
-                      >
+                      <Box position="relative">
                         <StyledCardMedia
                           component="img"
                           image={room.image}

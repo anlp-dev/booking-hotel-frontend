@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Layout, 
-  Typography, 
-  Card, 
-  Table, 
-  Tag, 
-  Button, 
-  Space, 
-  Modal, 
-  Descriptions, 
-  Divider, 
-  Empty, 
-  Skeleton, 
-  Avatar, 
-  Row, 
+import { useState, useEffect } from "react";
+import {
+  Layout,
+  Typography,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Modal,
+  Descriptions,
+  Divider,
+  Empty,
+  Skeleton,
+  Avatar,
+  Row,
   Col,
   Timeline,
   Tabs,
@@ -21,13 +21,13 @@ import {
   Badge,
   Image,
   Statistic,
-  Input
-} from 'antd';
-import { 
-  HistoryOutlined, 
-  CheckCircleOutlined, 
-  CloseCircleOutlined, 
-  ClockCircleOutlined, 
+  Input,
+} from "antd";
+import {
+  HistoryOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ClockCircleOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
   UserOutlined,
@@ -40,23 +40,22 @@ import {
   FileTextOutlined,
   MailOutlined,
   EyeOutlined,
-  FilterOutlined
-} from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import styles from '../../static/css/BookingHistory.module.css';
+  FilterOutlined,
+} from "@ant-design/icons";
+
+import styles from "../../static/css/BookingHistory.module.css";
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const BookingHistory = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [searchText, setSearchText] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   // Mock data for bookings history
   useEffect(() => {
@@ -64,117 +63,160 @@ const BookingHistory = () => {
     setTimeout(() => {
       const mockBookings = [
         {
-          id: 'BK-123456',
-          hotelName: 'Luxury Palace Hotel & Spa',
-          hotelAddress: '123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh',
-          hotelImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop',
-          roomType: 'Deluxe Room',
-          roomImage: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop',
-          checkIn: '2023-07-15',
-          checkOut: '2023-07-18',
+          id: "BK-123456",
+          hotelName: "Luxury Palace Hotel & Spa",
+          hotelAddress: "123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
+          hotelImage:
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop",
+          roomType: "Deluxe Room",
+          roomImage:
+            "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop",
+          checkIn: "2023-07-15",
+          checkOut: "2023-07-18",
           guests: 2,
-          status: 'completed',
+          status: "completed",
           totalAmount: 3500000,
-          paymentMethod: 'Credit Card',
-          paymentId: 'PAY-123456',
-          bookingDate: '2023-07-01',
+          paymentMethod: "Credit Card",
+          paymentId: "PAY-123456",
+          bookingDate: "2023-07-01",
           rating: 4.5,
-          review: 'Dịch vụ tuyệt vời, phòng sạch sẽ và nhân viên thân thiện.',
-          amenities: ['Wifi miễn phí', 'Điều hòa', 'Minibar', 'Bể bơi', 'Bữa sáng miễn phí'],
-          customerName: 'Nguyễn Văn A',
-          email: 'nguyenvana@example.com',
-          phone: '0912345678'
+          review: "Dịch vụ tuyệt vời, phòng sạch sẽ và nhân viên thân thiện.",
+          amenities: [
+            "Wifi miễn phí",
+            "Điều hòa",
+            "Minibar",
+            "Bể bơi",
+            "Bữa sáng miễn phí",
+          ],
+          customerName: "Nguyễn Văn A",
+          email: "nguyenvana@example.com",
+          phone: "0912345678",
         },
         {
-          id: 'BK-234567',
-          hotelName: 'Grand Riverside Resort',
-          hotelAddress: '456 Võ Văn Kiệt, Quận 5, TP. Hồ Chí Minh',
-          hotelImage: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop',
-          roomType: 'Premium Suite',
-          roomImage: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=2074&auto=format&fit=crop',
-          checkIn: '2023-08-10',
-          checkOut: '2023-08-15',
+          id: "BK-234567",
+          hotelName: "Grand Riverside Resort",
+          hotelAddress: "456 Võ Văn Kiệt, Quận 5, TP. Hồ Chí Minh",
+          hotelImage:
+            "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop",
+          roomType: "Premium Suite",
+          roomImage:
+            "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=2074&auto=format&fit=crop",
+          checkIn: "2023-08-10",
+          checkOut: "2023-08-15",
           guests: 3,
-          status: 'upcoming',
+          status: "upcoming",
           totalAmount: 5200000,
-          paymentMethod: 'Banking Transfer',
-          paymentId: 'PAY-234567',
-          bookingDate: '2023-07-20',
+          paymentMethod: "Banking Transfer",
+          paymentId: "PAY-234567",
+          bookingDate: "2023-07-20",
           rating: null,
           review: null,
-          amenities: ['Wifi miễn phí', 'Điều hòa', 'Minibar', 'Bể bơi', 'Spa', 'Gym'],
-          customerName: 'Nguyễn Văn A',
-          email: 'nguyenvana@example.com',
-          phone: '0912345678'
+          amenities: [
+            "Wifi miễn phí",
+            "Điều hòa",
+            "Minibar",
+            "Bể bơi",
+            "Spa",
+            "Gym",
+          ],
+          customerName: "Nguyễn Văn A",
+          email: "nguyenvana@example.com",
+          phone: "0912345678",
         },
         {
-          id: 'BK-345678',
-          hotelName: 'Seaside Paradise Hotel',
-          hotelAddress: '789 Trần Phú, Nha Trang, Khánh Hòa',
-          hotelImage: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop',
-          roomType: 'Ocean View Room',
-          roomImage: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop',
-          checkIn: '2023-06-01',
-          checkOut: '2023-06-05',
+          id: "BK-345678",
+          hotelName: "Seaside Paradise Hotel",
+          hotelAddress: "789 Trần Phú, Nha Trang, Khánh Hòa",
+          hotelImage:
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop",
+          roomType: "Ocean View Room",
+          roomImage:
+            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop",
+          checkIn: "2023-06-01",
+          checkOut: "2023-06-05",
           guests: 2,
-          status: 'completed',
+          status: "completed",
           totalAmount: 4800000,
-          paymentMethod: 'Credit Card',
-          paymentId: 'PAY-345678',
-          bookingDate: '2023-05-15',
+          paymentMethod: "Credit Card",
+          paymentId: "PAY-345678",
+          bookingDate: "2023-05-15",
           rating: 5,
-          review: 'Khách sạn tuyệt vời với view biển đẹp, sẽ quay lại lần sau!',
-          amenities: ['Wifi miễn phí', 'Điều hòa', 'Minibar', 'Bể bơi vô cực', 'Bữa sáng miễn phí', 'Bar trên sân thượng'],
-          customerName: 'Nguyễn Văn A',
-          email: 'nguyenvana@example.com',
-          phone: '0912345678'
+          review: "Khách sạn tuyệt vời với view biển đẹp, sẽ quay lại lần sau!",
+          amenities: [
+            "Wifi miễn phí",
+            "Điều hòa",
+            "Minibar",
+            "Bể bơi vô cực",
+            "Bữa sáng miễn phí",
+            "Bar trên sân thượng",
+          ],
+          customerName: "Nguyễn Văn A",
+          email: "nguyenvana@example.com",
+          phone: "0912345678",
         },
         {
-          id: 'BK-456789',
-          hotelName: 'Mountain View Resort',
-          hotelAddress: '101 Hoàng Liên, Sa Pa, Lào Cai',
-          hotelImage: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop',
-          roomType: 'Mountain Suite',
-          roomImage: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=2074&auto=format&fit=crop',
-          checkIn: '2023-09-20',
-          checkOut: '2023-09-25',
+          id: "BK-456789",
+          hotelName: "Mountain View Resort",
+          hotelAddress: "101 Hoàng Liên, Sa Pa, Lào Cai",
+          hotelImage:
+            "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop",
+          roomType: "Mountain Suite",
+          roomImage:
+            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=2074&auto=format&fit=crop",
+          checkIn: "2023-09-20",
+          checkOut: "2023-09-25",
           guests: 4,
-          status: 'upcoming',
+          status: "upcoming",
           totalAmount: 6300000,
-          paymentMethod: 'Banking Transfer',
-          paymentId: 'PAY-456789',
-          bookingDate: '2023-08-10',
+          paymentMethod: "Banking Transfer",
+          paymentId: "PAY-456789",
+          bookingDate: "2023-08-10",
           rating: null,
           review: null,
-          amenities: ['Wifi miễn phí', 'Điều hòa', 'Minibar', 'Lò sưởi', 'Bữa sáng miễn phí', 'Tour leo núi'],
-          customerName: 'Nguyễn Văn A',
-          email: 'nguyenvana@example.com',
-          phone: '0912345678'
+          amenities: [
+            "Wifi miễn phí",
+            "Điều hòa",
+            "Minibar",
+            "Lò sưởi",
+            "Bữa sáng miễn phí",
+            "Tour leo núi",
+          ],
+          customerName: "Nguyễn Văn A",
+          email: "nguyenvana@example.com",
+          phone: "0912345678",
         },
         {
-          id: 'BK-567890',
-          hotelName: 'City Central Hotel',
-          hotelAddress: '222 Lý Tự Trọng, Quận 1, TP. Hồ Chí Minh',
-          hotelImage: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit=crop',
-          roomType: 'Business Room',
-          roomImage: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=2070&auto=format&fit=crop',
-          checkIn: '2023-05-05',
-          checkOut: '2023-05-07',
+          id: "BK-567890",
+          hotelName: "City Central Hotel",
+          hotelAddress: "222 Lý Tự Trọng, Quận 1, TP. Hồ Chí Minh",
+          hotelImage:
+            "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit=crop",
+          roomType: "Business Room",
+          roomImage:
+            "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=2070&auto=format&fit=crop",
+          checkIn: "2023-05-05",
+          checkOut: "2023-05-07",
           guests: 1,
-          status: 'cancelled',
+          status: "cancelled",
           totalAmount: 1800000,
-          paymentMethod: 'Credit Card',
-          paymentId: 'PAY-567890',
-          bookingDate: '2023-04-20',
+          paymentMethod: "Credit Card",
+          paymentId: "PAY-567890",
+          bookingDate: "2023-04-20",
           rating: null,
           review: null,
-          amenities: ['Wifi miễn phí', 'Điều hòa', 'Minibar', 'Bàn làm việc', 'Bữa sáng miễn phí'],
-          customerName: 'Nguyễn Văn A',
-          email: 'nguyenvana@example.com',
-          phone: '0912345678'
-        }
+          amenities: [
+            "Wifi miễn phí",
+            "Điều hòa",
+            "Minibar",
+            "Bàn làm việc",
+            "Bữa sáng miễn phí",
+          ],
+          customerName: "Nguyễn Văn A",
+          email: "nguyenvana@example.com",
+          phone: "0912345678",
+        },
       ];
-      
+
       setBookings(mockBookings);
       setLoading(false);
     }, 1500);
@@ -190,22 +232,37 @@ const BookingHistory = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('vi-VN', options);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("vi-VN", options);
   };
 
   const getStatusTag = (status) => {
     switch (status) {
-      case 'completed':
-        return <Tag icon={<CheckCircleOutlined />} color="success">Đã hoàn thành</Tag>;
-      case 'upcoming':
-        return <Tag icon={<ClockCircleOutlined />} color="processing">Sắp tới</Tag>;
-      case 'cancelled':
-        return <Tag icon={<CloseCircleOutlined />} color="error">Đã hủy</Tag>;
+      case "completed":
+        return (
+          <Tag icon={<CheckCircleOutlined />} color="success">
+            Đã hoàn thành
+          </Tag>
+        );
+      case "upcoming":
+        return (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            Sắp tới
+          </Tag>
+        );
+      case "cancelled":
+        return (
+          <Tag icon={<CloseCircleOutlined />} color="error">
+            Đã hủy
+          </Tag>
+        );
       default:
         return <Tag color="default">{status}</Tag>;
     }
@@ -217,27 +274,27 @@ const BookingHistory = () => {
     return Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
   };
 
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = 
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesSearch =
       booking.hotelName.toLowerCase().includes(searchText.toLowerCase()) ||
       booking.roomType.toLowerCase().includes(searchText.toLowerCase()) ||
       booking.id.toLowerCase().includes(searchText.toLowerCase());
-    
-    if (activeTab === 'all') return matchesSearch;
+
+    if (activeTab === "all") return matchesSearch;
     return booking.status === activeTab && matchesSearch;
   });
 
   const columns = [
     {
-      title: 'Khách sạn',
-      dataIndex: 'hotelName',
-      key: 'hotelName',
+      title: "Khách sạn",
+      dataIndex: "hotelName",
+      key: "hotelName",
       render: (text, record) => (
         <div className={styles.hotelCell}>
-          <Avatar 
-            src={record.hotelImage} 
-            size={64} 
-            shape="square" 
+          <Avatar
+            src={record.hotelImage}
+            size={64}
+            shape="square"
             className={styles.hotelAvatar}
           />
           <div className={styles.hotelInfo}>
@@ -257,9 +314,9 @@ const BookingHistory = () => {
       ),
     },
     {
-      title: 'Thời gian',
-      dataIndex: 'checkIn',
-      key: 'checkIn',
+      title: "Thời gian",
+      dataIndex: "checkIn",
+      key: "checkIn",
       render: (text, record) => (
         <div className={styles.dateInfo}>
           <div>
@@ -269,21 +326,22 @@ const BookingHistory = () => {
             <CalendarOutlined /> Check-out: {formatDate(record.checkOut)}
           </div>
           <div>
-            <ClockCircleOutlined /> {calculateNights(record.checkIn, record.checkOut)} đêm
+            <ClockCircleOutlined />{" "}
+            {calculateNights(record.checkIn, record.checkOut)} đêm
           </div>
         </div>
       ),
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
       render: (status) => getStatusTag(status),
     },
     {
-      title: 'Tổng tiền',
-      dataIndex: 'totalAmount',
-      key: 'totalAmount',
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
       render: (amount) => (
         <Text strong className={styles.amount}>
           {formatCurrency(amount)}
@@ -291,25 +349,24 @@ const BookingHistory = () => {
       ),
     },
     {
-      title: 'Đánh giá',
-      dataIndex: 'rating',
-      key: 'rating',
-      render: (rating) => (
+      title: "Đánh giá",
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) =>
         rating ? (
           <Rate disabled defaultValue={rating} allowHalf />
         ) : (
           <Text type="secondary">Chưa đánh giá</Text>
-        )
-      ),
+        ),
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Thao tác",
+      key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button 
-            type="primary" 
-            icon={<EyeOutlined />} 
+          <Button
+            type="primary"
+            icon={<EyeOutlined />}
             onClick={() => showModal(record)}
             className={styles.viewButton}
           >
@@ -340,52 +397,55 @@ const BookingHistory = () => {
         </div>
 
         <Card className={styles.card}>
-          <Tabs 
-            activeKey={activeTab} 
+          <Tabs
+            activeKey={activeTab}
             onChange={setActiveTab}
             className={styles.tabs}
             tabBarExtraContent={
               <div className={styles.tabExtra}>
-                <Badge count={bookings.filter(b => b.status === 'upcoming').length} offset={[-5, 5]}>
+                <Badge
+                  count={bookings.filter((b) => b.status === "upcoming").length}
+                  offset={[-5, 5]}
+                >
                   <Button icon={<FilterOutlined />}>Lọc</Button>
                 </Badge>
               </div>
             }
           >
-            <TabPane 
+            <TabPane
               tab={
                 <span>
                   <HistoryOutlined />
                   Tất cả
                 </span>
-              } 
+              }
               key="all"
             />
-            <TabPane 
+            <TabPane
               tab={
                 <span>
                   <CheckCircleOutlined />
                   Đã hoàn thành
                 </span>
-              } 
+              }
               key="completed"
             />
-            <TabPane 
+            <TabPane
               tab={
                 <span>
                   <ClockCircleOutlined />
                   Sắp tới
                 </span>
-              } 
+              }
               key="upcoming"
             />
-            <TabPane 
+            <TabPane
               tab={
                 <span>
                   <CloseCircleOutlined />
                   Đã hủy
                 </span>
-              } 
+              }
               key="cancelled"
             />
           </Tabs>
@@ -397,16 +457,16 @@ const BookingHistory = () => {
               <Skeleton active avatar paragraph={{ rows: 4 }} />
             </div>
           ) : filteredBookings.length > 0 ? (
-            <Table 
-              dataSource={filteredBookings} 
-              columns={columns} 
+            <Table
+              dataSource={filteredBookings}
+              columns={columns}
               rowKey="id"
               pagination={{ pageSize: 5 }}
               className={styles.table}
             />
           ) : (
-            <Empty 
-              description="Không tìm thấy lịch sử đặt phòng nào" 
+            <Empty
+              description="Không tìm thấy lịch sử đặt phòng nào"
               className={styles.empty}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
@@ -427,29 +487,31 @@ const BookingHistory = () => {
               <Button key="back" onClick={handleCancel}>
                 Đóng
               </Button>,
-              selectedBooking.status === 'upcoming' && (
+              selectedBooking.status === "upcoming" && (
                 <Button key="cancel" danger>
                   Hủy đặt phòng
                 </Button>
               ),
-              <Button 
-                key="print" 
+              <Button
+                key="print"
                 icon={<PrinterOutlined />}
                 onClick={() => window.print()}
               >
                 In hóa đơn
               </Button>,
-              selectedBooking.status === 'completed' && !selectedBooking.review && (
-                <Button key="review" type="primary" icon={<StarOutlined />}>
-                  Đánh giá
-                </Button>
-              ),
+              selectedBooking.status === "completed" &&
+                !selectedBooking.review && (
+                  <Button key="review" type="primary" icon={<StarOutlined />}>
+                    Đánh giá
+                  </Button>
+                ),
             ]}
             width={800}
             className={styles.detailModal}
           >
             <div className={styles.bookingId}>
-              <FileTextOutlined /> Mã đặt phòng: <Text strong>{selectedBooking.id}</Text>
+              <FileTextOutlined /> Mã đặt phòng:{" "}
+              <Text strong>{selectedBooking.id}</Text>
             </div>
 
             <div className={styles.hotelDetailHeader}>
@@ -474,59 +536,71 @@ const BookingHistory = () => {
 
             <Row gutter={[24, 24]}>
               <Col xs={24} md={12}>
-                <Card title="Thông tin đặt phòng" bordered={false} className={styles.detailCard}>
+                <Card
+                  title="Thông tin đặt phòng"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
                   <div className={styles.roomImageContainer}>
                     <Image
                       src={selectedBooking.roomImage}
                       alt={selectedBooking.roomType}
                       className={styles.roomDetailImage}
                     />
-                    <Badge.Ribbon text={selectedBooking.roomType} color="blue" />
+                    <Badge.Ribbon
+                      text={selectedBooking.roomType}
+                      color="blue"
+                    />
                   </div>
-                  
+
                   <Timeline
                     className={styles.timeline}
                     items={[
                       {
-                        color: 'green',
+                        color: "green",
                         children: (
                           <>
-                            <Text strong>Check-in:</Text> {formatDate(selectedBooking.checkIn)}
+                            <Text strong>Check-in:</Text>{" "}
+                            {formatDate(selectedBooking.checkIn)}
                           </>
                         ),
-                        dot: <CalendarOutlined />
+                        dot: <CalendarOutlined />,
                       },
                       {
-                        color: 'red',
+                        color: "red",
                         children: (
                           <>
-                            <Text strong>Check-out:</Text> {formatDate(selectedBooking.checkOut)}
+                            <Text strong>Check-out:</Text>{" "}
+                            {formatDate(selectedBooking.checkOut)}
                           </>
                         ),
-                        dot: <CalendarOutlined />
+                        dot: <CalendarOutlined />,
                       },
                     ]}
                   />
-                  
+
                   <Row gutter={16} className={styles.statsRow}>
                     <Col span={12}>
-                      <Statistic 
-                        title="Số đêm" 
-                        value={calculateNights(selectedBooking.checkIn, selectedBooking.checkOut)} 
+                      <Statistic
+                        title="Số đêm"
+                        value={calculateNights(
+                          selectedBooking.checkIn,
+                          selectedBooking.checkOut
+                        )}
                         suffix="đêm"
                       />
                     </Col>
                     <Col span={12}>
-                      <Statistic 
-                        title="Số khách" 
-                        value={selectedBooking.guests} 
+                      <Statistic
+                        title="Số khách"
+                        value={selectedBooking.guests}
                         suffix="người"
                       />
                     </Col>
                   </Row>
-                  
+
                   <Divider />
-                  
+
                   <div className={styles.amenitiesSection}>
                     <Text strong>Tiện nghi phòng:</Text>
                     <div className={styles.amenitiesTags}>
@@ -539,9 +613,13 @@ const BookingHistory = () => {
                   </div>
                 </Card>
               </Col>
-              
+
               <Col xs={24} md={12}>
-                <Card title="Thông tin khách hàng" bordered={false} className={styles.detailCard}>
+                <Card
+                  title="Thông tin khách hàng"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
                   <Descriptions column={1}>
                     <Descriptions.Item label="Họ tên">
                       <UserOutlined /> {selectedBooking.customerName}
@@ -554,8 +632,12 @@ const BookingHistory = () => {
                     </Descriptions.Item>
                   </Descriptions>
                 </Card>
-                
-                <Card title="Thông tin thanh toán" bordered={false} className={styles.detailCard}>
+
+                <Card
+                  title="Thông tin thanh toán"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
                   <Descriptions column={1}>
                     <Descriptions.Item label="Phương thức thanh toán">
                       <CreditCardOutlined /> {selectedBooking.paymentMethod}
@@ -567,7 +649,7 @@ const BookingHistory = () => {
                       {formatDate(selectedBooking.bookingDate)}
                     </Descriptions.Item>
                   </Descriptions>
-                  
+
                   <div className={styles.totalAmount}>
                     <Text>Tổng tiền:</Text>
                     <Text strong className={styles.amountValue}>
@@ -575,10 +657,18 @@ const BookingHistory = () => {
                     </Text>
                   </div>
                 </Card>
-                
+
                 {selectedBooking.review && (
-                  <Card title="Đánh giá của bạn" bordered={false} className={styles.detailCard}>
-                    <Rate disabled defaultValue={selectedBooking.rating} allowHalf />
+                  <Card
+                    title="Đánh giá của bạn"
+                    bordered={false}
+                    className={styles.detailCard}
+                  >
+                    <Rate
+                      disabled
+                      defaultValue={selectedBooking.rating}
+                      allowHalf
+                    />
                     <Paragraph className={styles.reviewText}>
                       {selectedBooking.review}
                     </Paragraph>
@@ -593,4 +683,4 @@ const BookingHistory = () => {
   );
 };
 
-export default BookingHistory; 
+export default BookingHistory;

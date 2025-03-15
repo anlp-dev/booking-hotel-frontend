@@ -1,7 +1,7 @@
 .layout {
   min-height: 100vh;
   background-color: #f0f2f5;
-  background-image: linear-gradient(to bottom, #e6f7ff, #f0f2f5);
+
   padding: 40px 0;
 }
 
@@ -263,21 +263,21 @@
   .layout {
     padding: 20px 0;
   }
-  
+
   .pageHeader {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .searchSection {
     width: 100%;
     max-width: none;
   }
-  
+
   .hotelDetailHeader {
     flex-direction: column;
   }
-  
+
   .hotelDetailImage {
     width: 100%;
     max-width: none;
@@ -291,14 +291,17 @@
     background-image: none;
     padding: 0;
   }
-  
-  .card, .detailCard {
+
+  .card,
+  .detailCard {
     box-shadow: none;
     border: 1px solid #f0f0f0;
     page-break-inside: avoid;
   }
-  
-  .viewButton, .tabExtra, .tabs {
+
+  .viewButton,
+  .tabExtra,
+  .tabs {
     display: none !important;
   }
-} 
+}
