@@ -138,8 +138,12 @@ const Login = () => {
             if (resData.status === 200) {
                 const decode = jwtDecode(resData.data);
                 localStorage.setItem("role", decode.role);
+                localStorage.setItem("username", data.get('username'));
                 if (decode.role === "SUPER_ADMIN") {
                     navigate("/admin/homeAdmin");
+                    notifySuccess('Đăng nhập thành công!');
+                } else if (decode.role === "GUEST_ROLE_MEMBER") {
+                    navigate("/");
                     notifySuccess('Đăng nhập thành công!');
                 } else {
                     navigate("/403");
@@ -154,7 +158,6 @@ const Login = () => {
             setIsLoading(false);
         }
     };
-
     const handleSuccess = (response) => {
         console.log("Login Success:", response);
         // Gửi response.credentials đến backend để xác thực
@@ -425,7 +428,7 @@ const Login = () => {
                     align="center"
                     sx={{mt: 4, opacity: 0.8, zIndex: 1}}
                 >
-                    © 2025 LuxStay. Tất cả các quyền được bảo lưu.
+                    2025 LuxStay. Tất cả các quyền được bảo lưu.
                 </Typography>
             </LoginContainer>
         </>

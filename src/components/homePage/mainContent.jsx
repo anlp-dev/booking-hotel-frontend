@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Layout,
   Button,
@@ -24,7 +24,10 @@ import { UserOutlined } from "@ant-design/icons";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useFetcher } from "react-router-dom";
 dayjs.extend(customParseFormat);
+
+
 
 const { RangePicker } = DatePicker;
 
@@ -116,6 +119,24 @@ const accommodationTypes = [
 function MainContent() {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
+  const [room, setRoom] = useState();
+
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const response = await getRoomList;
+        console.log("response", response);
+        setRoom(response);
+      } catch (error) {
+        console.log(error);
+        message.error("Không thể lấy thông tin phòng");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (roomId) fetchRoom();
+  }, [roomId]);
+
 
   const content = (
     <div style={{ width: 280 }}>
