@@ -20,19 +20,22 @@ function Header() {
         if (token && role && username) {
             setIsLoggedIn(true);
             setUser({ name: username });
-        } else {
+          } else {
             setIsLoggedIn(false);
             setUser(null);
-        }
-    };
-
-    useEffect(() => {
-        checkAuthStatus();
-        // Set up an interval to check auth status periodically
-        const interval = setInterval(checkAuthStatus, 1000);
-        return () => clearInterval(interval);
-    }, []);
-
+               localStorage.removeItem('token');
+                  localStorage.removeItem('role');
+                  localStorage.removeItem('username');
+          }
+        };
+      
+        useEffect(() => {
+          checkAuthStatus();
+          // Set up an interval to check auth status periodically
+          const interval = setInterval(checkAuthStatus, 1000);
+          return () => clearInterval(interval);
+        }, []);
+      
     const handleLogout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('role');
@@ -45,41 +48,26 @@ function Header() {
     };
 
     const userMenu = (
-        <Menu
-            items={[
-                {
-                    key: '1',
-                    label: 'Tài khoản',
-                    onClick: () => navigate('/account'),
-                },
-                {
-                    key: '2',
-                    label: 'Lịch sử trả tiền',
-                    onClick: () => navigate('/payment-history'),
-                },
-                {
-                    key: '3',
-                    label: 'Hoạt động Rewards',
-                    onClick: () => navigate('/rewards'),
-                },
-                {
-                    key: '4',
-                    label: 'Hotels.com™ Rewards',
-                    onClick: () => navigate('/rewards-info'),
-                },
-                {
-                    key: '5',
-                    label: 'Phản hồi',
-                    onClick: () => navigate('/feedback'),
-                },
-                {
-                    key: '6',
-                    label: 'Thoát',
-                    onClick: handleLogout,
-                },
-            ]}
-        />
+        <Menu style={{ width: 150 }}>
+            <Menu.Item key="1">
+                <a href="/account">Tài khoản</a>
+            </Menu.Item>
+            <Menu.Item key="2">
+                <a href="/payment-history">Lịch sử trả tiền</a>
+            </Menu.Item>
+            <Menu.Item key="5">
+                <a href="/feedback">Phản hồi</a>
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="6" onClick={handleLogout}>
+                <a href="#">Thoát</a>
+            </Menu.Item>
+        </Menu>
     );
+    
+        
+
+    
 
     const tripMenu = (
         <Menu items={[
@@ -109,7 +97,7 @@ function Header() {
         }}>
             {/* Left section with logo and dropdown */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img
+                <img onClick={() => navigate('/')}
                     src="https://vi.hotels.com/_dms/header/logo.svg?locale=vi_VN&siteid=3213&2&6f9ec7db"
                     alt="logo"
                     style={{ height: '32px', marginRight: '16px' }}
