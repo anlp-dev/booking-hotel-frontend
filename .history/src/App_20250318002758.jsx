@@ -18,6 +18,7 @@ import PaymentHistory from "./components/homePage/paymentHistory.jsx";
 import RoomDetails from "./page/room/RoomDetails.jsx";
 import LayoutUser from "./page/userInformation/layoutUser.jsx";
 
+
 function App() {
   return (
     <>
@@ -26,7 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />}>
             <Route index element={<MainContent />} />
-            <Route path="/room/:id" element={<RoomDetails />} />
+            <Route path="/details" element={<RoomDetails />} />
             <Route path="/information/*" element={<LayoutUser />} />
           </Route>
           <Route path="/login" element={<Login />} />
