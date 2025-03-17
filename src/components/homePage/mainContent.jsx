@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Layout,
   Button,
@@ -9,6 +9,7 @@ import {
   Carousel,
   Tabs,
   Space,
+  message,
 } from "antd";
 import {
   RightOutlined,
@@ -24,6 +25,8 @@ import { UserOutlined } from "@ant-design/icons";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useFetcher, useNavigate } from "react-router-dom";
+import { getRoomList } from "../../services/RoomService";
 dayjs.extend(customParseFormat);
 
 const { RangePicker } = DatePicker;
@@ -61,61 +64,51 @@ const promotions = [
   },
 ];
 
-// Accommodation types data
-const accommodationTypes = [
-  {
-    id: 1,
-    img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624608378.jpg?k=d1b48b5c6f96884d97b31b7582fe3c0f15c4dff3228c23754a1ae828cc0d8e0c&o=&hp=1",
-    title: "Resort",
-    icon: <BankOutlined />,
-  },
-  {
-    id: 2,
-    img: "https://www.hotelescenter.es/wp-content/blogs.dir/1601/files/home//header-home-mb.jpg",
-    title: "Khách sạn",
-    icon: <HomeOutlined />,
-  },
-  {
-    id: 3,
-    img: "https://pro-static.h10hotels.com/gallery/T2D3/07_OCSHotel7.jpg",
-    title: "Căn hộ",
-    icon: <BankOutlined />,
-  },
-  {
-    id: 4,
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoWnQ76KGgDhoCCgWvQ6wbre_FUi8_kDnkzA&s",
-    title: "Biệt thự",
-    icon: <HomeOutlined />,
-  },
-  {
-    id: 5,
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ALU4st0khcyisgNPy1E7ghXitdDJ-fRJGA&s",
-    title: "Nhà nghỉ B&B",
-    icon: <HomeOutlined />,
-  },
-  {
-    id: 6,
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ALU4st0khcyisgNPy1E7ghXitdDJ-fRJGA&s",
-    title: "Nhà nghỉ B&B",
-    icon: <HomeOutlined />,
-  },
-  {
-    id: 7,
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ALU4st0khcyisgNPy1E7ghXitdDJ-fRJGA&s",
-    title: "Nhà nghỉ B&B",
-    icon: <HomeOutlined />,
-  },
-  {
-    id: 8,
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ALU4st0khcyisgNPy1E7ghXitdDJ-fRJGA&s",
-    title: "Nhà nghỉ B&B",
-    icon: <HomeOutlined />,
-  },
-];
-
 function MainContent() {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
+  const [room, setRoom] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const response = await getRoomList();
+        console.log("response", response);
+        setRoom(response);
+      } catch (error) {
+        console.log(error);
+        message.error("Không thể lấy thông tin phòng");
+      }
+    };
+    fetchRoom();
+  }, []);
+
+  const checkAuthStatus = () => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const username = localStorage.getItem("username");
+
+    if (token && role && username) {
+      setIsLoggedIn(true);
+      setUser({ name: username });
+    } else {
+      setIsLoggedIn(false);
+      setUser(null);
+         localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('username');
+    }
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+    // Set up an interval to check auth status periodically
+    const interval = setInterval(checkAuthStatus, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const content = (
     <div style={{ width: 280 }}>
@@ -263,43 +256,46 @@ function MainContent() {
       </div>
 
       {/* Membership Banner */}
-      <Card
-        style={{
-          marginBottom: "48px",
-          background: "#191E3B",
-          borderRadius: "10px",
-        }}
-      >
-        <Row align="middle" gutter={15}>
-          <Col xs={24} md={3} style={{ textAlign: "center" }}>
-            <img
-              src="https://a.travel-assets.com/egds/marks/mod_hotels.svg"
-              alt="Hotels logo"
-              style={{ height: "64px" }}
-            />
-          </Col>
-          <Col xs={24} md={16}>
-            <Text style={{ color: "white", fontSize: "18px" }}>
-              Thành viên tiết kiệm 10% trở lên tại hơn 100.000 khách sạn trên
-              toàn thế giới khi đăng nhập
-            </Text>
-          </Col>
-          <Col xs={24} md={5} style={{ textAlign: "right" }}>
-            <Button
-              type="primary"
-              ghost
-              style={{
-                color: "white",
-                backgroundColor: "#1668E3",
-                borderRadius: "18px",
-              }}
-              size="large"
-            >
-              Đăng nhập ngay
-            </Button>
-          </Col>
-        </Row>
-      </Card>
+      {!isLoggedIn && (
+        <Card
+          style={{
+            marginBottom: "48px",
+            background: "#191E3B",
+            borderRadius: "10px",
+          }}
+        >
+          <Row align="middle" gutter={15}>
+            <Col xs={24} md={3} style={{ textAlign: "center" }}>
+              <img
+                src="https://a.travel-assets.com/egds/marks/mod_hotels.svg"
+                alt="Hotels logo"
+                style={{ height: "64px" }}
+              />
+            </Col>
+            <Col xs={24} md={16}>
+              <Text style={{ color: "white", fontSize: "18px" }}>
+                Thành viên tiết kiệm 10% trở lên tại hơn 100.000 khách sạn trên
+                toàn thế giới khi đăng nhập
+              </Text>
+            </Col>
+            <Col xs={24} md={5} style={{ textAlign: "right" }}>
+              <Button
+                type="primary"
+                ghost
+                onClick={() => navigate("/login")}
+                style={{
+                  color: "white",
+                  backgroundColor: "#1668E3",
+                  borderRadius: "18px",
+                }}
+                size="large"
+              >
+                Đăng nhập ngay
+              </Button>
+            </Col>
+          </Row>
+        </Card>
+      )}
 
       {/* Features Section */}
       <div style={{ marginBottom: "48px", textAlign: "center" }}>
@@ -360,7 +356,7 @@ function MainContent() {
         <Title level={2} style={{ marginBottom: "24px" }}>
           Tìm cho mình nơi lưu trú yêu thích tiếp theo
         </Title>
-        
+
         <Carousel
           dots={false}
           arrows
@@ -372,36 +368,44 @@ function MainContent() {
             { breakpoint: 768, settings: { slidesToShow: 2 } },
             { breakpoint: 480, settings: { slidesToShow: 1 } },
           ]}
-          
         >
-          {accommodationTypes.map((item) => (
-            <div key={item.id} style={{ padding: "10px" }}>
-              <Card style={{marginLeft: "10px"}}
-                hoverable
-                cover={
-                  <div style={{ height: "210px", overflow: "hidden" }}>
-                    <img
-                      alt={item.title}
-                      src={item.img}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "12px", 
-                      }}
-                    />
-                  </div>
-                }
-              
-                bodyStyle={{ padding: "12px", textAlign: "center"}}
-              >
-                <Space direction="vertical" size={4} style={{ width: "100%" }}>
-                  {item.icon}
-                  <Text strong>{item.title}</Text>
-                </Space>
-              </Card>
-            </div>
-          ))}
+          {room?.length > 0 ? (
+            room.map((item) => (
+              <div key={item.id} style={{ padding: "10px" }}>
+                <Card
+                  style={{ marginLeft: "10px" }}
+                  hoverable
+                  onClick={() => navigate(`/room/${item.id}`)}
+                  cover={
+                    <div style={{ height: "210px", overflow: "hidden" }}>
+                      <img
+                        alt={item.title}
+                        src={item.images?.[0]}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: "12px",
+                        }}
+                      />
+                    </div>
+                  }
+                  bodyStyle={{ padding: "12px", textAlign: "center" }}
+                >
+                  <Space
+                    direction="vertical"
+                    size={4}
+                    style={{ width: "100%" }}
+                  >
+                    <Text strong>{item.type}</Text>
+                    {item.description}
+                  </Space>
+                </Card>
+              </div>
+            ))
+          ) : (
+            <p>Loading rooms...</p> // Hiển thị thông báo nếu chưa có dữ liệu
+          )}
         </Carousel>
       </div>
 
