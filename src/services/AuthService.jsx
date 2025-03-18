@@ -17,14 +17,33 @@ const authService = {
             const data = await res.json();
             console.log(data, 'data')
             if(!res.ok){
-                throw new Error("Error fetch data.")
+                throw new Error(data.message)
             }
             localStorage.setItem("token", data.data);
             return data;
         }catch (e) {
             throw new Error(e.message);
         }
-    }
+    },
+
+    async loginGoogle(dataReq){
+      try{
+          const res = await fetch(`${apiConfig.baseUrl}/auth/login-google`, {
+              method: "POST",
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify(dataReq)
+          })
+          const data = await res.json();
+          if(!res.ok){
+              throw new Error(data.message)
+          }
+          localStorage.setItem("token", data.data);
+          console.log(data, 'data')
+          return data;
+      }catch (e) {
+          throw new Error(e.message);
+      }
+  }
 }
 
 export default authService;

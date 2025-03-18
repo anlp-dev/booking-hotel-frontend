@@ -3,7 +3,6 @@ import apiConfig from "../configs/apiConfig";
 const endpoint = `${apiConfig.baseUrl}/room`;
 
 export const getRoomList = async () => {
-  3;
   try {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -12,7 +11,7 @@ export const getRoomList = async () => {
 
     const res = await fetch(endpoint, {
       method: "GET",
-      headers: apiConfig.getAuthHeaders(token),
+      headers: {'Content-Type': 'application/json'},
     });
 
     const data = await res.json();
@@ -27,16 +26,15 @@ export const getRoomList = async () => {
 };
 
 export const getRoomById = async (id) => {
-  3;
   try {
     const token = localStorage.getItem("token");
     if (!token) {
       throw new Error("Đã hết hạn đăng nhập !!!");
     }
 
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await fetch(`${endpoint}/get-by-id/${id}`, {
       method: "GET",
-      headers: apiConfig.getAuthHeaders(token),
+      headers: {'Content-Type': 'application/json'},
     });
 
     const data = await res.json();

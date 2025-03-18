@@ -35,7 +35,7 @@ import {
   QuestionCircleOutlined,
   CompassOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../../static/css/Checkout.module.css";
 import PaymentService from "../../services/PaymentService";
 
@@ -48,6 +48,10 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const bookingInfo = location.state?.bookingInfo;
+
+  console.log(bookingInfo, 'bookingInfo')
 
   // Mock data for the hotel booking
   const bookingDetails = {

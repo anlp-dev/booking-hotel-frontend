@@ -194,15 +194,34 @@ const Login = () => {
         return isValid;
     };
 
-    const loginGoogle = async (credentialResponse) => {
-        const decoded = jwtDecode(credentialResponse?.credential);
-
-        console.log(decoded);
-
-        alert("Tài khoản của bạn không được phép đăng nhập vào hệ thống.");
-
-
+  const loginGoogle = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse?.credential);
+      let dataReq = {
+        email: decoded.email,
+      };
+      const resData = await AuthService.loginGoogle(dataReq);
+      if (resData.status === 200) {
+        console.log(resData, 'resData')
+        const decode = jwtDecode(resData?.data);
+        localStorage.setItem("role", decode.role);
+        if (decode.role === "SUPER_ADMIN") {
+          navigate("/admin/homeAdmin");
+          notifySuccess("Đăng nhập thành công!");
+        } else if (decode.role === "GUEST_ROLE_MEMBER") {
+          navigate("/");
+          notifySuccess("Đăng nhập thành công!");
+        } else {
+          navigate("/403");
+          notifyError("Bạn không có quyền truy cập!");
+        }
+      } else {
+        notifyError("Đăng nhập thất bại!");
+      }
+    } catch (e) {
+      notifyError(e.message);
     }
+  };
 
     const onSuccess = (response) => {
         console.log(response);
