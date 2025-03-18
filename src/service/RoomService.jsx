@@ -1,22 +1,16 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:8080/api";
+import fetchUtils from "../utils/fetchUtils.jsx";
 
 class RoomService {
   getRoomList() {
-    return axios.get(`${API_URL}/rooms`);
+    return fetchUtils.get("/rooms", false);
   }
 
   getRoomById(id) {
-    return axios.get(`${API_URL}/rooms/${id}`);
+    return fetchUtils.get(`/rooms/${id}`, false);
   }
 
   getPaymentHistory() {
-    return axios.get(`${API_URL}/payments`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    return fetchUtils.get("/payments");
   }
 }
 

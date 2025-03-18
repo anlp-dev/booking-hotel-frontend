@@ -30,6 +30,7 @@ import OverView from "../../components/DetailItems/OverView";
 import { getRoomById } from "../../services/RoomService";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { notifyError } from "../../components/notification/ToastNotification";
 
 // Extend dayjs với plugin isSameOrBefore
 dayjs.extend(isSameOrBefore);
@@ -199,17 +200,15 @@ const RoomDetails = () => {
       setLoading(true);
       try {
         const response = await getRoomById(roomId);
-        console.log("response", response);
-        setRoom(response);
+        setRoom(response.data);
       } catch (error) {
-        console.log(error);
-        message.error("Không thể lấy thông tin phòng");
+        notifyError(error.message);
       } finally {
         setLoading(false);
       }
     };
-    if (roomId) fetchRoom();
-  }, [roomId]);
+    fetchRoom();
+  }, [navigate]);
 
   const hanleViewDetail = () => {
     setIsModal(!isModal);
@@ -235,8 +234,13 @@ const RoomDetails = () => {
       total_price: calculateTotalPrice(room.price),
     };
 
-    // Chuyển đến trang checkout với dữ liệu bookingInfo
-    navigate("/checkout", { state: { bookingInfo } });
+    const token = localStorage.getItem("token");
+    if(token){
+      navigate("/checkout", { state: { bookingInfo } });
+    }else{
+      localStorage.setItem("bookingInfo", JSON.stringify(bookingInfo));
+      navigate("/checkout");
+    }
   };
 
   // Lấy marks dựa trên giá phòng

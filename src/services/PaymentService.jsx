@@ -13,7 +13,7 @@ const PaymentService = {
       const currentTime = Date.now() / 1000;
       console.log(currentTime.exp < currentTime, 123);
       if (decodedToken.exp < currentTime) {
-        window.location.href = "/login";
+        window.location.href = "/403";
         return;
       }
 

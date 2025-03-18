@@ -12,6 +12,7 @@ import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
 import {notifyError, notifySuccess} from "../notification/ToastNotification.jsx";
 import {useNavigate} from "react-router-dom";
+import authService from "../../services/AuthService";
 
 const MenuItem = styled(MuiMenuItem)({
     margin: '2px 0',
@@ -27,11 +28,13 @@ export default function OptionsMenu() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const handleLogOut = () => {
+    const handleLogOut = async () => {
         try{
-            localStorage.clear();
-            navigate("/");
-            notifySuccess("Logout successfully");
+            const res = await authService.logout();
+            if(res.status === 200){
+                notifySuccess("Logged out successfully");
+                navigate('/');
+            }
         }catch (e) {
             notifyError("Failed to logout");
         }

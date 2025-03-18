@@ -1,21 +1,10 @@
 import apiConfig from "../configs/apiConfig.jsx";
+import fetchUtils from "../utils/fetchUtils.jsx";
 
 const FacilityService = {
   async getAllFacilities() {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Đã hết hạn đăng nhập !!!");
-      }
-      const res = await fetch(`${apiConfig.baseUrl}/admin/facility`, {
-        method: "GET",
-        headers: apiConfig.getAuthHeaders(token),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Lỗi khi lấy danh sách vật tư");
-      }
-      return data;
+      return await fetchUtils.get("/admin/facility");
     } catch (e) {
       throw new Error(e);
     }
@@ -23,19 +12,7 @@ const FacilityService = {
 
   async getFacilityById(id) {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Đã hết hạn đăng nhập !!!");
-      }
-      const res = await fetch(`${apiConfig.baseUrl}/admin/facility/${id}`, {
-        method: "GET",
-        headers: apiConfig.getAuthHeaders(token),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Lỗi khi lấy thông tin vật tư");
-      }
-      return data;
+      return await fetchUtils.get(`/admin/facility/${id}`);
     } catch (e) {
       throw new Error(e);
     }
@@ -43,20 +20,7 @@ const FacilityService = {
 
   async createFacility(facilityData) {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Đã hết hạn đăng nhập !!!");
-      }
-      const res = await fetch(`${apiConfig.baseUrl}/admin/facility`, {
-        method: "POST",
-        headers: apiConfig.getAuthHeaders(token),
-        body: JSON.stringify(facilityData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Lỗi khi tạo vật tư");
-      }
-      return data;
+      return await fetchUtils.post("/admin/facility", facilityData);
     } catch (e) {
       throw new Error(e);
     }
@@ -64,20 +28,7 @@ const FacilityService = {
 
   async updateFacility(id, facilityData) {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Đã hết hạn đăng nhập !!!");
-      }
-      const res = await fetch(`${apiConfig.baseUrl}/admin/facility/${id}`, {
-        method: "PUT",
-        headers: apiConfig.getAuthHeaders(token),
-        body: JSON.stringify(facilityData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Lỗi khi cập nhật vật tư");
-      }
-      return data;
+      return await fetchUtils.put(`/admin/facility/${id}`, facilityData);
     } catch (e) {
       throw new Error(e);
     }
@@ -85,19 +36,7 @@ const FacilityService = {
 
   async deleteFacility(id) {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Đã hết hạn đăng nhập !!!");
-      }
-      const res = await fetch(`${apiConfig.baseUrl}/admin/facility/${id}`, {
-        method: "DELETE",
-        headers: apiConfig.getAuthHeaders(token),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Lỗi khi xóa vật tư");
-      }
-      return data;
+      return await fetchUtils.remove(`/admin/facility/${id}`);
     } catch (e) {
       throw new Error(e);
     }
