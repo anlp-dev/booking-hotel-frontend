@@ -14,7 +14,7 @@ import Checkout from "./page/customers/Checkout.jsx";
 import BookingSuccess from "./page/customers/BookingSuccess.jsx";
 import BookingHistory from "./page/customers/BookingHistory.jsx";
 import RoomListing from "./page/customers/RoomListing.jsx";
-import PaymentHistory from "./components/homePage/paymentHistory.jsx";
+import PaymentHistory from "./page/customers/paymentHistory.jsx";
 import RoomDetails from "./page/room/RoomDetails.jsx";
 import LayoutUser from "./page/userInformation/layoutUser.jsx";
 
