@@ -360,8 +360,8 @@ const RoomDetails = () => {
                     <ul className={styles.resortFeatures}>
                       {room.facility_id.map((facility) => (
                         <li key={facility._id}>
-                          {/* <CheckOutlined />  */}
-                          {facility.name} - {facility.description}
+                          <CheckOutlined /> {facility.name} -{" "}
+                          {facility.description}
                         </li>
                       ))}
                     </ul>

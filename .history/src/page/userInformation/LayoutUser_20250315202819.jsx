@@ -40,17 +40,17 @@ const LayoutUser = () => {
     {
       key: "1",
       icon: <UserOutlined />,
-      label: "Tài khoản",
+      label: "User Profile",
     },
     {
       key: "2",
       icon: <FileDoneOutlined />,
-      label: "Lịch sử đặt phòng",
+      label: "Booking History",
     },
     {
       key: "3",
       icon: <DollarOutlined />,
-      label: "Lịch sử trả tiền",
+      label: "Payment History",
     },
   ];
 

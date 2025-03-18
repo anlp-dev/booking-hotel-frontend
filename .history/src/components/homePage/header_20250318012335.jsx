@@ -57,16 +57,16 @@ function Header() {
   const userMenu = (
     <Menu style={{ width: 150, listStyleType: "none", padding: 15 }}>
       <Menu.Item key="1">
-        <a href="/information/account">Tài khoản</a>
+        <a href="/information/account">Account User</a>
       </Menu.Item>
       <Menu.Item key="2">
-        <a href="/information/payment-history">Lịch sử trả tiền</a>
+        <a href="/information/payment-history">Payment History</a>
       </Menu.Item>
       <Menu.Item key="3">
-        <a href="/information/booking-history">Lịch sử đặt phòng</a>
+        <a href="/information/booking-history">Booking History</a>
       </Menu.Item>
       <Menu.Item key="5">
-        <a href="/information/feedback">Phản hồi</a>
+        <a href="/information/feedback">Feedback</a>
       </Menu.Item>
 
       <Menu.Divider />
@@ -82,7 +82,7 @@ function Header() {
       >
         <LogoutOutlined />{" "}
         <a href="#" style={{ textAlign: "center" }}>
-          Đăng xuất
+          Logout
         </a>
       </Menu.Item>
     </Menu>

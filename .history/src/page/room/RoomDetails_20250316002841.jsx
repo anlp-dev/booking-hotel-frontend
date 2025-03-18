@@ -22,7 +22,7 @@ import {
 } from "@ant-design/icons";
 import styles from "../../static/css/RoomDetails.module.css";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Disabled from "../../components/DetailItems/Disabled";
 import FeesAndPolicy from "../../components/DetailItems/FeesAndPolicy";
 import ModalDetails from "../../components/DetailItems/ModalDetails";
@@ -36,8 +36,7 @@ dayjs.extend(isSameOrBefore);
 
 const RoomDetails = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  // const roomId = "67d5a06360523dae096a6bbc";
+  const roomId = "67d5a06360523dae096a6bbc";
   const [room, setRoom] = useState(null);
   const [isModal, setIsModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -199,7 +198,7 @@ const RoomDetails = () => {
     const fetchRoom = async () => {
       setLoading(true);
       try {
-        const response = await getRoomById(id);
+        const response = await getRoomById(roomId);
         console.log("response", response);
         setRoom(response);
       } catch (error) {
@@ -209,8 +208,8 @@ const RoomDetails = () => {
         setLoading(false);
       }
     };
-    if (id) fetchRoom();
-  }, [id]);
+    if (roomId) fetchRoom();
+  }, [roomId]);
 
   const hanleViewDetail = () => {
     setIsModal(!isModal);
@@ -360,8 +359,7 @@ const RoomDetails = () => {
                     <ul className={styles.resortFeatures}>
                       {room.facility_id.map((facility) => (
                         <li key={facility._id}>
-                          {/* <CheckOutlined />  */}
-                          {facility.name} - {facility.description}
+                          ✅ {facility.name} - {facility.description}
                         </li>
                       ))}
                     </ul>
