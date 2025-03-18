@@ -30,7 +30,6 @@ import OverView from "../../components/DetailItems/OverView";
 import { getRoomById } from "../../services/RoomService";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { notifyError } from "../../components/notification/ToastNotification";
 
 // Extend dayjs với plugin isSameOrBefore
 dayjs.extend(isSameOrBefore);
@@ -38,7 +37,7 @@ dayjs.extend(isSameOrBefore);
 const RoomDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  // const roomId = "67d5a06360523dae096a6bbc";
+  const roomId = "67d5a06360523dae096a6bbc";
   const [room, setRoom] = useState(null);
   const [isModal, setIsModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -204,7 +203,8 @@ const RoomDetails = () => {
         console.log("response", response);
         setRoom(response);
       } catch (error) {
-        notifyError(error.message);
+        console.log(error);
+        message.error("Không thể lấy thông tin phòng");
       } finally {
         setLoading(false);
       }
@@ -360,8 +360,7 @@ const RoomDetails = () => {
                     <ul className={styles.resortFeatures}>
                       {room.facility_id.map((facility) => (
                         <li key={facility._id}>
-                          {/* <CheckOutlined />  */}
-                          {facility.name} - {facility.description}
+                          ✅ {facility.name} - {facility.description}
                         </li>
                       ))}
                     </ul>

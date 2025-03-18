@@ -6,7 +6,6 @@ import {
 import { Menu } from "antd";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import BookingHistory from "../customers/BookingHistory";
-import PaymentHistory from "../customers/paymentHistory";
 
 const LayoutUser = () => {
   const location = useLocation();
@@ -41,17 +40,17 @@ const LayoutUser = () => {
     {
       key: "1",
       icon: <UserOutlined />,
-      label: "Tài khoản",
+      label: "User Profile",
     },
     {
       key: "2",
       icon: <FileDoneOutlined />,
-      label: "Lịch sử đặt phòng",
+      label: "Booking History",
     },
     {
       key: "3",
       icon: <DollarOutlined />,
-      label: "Lịch sử trả tiền",
+      label: "Payment History",
     },
   ];
 
@@ -76,7 +75,7 @@ const LayoutUser = () => {
         <Routes>
           {/* <Route path="profile" element={<UserProfile />} /> */}
           <Route path="booking-history" element={<BookingHistory />} />
-          <Route path="payment-history" element={<PaymentHistory />} />
+          {/* <Route path="payment-history" element={<PaymentHistory />} /> */}
           {/* <Route path="*" element={<UserProfile />} /> */}
         </Routes>
       </div>
