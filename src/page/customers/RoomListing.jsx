@@ -12,7 +12,6 @@ import {
   FormControl,
   Select,
   MenuItem,
-  CircularProgress,
   Button,
   Paper,
   Slider,
@@ -34,6 +33,8 @@ import {
   FavoriteBorder as FavoriteBorderIcon,
   LocationOn as LocationIcon,
   Map as MapIcon,
+  ArrowBack as ArrowBackIcon,
+  ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import Header from "../../components/homePage/header";
@@ -106,7 +107,6 @@ const ViewMapButtonLink = styled("a")(({ theme }) => ({
   height: 150,
   borderRadius: theme.spacing(1),
   marginBottom: theme.spacing(3),
-  display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
@@ -197,23 +197,13 @@ const RoomListing = () => {
   const [maxSliderPrice, setMaxSliderPrice] = useState(2500000);
   const [allFacilities, setAllFacilities] = useState([]);
   const [facilityIconMap, setFacilityIconMap] = useState({});
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const roomTypeLabels = {
     single: "Phòng Đơn",
     double: "Phòng Đôi",
     suite: "Phòng Suite",
     family: "Phòng Gia Đình",
-  };
-
-  const roomTypeImages = {
-    single:
-      "https://ywcavan.org/sites/default/files/styles/scale_width_1440/public/assets/room/room_image/Single-bed-room-YWCA_Hotel_Vancouver.jpg?itok=ha3Io79Z",
-    double:
-      "https://webbox.imgix.net/images/owvecfmxulwbfvxm/cfca3e26-3e33-4a69-8404-8e578394e12b.jpg?auto=format,compress&fit=crop&crop=entropy",
-    suite:
-      "https://www.itchotels.com/content/dam/itchotels/in/umbrella/images/headmast-desktop/suite-room.jpg",
-    family:
-      "https://hips.hearstapps.com/hmg-prod/images/alexander-design-contemporary-family-room-1555952765.jpg",
   };
 
   const defaultFacilities = [
@@ -290,13 +280,11 @@ const RoomListing = () => {
           discount:
             Math.random() > 0.5 ? Math.floor(Math.random() * 30) + 10 : 0,
           vip: Math.random() > 0.7,
-          image: roomTypeImages[type],
           facilities: room.facility_id.map((facilityId) => {
-            console.log("facilityId", facilityId);
             const facility = facilitiesFromRooms.find(
               (facility) => facility._id === facilityId._id
             );
-            return facility || { _id: facilityId, name: "Unknown Facility" }; // Handle not found facility
+            return facility || { _id: facilityId, name: "Unknown Facility" };
           }),
         }));
 
@@ -432,6 +420,20 @@ const RoomListing = () => {
   const calculateOriginalPrice = (price, discount) => {
     if (!discount) return null;
     return Math.round(price / (1 - discount / 100));
+  };
+
+  const handleNextImage = (event, roomImages) => {
+    event.stopPropagation();
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === roomImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevImage = (event, roomImages) => {
+    event.stopPropagation();
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? roomImages.length - 1 : prevIndex - 1
+    );
   };
 
   return (
@@ -622,19 +624,83 @@ const RoomListing = () => {
             ) : (
               <Grid container spacing={2}>
                 {rooms.map((room) => (
-                  <Grid item xs={12} key={room._id} onClick={() => handleRoomClick(room._id)}>
+                  <Grid
+                    item
+                    xs={12}
+                    key={room._id}
+                    onClick={() => handleRoomClick(room._id)}
+                  >
                     <StyledCard>
                       {room.vip && <VipBadge>VIP Access</VipBadge>}
-                      <Box
-                        position="relative"
-                        
-                      >
+                      <Box position="relative">
                         <StyledCardMedia
                           component="img"
-                          image={room.image}
+                          image={room.images[currentImageIndex]}
                           alt={`Phòng ${room.room_number}`}
                           sx={{ height: "100%" }}
                         />
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: 0,
+                            right: 0,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            px: 1,
+                            transform: "translateY(-50%)",
+                            zIndex: 2,
+                          }}
+                        >
+                          <IconButton
+                            onClick={(e) => handlePrevImage(e, room.images)}
+                            sx={{
+                              bgcolor: "rgba(255,255,255,0.8)",
+                              "&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
+                            }}
+                          >
+                            <ArrowBackIcon />
+                          </IconButton>
+                          <IconButton
+                            onClick={(e) => handleNextImage(e, room.images)}
+                            sx={{
+                              bgcolor: "rgba(255,255,255,0.8)",
+                              "&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
+                            }}
+                          >
+                            <ArrowForwardIcon />
+                          </IconButton>
+                        </Box>
+
+                        {/* Indicators */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            bottom: 8,
+                            left: 0,
+                            right: 0,
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: 1,
+                            zIndex: 2,
+                          }}
+                        >
+                          {room.images.map((_, index) => (
+                            <Box
+                              key={index}
+                              sx={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: "50%",
+                                bgcolor:
+                                  index === currentImageIndex
+                                    ? "white"
+                                    : "rgba(255,255,255,0.5)",
+                              }}
+                            />
+                          ))}
+                        </Box>
+
                         <FavoriteButton
                           onClick={(e) => toggleFavorite(e, room._id)}
                         >
