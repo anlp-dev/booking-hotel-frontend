@@ -1,29 +1,16 @@
 import apiConfig from "../configs/apiConfig.jsx";
+import fetchUtils from "../utils/fetchUtils.jsx";
 
 const BookingService = {
     async getAllBookings(page = 0, size = 10, searchTerm = '') {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
             const queryParams = new URLSearchParams({
                 page,
                 size,
                 search: searchTerm
             }).toString();
             
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings?${queryParams}`, {
-                method: "GET",
-                headers: apiConfig.getAuthHeaders(token),
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.get(`/admin/bookings?${queryParams}`);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -31,21 +18,7 @@ const BookingService = {
     
     async getBookingById(id) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings/${id}`, {
-                method: "GET",
-                headers: apiConfig.getAuthHeaders(token),
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.get(`/admin/bookings/${id}`);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -53,22 +26,7 @@ const BookingService = {
     
     async createBooking(bookingData) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings`, {
-                method: "POST",
-                headers: apiConfig.getAuthHeaders(token),
-                body: JSON.stringify(bookingData)
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.post(`/admin/bookings`, bookingData);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -76,22 +34,7 @@ const BookingService = {
     
     async updateBooking(id, bookingData) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings/${id}`, {
-                method: "PUT",
-                headers: apiConfig.getAuthHeaders(token),
-                body: JSON.stringify(bookingData)
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.put(`/admin/bookings/${id}`, bookingData);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -99,22 +42,7 @@ const BookingService = {
     
     async updateBookingStatus(id, status) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings/${id}/status`, {
-                method: "PUT",
-                headers: apiConfig.getAuthHeaders(token),
-                body: JSON.stringify({ status })
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.put(`/admin/bookings/${id}/status`, { status });
         } catch (e) {
             throw new Error(e.message);
         }
@@ -122,21 +50,7 @@ const BookingService = {
     
     async deleteBooking(id) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings/${id}`, {
-                method: "DELETE",
-                headers: apiConfig.getAuthHeaders(token),
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.remove(`/admin/bookings/${id}`);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -144,10 +58,7 @@ const BookingService = {
     
     async exportBookingsToExcel() {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
+            const token = fetchUtils.getAuthToken();
             
             const res = await fetch(`${apiConfig.baseUrl}/admin/bookings/export`, {
                 method: "GET",
@@ -165,24 +76,18 @@ const BookingService = {
             throw new Error(e.message);
         }
     },
+
+    async createBookingCustomer(bookingData) {
+      try {
+          return await fetchUtils.post(`/booking/create`, bookingData);
+      } catch (e) {
+          throw new Error(e.message);
+      }
+  },
     
     async getAllRooms() {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            
-            const res = await fetch(`${apiConfig.baseUrl}/admin/rooms`, {
-                method: "GET",
-                headers: apiConfig.getAuthHeaders(token),
-            });
-            
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.get(`/admin/rooms`);
         } catch (e) {
             throw new Error(e.message);
         }

@@ -35,9 +35,16 @@ import {
   QuestionCircleOutlined,
   CompassOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../../static/css/Checkout.module.css";
 import PaymentService from "../../services/PaymentService";
+import { useEffect } from "react";
+import { notifyError } from "../../components/notification/ToastNotification";
+import { getRoomById } from "../../services/RoomService";
+import authService from "../../services/AuthService";
+import { formatDate } from "../../utils/format";
+import BookingService from "../../services/BookingService";
+import Loading from "../../components/loading/Loading";
 
 const { Title, Text, Paragraph } = Typography;
 const { Header, Content } = Layout;
@@ -48,6 +55,60 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const bookingInfo = location.state?.bookingInfo
+    ? location.state.bookingInfo
+    : JSON.parse(localStorage.getItem("bookingInfo"));
+  const [user, setUser] = useState({});
+  const [room, setRoom] = useState({});
+
+  console.log(bookingInfo);
+
+  useEffect(() => {
+    fetchDataUser();
+    fetchDataRoom();
+  }, []);
+
+  useEffect(() => {
+    if (user && Object.keys(user).length > 0) {
+      form.setFieldsValue({
+        firstName: user.first_name || "",
+        lastName: user.last_name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+      });
+    }
+  }, [user, form]);
+
+  // const checkLogin = () => {
+  //   const token = localStorage.getItem("token");
+  //   if(!token){
+  //     localStorage.setItem("redirectUrl", window.location.pathname);
+  //     message.warning("Vui lòng đăng nhập để tiếp tục");
+  //     navigate("/login");
+  //   }
+  // }
+
+  const fetchDataUser = async () => {
+    try {
+      const response = await authService.getUser();
+      if (response.status === 200) {
+        setUser(response.data);
+      }
+    } catch (e) {
+      notifyError(e.message);
+    }
+  };
+
+  const fetchDataRoom = async () => {
+    try {
+      const response = await getRoomById(bookingInfo.roomId);
+      setRoom(response.data);
+    } catch (e) {
+      notifyError(e.message);
+    }
+  };
 
   // Mock data for the hotel booking
   const bookingDetails = {
@@ -77,23 +138,25 @@ const Checkout = () => {
     try {
       setLoading(true);
       console.log("Form values:", values);
-      // Create booking data to pass to success page
-      const bookingData = {
-        orderId: "BK-" + Math.floor(100000 + Math.random() * 900000),
-        totalPrice: bookingDetails.grandTotal,
-        orderInfo: ``,
-        orderType: `Đặt phòng khách sạn`,
-      };
 
-      bookingData.orderInfo = `Thanh toán phòng ${bookingDetails.hotelName} với mã đặt phòng ${bookingData.orderId}`;
-      bookingData.bankCode = "NCB";
+      let dataReq = {
+        user_id: user._id,
+        room_id: bookingInfo.roomId,
+        checkin_date: bookingInfo.check_in,
+        checkout_date: bookingInfo.check_out,
+        totalPrice: bookingInfo?.total_price,
+        status: "pending",
+        breakfast: false,
+        payment_method: values.paymentMethod,
+        note: values.specialRequests,
+      }
 
-      const resData = await PaymentService.getUrlVnPay(bookingData);
+      const response = await BookingService.createBookingCustomer(dataReq);
 
-      if (resData.status === 200) {
-        window.location.href = resData.data;
-      } else {
-        message.error(resData.message);
+      if(response.status === 200){
+        await createBanking(values, response.data);
+      }else{
+        message.error(response.message);
       }
     } catch (e) {
       message.error(e.message);
@@ -101,6 +164,47 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  const createBanking = async (values, dataBookingRes) => {
+    try {
+       const bookingData = {
+        orderId: dataBookingRes.code,
+        totalPrice: dataBookingRes.total_price,
+        orderInfo: ``,
+        orderType: `Đặt phòng khách sạn`,
+      };
+
+      bookingData.orderInfo = `Thanh toán phòng với mã đặt phòng ${bookingData.orderId}`;
+
+      switch (values.paymentMethod) {
+        case "bank-transfer":
+          bookingData.bankCode = "ATM";
+          break;
+        case "paypal":
+          bookingData.bankCode = "VISA";
+          break;
+        case "vnpayqr":
+          bookingData.bankCode = "VNPAYQR";
+          break;
+        case "ncb":
+          bookingData.bankCode = "VISA";
+          break;
+        default:
+          break;
+      }
+
+      const resData = await PaymentService.getUrlVnPay(bookingData);
+
+      if (resData.status === 200) {
+        localStorage.removeItem("bookingInfo");
+        window.location.href = resData.data;
+      } else {
+        message.error(resData.message);
+      }
+    } catch (e) {
+      notifyError(e.message);
+    }
+  }
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -129,8 +233,11 @@ const Checkout = () => {
     />
   );
 
+  console.log(room, "room");
+
   return (
     <Layout className={styles.checkoutLayout}>
+      {loading ? <Loading /> : ""}
       <Header className={styles.header}>
         <div className={styles.headerContent}>
           {/* Left section with logo and dropdown */}
@@ -204,7 +311,12 @@ const Checkout = () => {
                 onFinish={onFinish}
                 initialValues={{
                   country: "Vietnam",
-                  paymentMethod: "credit-card",
+                  paymentMethod: "vnpayqr",
+                  firstName: user.first_name || "",
+                  lastName: user.last_name || "",
+                  email: user.email || "",
+                  phone: user.phone || "",
+                  address: user.address || "",
                 }}
               >
                 <Row gutter={16}>
@@ -330,13 +442,12 @@ const Checkout = () => {
                   ]}
                 >
                   <Select placeholder="Chọn phương thức thanh toán">
-                    <Option value="credit-card">Thẻ tín dụng/ghi nợ</Option>
+                    <Option value="vnpayqr">VNPay QR</Option>
                     <Option value="bank-transfer">
                       Chuyển khoản ngân hàng
                     </Option>
                     <Option value="paypal">PayPal</Option>
-                    <Option value="momo">Ví MoMo</Option>
-                    <Option value="zalopay">ZaloPay</Option>
+                    <Option value="ncb">NCB</Option>
                   </Select>
                 </Form.Item>
 
@@ -401,10 +512,10 @@ const Checkout = () => {
               </div>
 
               <Title level={4} className={styles.hotelName}>
-                {bookingDetails.hotelName}
+                {room?.hotel_id?.name}
               </Title>
               <Paragraph>
-                <Tag color="blue">{bookingDetails.roomType}</Tag>
+                <Tag color="blue">Phòng {bookingInfo.roomType}</Tag>
                 <Tag icon={<UserOutlined />}>{bookingDetails.guests} khách</Tag>
               </Paragraph>
 
@@ -416,18 +527,18 @@ const Checkout = () => {
                     <ClockCircleOutlined className={styles.dateIcon} /> Nhận
                     phòng:
                   </Text>
-                  <Text strong>{bookingDetails.checkIn}</Text>
+                  <Text strong>{formatDate(bookingInfo.check_in)}</Text>
                 </div>
                 <div className={styles.dateInfo}>
                   <Text>
                     <ClockCircleOutlined className={styles.dateIcon} /> Trả
                     phòng:
                   </Text>
-                  <Text strong>{bookingDetails.checkOut}</Text>
+                  <Text strong>{formatDate(bookingInfo.check_out)}</Text>
                 </div>
                 <div className={styles.dateInfo}>
                   <Text>Số đêm:</Text>
-                  <Text strong>{bookingDetails.nights} đêm</Text>
+                  <Text strong>{bookingInfo.nights} đêm</Text>
                 </div>
               </Space>
 
@@ -436,11 +547,11 @@ const Checkout = () => {
               <Title level={5}>Tiện nghi phòng</Title>
               <List
                 size="small"
-                dataSource={bookingDetails.amenities}
+                dataSource={room?.facility_id}
                 renderItem={(item) => (
                   <List.Item className={styles.amenityItem}>
                     <CheckCircleOutlined className={styles.amenityIcon} />
-                    {item}
+                    {item.name}
                   </List.Item>
                 )}
                 style={{ marginBottom: "16px" }}
@@ -452,18 +563,21 @@ const Checkout = () => {
               <Space direction="vertical" style={{ width: "100%" }}>
                 <div className={styles.priceLine}>
                   <Text>
-                    {formatCurrency(bookingDetails.pricePerNight)} x{" "}
-                    {bookingDetails.nights} đêm
+                    {formatCurrency(room?.price)} x {bookingInfo.nights} đêm
                   </Text>
-                  <Text>{formatCurrency(bookingDetails.totalPrice)}</Text>
+                  <Text>{formatCurrency(bookingInfo.total_price)}</Text>
                 </div>
                 <div className={styles.priceLine}>
-                  <Text>Thuế</Text>
-                  <Text>{formatCurrency(bookingDetails.tax)}</Text>
+                  <Text>Thuế (10%)</Text>
+                  <Text>
+                    {formatCurrency((bookingInfo.total_price * 10) / 100)}
+                  </Text>
                 </div>
                 <div className={styles.priceLine}>
-                  <Text>Phí dịch vụ</Text>
-                  <Text>{formatCurrency(bookingDetails.serviceFee)}</Text>
+                  <Text>Phí dịch vụ (5%)</Text>
+                  <Text>
+                    {formatCurrency((bookingInfo.total_price * 5) / 100)}
+                  </Text>
                 </div>
               </Space>
 
@@ -474,7 +588,11 @@ const Checkout = () => {
                   Tổng cộng
                 </Title>
                 <Title level={4} className={styles.totalPrice}>
-                  {formatCurrency(bookingDetails.grandTotal)}
+                  {formatCurrency(
+                    bookingInfo.total_price +
+                      (bookingInfo.total_price * 10) / 100 +
+                      (bookingInfo.total_price * 5) / 100
+                  )}
                 </Title>
               </div>
 

@@ -30,6 +30,7 @@ import OverView from "../../components/DetailItems/OverView";
 import { getRoomById } from "../../services/RoomService";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { notifyError } from "../../components/notification/ToastNotification";
 
 // Extend dayjs với plugin isSameOrBefore
 dayjs.extend(isSameOrBefore);
@@ -203,8 +204,7 @@ const RoomDetails = () => {
         console.log("response", response);
         setRoom(response);
       } catch (error) {
-        console.log(error);
-        message.error("Không thể lấy thông tin phòng");
+        notifyError(error.message);
       } finally {
         setLoading(false);
       }

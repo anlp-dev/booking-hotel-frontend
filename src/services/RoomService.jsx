@@ -1,73 +1,28 @@
 import apiConfig from "../configs/apiConfig";
+import fetchUtils from "../utils/fetchUtils.jsx";
 
-const endpoint = `${apiConfig.baseUrl}/room`;
+const endpoint = `/room`;
 
 export const getRoomList = async () => {
-  3;
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Đã hết hạn đăng nhập !!!");
-    }
-
-    const res = await fetch(endpoint, {
-      method: "GET",
-      headers: apiConfig.getAuthHeaders(token),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-    return data.data;
+    return await fetchUtils.get(endpoint, false);
   } catch (e) {
-    // throw new Error(e.message);
     console.log("error: ", e.message);
   }
 };
 
 export const getRoomById = async (id) => {
-  3;
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Đã hết hạn đăng nhập !!!");
-    }
-
-    const res = await fetch(`${endpoint}/${id}`, {
-      method: "GET",
-      headers: apiConfig.getAuthHeaders(token),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-    return data.data;
+    console.log(id, "id");
+    return await fetchUtils.get(`${endpoint}/get-by-id/${id}`, false);
   } catch (e) {
-    // throw new Error(e.message);
     console.log("error: ", e.message);
   }
 };
 
 export const createRoom = async (roomData) => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Đã hết hạn đăng nhập !!!");
-    }
-
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: apiConfig.getAuthHeaders(token),
-      body: JSON.stringify(roomData),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-    return data;
+    return await fetchUtils.post(endpoint, roomData);
   } catch (e) {
     throw new Error(e.message);
   }
@@ -75,21 +30,7 @@ export const createRoom = async (roomData) => {
 
 export const deleteRoom = async (id) => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Đã hết hạn đăng nhập !!!");
-    }
-
-    const res = await fetch(`${endpoint}/${id}`, {
-      method: "DELETE",
-      headers: apiConfig.getAuthHeaders(token),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-    return data;
+    return await fetchUtils.remove(`${endpoint}/${id}`);
   } catch (e) {
     throw new Error(e.message);
   }
@@ -97,22 +38,7 @@ export const deleteRoom = async (id) => {
 
 export const updateRoom = async (id, roomData) => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Đã hết hạn đăng nhập !!!");
-    }
-
-    const res = await fetch(`${endpoint}/${id}`, {
-      method: "PUT",
-      headers: apiConfig.getAuthHeaders(token),
-      body: JSON.stringify({ roomData }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-    return data;
+    return await fetchUtils.put(`${endpoint}/${id}`, { roomData });
   } catch (e) {
     throw new Error(e.message);
   }

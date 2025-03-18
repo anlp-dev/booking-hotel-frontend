@@ -1,118 +1,50 @@
 import apiConfig from "../configs/apiConfig.jsx";
+import fetchUtils from "../utils/fetchUtils.jsx";
+
 const AdminService = {
     async getRole(){
         try{
-            const token = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            const res = await fetch(`${apiConfig.baseUrl}/admin/role`, {
-                method: "GET",
-                headers: apiConfig.getAuthHeaders(token),
-            })
-            const data = await res.json();
-            if(!res.ok){
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.get("/admin/role");
         }catch (e) {
             throw new Error(e);
         }
     },
+    
     async createRole(dataReq) {
         try{
-            const token = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            const res = await fetch(`${apiConfig.baseUrl}/admin/role`, {
-                method: "POST",
-                headers: apiConfig.getAuthHeaders(token),
-                body: JSON.stringify(dataReq)
-            })
-            const data = await res.json();
-            if(!res.ok){
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.post("/admin/role", dataReq);
         }catch (e) {
             throw new Error(e);
         }
     },
+    
     async getPermission() {
         try{
-            const token = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            const res = await fetch(`${apiConfig.baseUrl}/admin/permission`, {
-                method: "GET",
-                headers: apiConfig.getAuthHeaders(token),
-            })
-            const data = await res.json();
-            if(!res.ok){
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.get("/admin/permission");
         }catch (e) {
             throw new Error(e);
         }
     },
+    
     async createPermission(dataReq) {
         try{
-            const token = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            const res = await fetch(`${apiConfig.baseUrl}/admin/permission`, {
-                method: "POST",
-                headers: apiConfig.getAuthHeaders(token),
-                body: JSON.stringify(dataReq)
-            })
-            const data = await res.json();
-            if(!res.ok){
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.post("/admin/permission", dataReq);
         }catch (e) {
             throw new Error(e);
         }
     },
+    
     async getRolePermission(){
         try{
-            const token = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            const res = await fetch(`${apiConfig.baseUrl}/admin/rolePermission`, {
-                method: "GET",
-                headers: apiConfig.getAuthHeaders(token),
-            })
-            const data = await res.json();
-            if(!res.ok){
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.get("/admin/rolePermission");
         }catch (e) {
             throw new Error(e);
         }
     },
+    
     async updateRolePermission(dataReq){
         try{
-            const token = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Đã hết hạn đăng nhập !!!")
-            }
-            const res = await fetch(`${apiConfig.baseUrl}/admin/rolePermission`, {
-                method: "PUT",
-                headers: apiConfig.getAuthHeaders(token),
-                body: JSON.stringify(dataReq)
-            })
-            const data = await res.json();
-            if(!res.ok){
-                throw new Error(data.message);
-            }
-            return data;
+            return await fetchUtils.put("/admin/rolePermission", dataReq);
         }catch (e) {
             throw new Error(e);
         }
