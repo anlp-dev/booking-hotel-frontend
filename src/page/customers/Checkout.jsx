@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Layout,
   Typography,
@@ -9,11 +9,9 @@ import {
   Form,
   Input,
   Select,
-  DatePicker,
   Button,
   Divider,
   List,
-  Avatar,
   Tag,
   Space,
   Checkbox,
@@ -27,11 +25,9 @@ import {
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
-  CreditCardOutlined,
   HomeOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
-  InfoCircleOutlined,
   LockOutlined,
   SafetyOutlined,
   ShoppingCartOutlined,
@@ -41,11 +37,12 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import styles from "../../static/css/Checkout.module.css";
+import PaymentService from "../../services/PaymentService";
 
 const { Title, Text, Paragraph } = Typography;
 const { Header, Content } = Layout;
 const { Option } = Select;
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -76,33 +73,33 @@ const Checkout = () => {
     grandTotal: 4140000,
   };
 
-  const onFinish = (values) => {
-    setLoading(true);
-    console.log("Form values:", values);
-
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      message.success("Đặt phòng thành công!");
-
+  const onFinish = async (values) => {
+    try {
+      setLoading(true);
+      console.log("Form values:", values);
       // Create booking data to pass to success page
       const bookingData = {
-        bookingId: "BK-" + Math.floor(100000 + Math.random() * 900000),
-        customerName: values.fullName || "Khách hàng",
-        email: values.email || "example@email.com",
-        phone: values.phone || "0912345678",
-        roomType: bookingDetails.roomType,
-        checkIn: bookingDetails.checkIn,
-        checkOut: bookingDetails.checkOut,
-        guests: bookingDetails.guests,
-        totalAmount: bookingDetails.grandTotal,
-        paymentMethod: values.paymentMethod || "Credit Card",
-        paymentId: "PAY-" + Math.floor(100000 + Math.random() * 900000),
+        orderId: "BK-" + Math.floor(100000 + Math.random() * 900000),
+        totalPrice: bookingDetails.grandTotal,
+        orderInfo: ``,
+        orderType: `Đặt phòng khách sạn`,
       };
 
-      // Navigate to success page with booking data
-      navigate("/booking-success", { state: { bookingData } });
-    }, 1500);
+      bookingData.orderInfo = `Thanh toán phòng ${bookingDetails.hotelName} với mã đặt phòng ${bookingData.orderId}`;
+      bookingData.bankCode = "NCB";
+
+      const resData = await PaymentService.getUrlVnPay(bookingData);
+
+      if (resData.status === 200) {
+        window.location.href = resData.data;
+      } else {
+        message.error(resData.message);
+      }
+    } catch (e) {
+      message.error(e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Format currency

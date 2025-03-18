@@ -97,9 +97,9 @@ function MainContent() {
     } else {
       setIsLoggedIn(false);
       setUser(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("username");
+         localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('username');
     }
   };
 
@@ -375,7 +375,7 @@ function MainContent() {
                 <Card
                   style={{ marginLeft: "10px" }}
                   hoverable
-                  onClick={() => navigate(`/room/${item._id}`)}
+                  onClick={() => navigate(`/room/${item.id}`)}
                   cover={
                     <div style={{ height: "210px", overflow: "hidden" }}>
                       <img

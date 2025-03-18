@@ -5,7 +5,6 @@ import {
   CompassOutlined,
   HomeOutlined,
   UserOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { notifySuccess } from "../../components/notification/ToastNotification.jsx";
@@ -55,35 +54,23 @@ function Header() {
   };
 
   const userMenu = (
-    <Menu style={{ width: 150, listStyleType: "none", padding: 15 }}>
+    <Menu style={{ width: 150 }}>
       <Menu.Item key="1">
-        <a href="/information/account">Tài khoản</a>
+        <a href="/account">Tài khoản</a>
       </Menu.Item>
       <Menu.Item key="2">
-        <a href="/information/payment-history">Lịch sử trả tiền</a>
+        <a href="/payment-history">Lịch sử trả tiền</a>
       </Menu.Item>
       <Menu.Item key="3">
-        <a href="/information/booking-history">Lịch sử đặt phòng</a>
+        <a href="/information/booking-history">Booking History</a>
       </Menu.Item>
       <Menu.Item key="5">
-        <a href="/information/feedback">Phản hồi</a>
+        <a href="/feedback">Phản hồi</a>
       </Menu.Item>
 
       <Menu.Divider />
-
-      <Menu.Item
-        key="6"
-        onClick={handleLogout}
-        style={{
-          fontWeight: "bold",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <LogoutOutlined />{" "}
-        <a href="#" style={{ textAlign: "center" }}>
-          Đăng xuất
-        </a>
+      <Menu.Item key="6" onClick={handleLogout}>
+        <a href="#">Thoát</a>
       </Menu.Item>
     </Menu>
   );

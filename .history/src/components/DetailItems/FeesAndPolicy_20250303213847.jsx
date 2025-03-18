@@ -50,8 +50,7 @@ const FeesAndPolicy = () => {
 
           <h3>Tên khác</h3>
           <ul>
-            <li>Green Valley Hotel Sapa</li>
-            {/* <li>Cam Ranh Riviera Beach Resort Cam Lam</li>
+            <li>Cam Ranh Riviera Beach Resort Cam Lam</li>
             <li>Cam Ranh Riviera Beach Resort</li>
             <li>Cam Ranh Riviera Beach Cam Lam</li>
             <li>Cam Ranh Riviera Beach</li>
@@ -59,7 +58,7 @@ const FeesAndPolicy = () => {
             <li>Cam Ranh Riviera & Spa Cam Lam</li>
             <li>Cam Ranh Riviera Beach Resort & Spa Resort</li>
             <li>Cam Ranh Riviera Beach Resort & Spa Cam Lam</li>
-            <li>Cam Ranh Riviera Beach Resort & Spa Resort Cam Lam</li> */}
+            <li>Cam Ranh Riviera Beach Resort & Spa Resort Cam Lam</li>
           </ul>
         </div>
       </div>

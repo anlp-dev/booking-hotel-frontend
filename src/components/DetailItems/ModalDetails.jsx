@@ -4,35 +4,29 @@ import {
   CheckOutlined,
   CloseOutlined,
   HomeOutlined,
-  InfoCircleOutlined,
   UserOutlined,
   WifiOutlined,
 } from "@ant-design/icons";
 import styles from "../../static/css/modalDetail.module.css";
-import { Badge, Button, Radio, Tooltip } from "antd";
-import { useState } from "react";
+import { Button, Tooltip, Tag, Empty } from "antd";
 
-const ModalDetails = () => {
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const showModal = () => {
-  //   setIsModalOpen(true);
-  // };
-  // const handleOk = () => {
-  //     setIsModalOpen(false);
-  //   };
-  //   const handleCancel = () => {
-  //     setIsModalOpen(false);
-  //   };
-  //   const images = [
-  //     "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8aG90ZWx8ZW58MHx8MHx8fDA%3D",
-  //     "https://plus.unsplash.com/premium_photo-1675745329954-9639d3b74bbf?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8aG90ZWx8ZW58MHx8MHx8fDA%3D",
-  //     "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8aG90ZWx8ZW58MHx8MHx8fDA%3D",
-  //     "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGhvdGVsfGVufDB8fDB8fHww",
-  //     "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGhvdGVsfGVufDB8fDB8fHww",
-  //   ];\
+const ModalDetails = ({ room, onClose }) => {
+  // const [selectedOption, setSelectedOption] = useState("buffet");
 
-  const [selectedOption, setSelectedOption] = useState("buffet");
+  // Ngăn sự kiện click lan truyền lên phần tử cha
+  const handleModalContentClick = (e) => {
+    e.stopPropagation();
+  };
 
+  // Xử lý đóng modal khi click vào nút X
+  const handleCloseClick = (e) => {
+    e.stopPropagation();
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  // Danh sách tính năng phòng
   const features = [
     { icon: <CheckOutlined />, text: "Ban công hoặc sân hiên" },
     { icon: <i className="fas fa-headphones"></i>, text: "Phòng cách âm" },
@@ -45,6 +39,7 @@ const ModalDetails = () => {
     { icon: <i className="fas fa-hot-tub"></i>, text: "Áo choàng tắm" },
   ];
 
+  // Danh sách tiện nghi phòng
   const amenities = [
     {
       category: "Phòng tắm",
@@ -99,7 +94,6 @@ const ModalDetails = () => {
       icon: "fas fa-wifi",
       items: ["Wifi miễn phí"],
     },
-
     {
       category: "Khác",
       icon: <CheckOutlined />,
@@ -121,8 +115,28 @@ const ModalDetails = () => {
     },
   ];
 
+  // Nếu không có dữ liệu phòng
+  if (!room) {
+    return (
+      <div className={styles.container} onClick={handleModalContentClick}>
+        <div
+          style={{
+            backgroundColor: "white",
+            borderRadius: "20px",
+            height: "640px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Empty description="Không có thông tin phòng" />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={handleModalContentClick}>
       <div
         style={{
           backgroundColor: "white",
@@ -133,8 +147,12 @@ const ModalDetails = () => {
       >
         <div className={styles.modal}>
           <div className={styles.infor}>
-            <Tooltip title="search">
-              <Button shape="circle" icon={<CloseOutlined />} />
+            <Tooltip title="Đóng">
+              <Button
+                shape="circle"
+                icon={<CloseOutlined />}
+                onClick={handleCloseClick}
+              />
             </Tooltip>
             <h4 className={styles.inforTitle}>Thông tin phòng</h4>
           </div>
@@ -148,8 +166,37 @@ const ModalDetails = () => {
 
           {/* Feature */}
           <div>
-            <h2 className={styles.roomTitle}>Phòng Deluxe, quang cảnh biển</h2>
-            <p className={styles.roomSubtitle}>Quang cảnh biển</p>
+            <h2 className={styles.roomTitle}>
+              Phòng {room.room_number} -{" "}
+              {room.type.charAt(0).toUpperCase() + room.type.slice(1)}
+            </h2>
+            <div style={{ marginBottom: "15px" }}>
+              <Tag color="blue">Loại: {room.type}</Tag>
+              <Tag color="green">Sức chứa: {room.capacity} người</Tag>
+              <Tag color="orange">
+                Trạng thái:{" "}
+                {room.status === "available" ? "Còn trống" : "Đã đặt"}
+              </Tag>
+            </div>
+            <p className={styles.roomSubtitle}>{room.description}</p>
+
+            {/* Hiển thị tiện nghi từ API */}
+            {room.facility_id && room.facility_id.length > 0 && (
+              <div style={{ marginTop: "15px", marginBottom: "15px" }}>
+                <h3>Tiện nghi: </h3>
+                <div className={styles.roomFeaturesContainer}>
+                  <div className={styles.featuresGrid}>
+                    {room.facility_id.map((facility) => (
+                      <div key={facility._id} className={styles.featureItem}>
+                        <CheckOutlined />
+                        <span>{facility.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className={styles.roomFeaturesContainer}>
               <div className={styles.featuresGrid}>
                 {features.map((feature, index) => (
@@ -174,7 +221,7 @@ const ModalDetails = () => {
               <AppstoreOutlined /> 35 mét vuông
             </li>
             <li style={{ color: "#3a3a3a" }}>
-              <UserOutlined /> 4 khách
+              <UserOutlined /> {room.capacity} khách
             </li>
             <li style={{ color: "#3a3a3a" }}>
               <CheckOutlined /> Đặt ngay, thanh toán sau
@@ -214,7 +261,7 @@ const ModalDetails = () => {
           </div>
 
           {/* Room selection */}
-          <div className={styles.roomSelection}>
+          {/* <div className={styles.roomSelection}>
             <h2 className={styles.title}>Tùy chọn phòng</h2>
 
             <div className={styles.section}>
@@ -255,28 +302,12 @@ const ModalDetails = () => {
                   }}
                 >
                   <span className={styles.price}>+ 0 đ</span>
-                  <span className={styles.price}>+ 1.269.842 đ</span>
+                  <span className={styles.price}>
+                    + {formatPrice(room.price * 0.2)} đ
+                  </span>
                 </div>
               </div>
             </div>
-            {/* <div className={styles.section}>
-            <h3>Bổ sung</h3>
-            <Radio.Group
-              onChange={(e) => setSelectedOption(e.target.value)}
-              value={selectedOption}
-            >
-              <Radio value="buffet">
-                <span className={styles.optionTitle}>Bữa sáng buffet</span>
-                <span className={styles.price}>+ 0 đ</span>
-              </Radio>
-              <Radio value="combo">
-                <span className={styles.optionTitle}>
-                  Trọn gói (thức ăn/nước uống/đồ ăn nhẹ)
-                </span>
-                <span className={styles.price}>+ 1.269.842 đ</span>
-              </Radio>
-            </Radio.Group>
-          </div> */}
 
             <div className={styles.refundPolicy}>
               <div>
@@ -288,10 +319,8 @@ const ModalDetails = () => {
               </div>
             </div>
 
-            {/* <p className={styles.remainingRooms}>Còn 4 phòng</p> */}
-
             <div className={styles.priceSection}>
-              <Badge count="Giảm 28%" color="#e61e43" />
+              <Badge count="Giảm 20%" color="#e61e43" />
               <div
                 style={{
                   display: "flex",
@@ -300,10 +329,15 @@ const ModalDetails = () => {
                   justifyContent: "end",
                 }}
               >
-                <p className={styles.oldPrice}>4.144.621 đ</p>
-                <p className={styles.newPrice}>2.984.127 đ</p>
+                <p className={styles.oldPrice}>{formatPrice(room.price)} đ</p>
+                <p className={styles.newPrice}>
+                  {formatPrice(getDiscountedPrice(room.price))} đ
+                </p>
               </div>
-              <p className={styles.totalPrice}>Tổng 6.768.001 đ</p>
+              <p className={styles.totalPrice}>
+                Tổng{" "}
+                {formatPrice(getTotalPrice(getDiscountedPrice(room.price)))} đ
+              </p>
               <div
                 style={{
                   display: "flex",
@@ -311,16 +345,22 @@ const ModalDetails = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <p className={styles.numberRoom}>Còn 4 phòng</p>
+                <p className={styles.numberRoom}>
+                  {room.status === "available" ? "Còn phòng" : "Hết phòng"}
+                </p>
                 <p className={styles.totalPrice}>bao gồm thuế & phí</p>
               </div>
             </div>
 
-            <Button type="primary" className={styles.bookButton}>
-              Đặt
+            <Button
+              type="primary"
+              className={styles.bookButton}
+              disabled={room.status !== "available"}
+            >
+              {room.status === "available" ? "Đặt ngay" : "Phòng đã được đặt"}
             </Button>
             <p className={styles.note}>Sẽ chưa thu tiền ngay</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
