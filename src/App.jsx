@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Login from "./page/Login.jsx";
 import Register from "./page/Register.jsx";
 import PrivateRoute from "./security/PrivateRoute.jsx";
@@ -48,6 +48,8 @@ function App() {
             <Route path="/booking-success" element={<BookingSuccess />} />
             <Route path="/booking-history" element={<BookingHistory />} />
           </Route>
+          {/* Catch-all route for undefined routes */}
+          <Route path="*" element={<Navigate to="/404" />} />
         </Routes>
       </BrowserRouter>
     </>
