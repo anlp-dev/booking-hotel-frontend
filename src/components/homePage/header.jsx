@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { notifySuccess } from "../../components/notification/ToastNotification.jsx";
+import authService from "../../services/AuthService.jsx";
 import "../../static/css/styles.css";
 import { useState, useEffect } from "react";
 
@@ -18,40 +19,66 @@ function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [lastCheckTime, setLastCheckTime] = useState(0);
 
-  const checkAuthStatus = () => {
+  const checkAuthStatus = async () => {
+    try {
+      const currentTime = Date.now();
+      if (currentTime - lastCheckTime < 2000) {
+        return;
+      }
+      setLastCheckTime(currentTime);
+
+      if (!authService.isAuthenticated()) {
+        handleLogout(false);
+        return;
+      }
+
+      const userData = await authService.getUser();
+      if (userData && userData.data) {
+        setIsLoggedIn(true);
+        setUser(userData.data);
+        localStorage.setItem("username", userData.data.username);
+        localStorage.setItem("role", userData.data.role);
+      } else {
+        handleLogout(false);
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      if (error.message.includes("Too Many Requests")) {
+        return;
+      }
+      handleLogout(false);
+    }
+  };
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
     const username = localStorage.getItem("username");
-
-    if (token && role && username) {
+    
+    if (token && username) {
       setIsLoggedIn(true);
-      setUser({ name: username });
-    } else {
+      setUser({ username: username });
+      checkAuthStatus();
+    }
+  }, []);
+
+  const handleLogout = async (showNotification = true) => {
+    try {
+      if (isLoggedIn && showNotification) {
+        await authService.logout();
+        notifySuccess("Đăng xuất thành công!");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
       setIsLoggedIn(false);
       setUser(null);
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       localStorage.removeItem("username");
+      navigate("/");
     }
-  };
-
-  useEffect(() => {
-    checkAuthStatus();
-    // Set up an interval to check auth status periodically
-    const interval = setInterval(checkAuthStatus, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("role");
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    setIsLoggedIn(false);
-    setUser(null);
-    navigate("/");
-    notifySuccess("Đăng xuất thành công!");
   };
 
   const userMenu = (
@@ -170,12 +197,11 @@ function Header() {
         {isLoggedIn ? (
           <Dropdown
             overlay={userMenu}
-            // trigger={["click"]}
             placement="bottomRight"
           >
             <Space style={{ cursor: "pointer" }}>
               <Avatar icon={<UserOutlined />} />
-              <span>{user?.name}</span>
+              <span>{user?.username}</span>
               <DownOutlined />
             </Space>
           </Dropdown>
