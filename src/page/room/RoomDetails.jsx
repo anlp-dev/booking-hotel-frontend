@@ -202,7 +202,7 @@ const RoomDetails = () => {
       try {
         const response = await getRoomById(id);
         console.log("response", response);
-        setRoom(response);
+        setRoom(response.data);
       } catch (error) {
         notifyError(error.message);
       } finally {

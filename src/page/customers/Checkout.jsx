@@ -45,9 +45,10 @@ import authService from "../../services/AuthService";
 import { formatDate } from "../../utils/format";
 import BookingService from "../../services/BookingService";
 import Loading from "../../components/loading/Loading";
+import Header from "../../components/homePage/header";
 
 const { Title, Text, Paragraph } = Typography;
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Option } = Select;
 // const { RangePicker } = DatePicker;
 
@@ -238,56 +239,7 @@ const Checkout = () => {
   return (
     <Layout className={styles.checkoutLayout}>
       {loading ? <Loading /> : ""}
-      <Header className={styles.header}>
-        <div className={styles.headerContent}>
-          {/* Left section with logo and dropdown */}
-          <div className={styles.headerLeft}>
-            <img
-              src="https://vi.hotels.com/_dms/header/logo.svg?locale=vi_VN&siteid=3213&2&6f9ec7db"
-              alt="logo"
-              className={styles.logo}
-              onClick={() => navigate("/")}
-            />
-            <Dropdown overlay={tripMenu} placement="bottomLeft">
-              <Button type="primary">
-                <Space>
-                  Đặt chuyến đi
-                  <DownOutlined />
-                </Space>
-              </Button>
-            </Dropdown>
-          </div>
-
-          {/* Middle section with checkout steps */}
-          <div className={styles.headerMiddle}>
-            <Steps
-              size="small"
-              current={0}
-              items={[
-                { title: "Thông tin đặt phòng" },
-                { title: "Thanh toán" },
-                { title: "Xác nhận" },
-              ]}
-            />
-          </div>
-
-          {/* Right section with user actions */}
-          <div className={styles.headerRight}>
-            <Button type="link" icon={<QuestionCircleOutlined />}>
-              Hỗ trợ
-            </Button>
-            <Button type="link" icon={<CompassOutlined />}>
-              Chuyến đi
-            </Button>
-            <Badge count={1}>
-              <Button
-                type="text"
-                icon={<ShoppingCartOutlined style={{ fontSize: "18px" }} />}
-              />
-            </Badge>
-          </div>
-        </div>
-      </Header>
+      <Header />
 
       <Content className={styles.content}>
         <Title level={2} className={styles.pageTitle}>
