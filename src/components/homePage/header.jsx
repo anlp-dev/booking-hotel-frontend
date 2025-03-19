@@ -38,8 +38,6 @@ function Header() {
       if (userData && userData.data) {
         setIsLoggedIn(true);
         setUser(userData.data);
-        localStorage.setItem("username", userData.data.username);
-        localStorage.setItem("role", userData.data.role);
       } else {
         handleLogout(false);
       }
@@ -74,9 +72,6 @@ function Header() {
     } finally {
       setIsLoggedIn(false);
       setUser(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("username");
       navigate("/");
     }
   };
