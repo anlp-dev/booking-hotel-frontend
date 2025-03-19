@@ -236,8 +236,13 @@ const RoomDetails = () => {
       total_price: calculateTotalPrice(room.price),
     };
 
-    // Chuyển đến trang checkout với dữ liệu bookingInfo
-    navigate("/checkout", { state: { bookingInfo } });
+    const token = localStorage.getItem("token");
+    if(!token){
+      localStorage.setItem("bookingInfo", JSON.stringify(bookingInfo));
+      navigate("/checkout");
+    }else{
+      navigate("/checkout", { state: { bookingInfo } });
+    }
   };
 
   // Lấy marks dựa trên giá phòng

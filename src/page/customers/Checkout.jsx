@@ -467,7 +467,7 @@ const Checkout = () => {
                 {room?.hotel_id?.name}
               </Title>
               <Paragraph>
-                <Tag color="blue">Phòng {bookingInfo.roomType}</Tag>
+                <Tag color="blue">Phòng {bookingInfo?.roomType}</Tag>
                 <Tag icon={<UserOutlined />}>{bookingDetails.guests} khách</Tag>
               </Paragraph>
 
