@@ -1,4 +1,5 @@
 const API_URL = 'http://localhost:9999';
+const API_URL_PROD = 'https://3.106.232.128'
 
 const headers = {
     'Content-Type': 'application/json',
@@ -10,7 +11,7 @@ const getAuthHeaders = (token) => ({
 });
 
 const apiConfig = {
-    baseUrl: API_URL,
+    baseUrl: API_URL_PROD,
     headers,
     getAuthHeaders,
 };
