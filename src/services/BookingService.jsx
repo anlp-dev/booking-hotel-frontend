@@ -92,6 +92,24 @@ const BookingService = {
             throw new Error(e.message);
         }
     },
+
+    // Add cancellation methods
+    async cancelBooking(bookingData) {
+      return await fetchUtils.post(`/booking/cancel`, bookingData);
+    },
+
+    async getRefundDetails(bookingId) {
+      return await fetchUtils.get(`/booking/refund/${bookingId}`);
+    },
+
+    async submitRefundInfo(refundData) {
+      return await fetchUtils.post(`/booking/refund/submit`, refundData);
+    },
+
+    // Admin method to complete refund
+    async completeRefund(refundId) {
+      return await fetchUtils.post(`/booking/refund/complete`, { refund_id: refundId });
+    },
 };
 
 export default BookingService; 

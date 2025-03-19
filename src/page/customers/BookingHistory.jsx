@@ -42,6 +42,7 @@ import {
   EyeOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 import styles from "../../static/css/BookingHistory.module.css";
 
@@ -56,6 +57,7 @@ const BookingHistory = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const navigate = useNavigate();
 
   // Mock data for bookings history
   useEffect(() => {
@@ -231,6 +233,10 @@ const BookingHistory = () => {
     setIsModalVisible(false);
   };
 
+  const handleCancelBooking = (bookingId) => {
+    navigate(`/booking-cancel-refund/${bookingId}`);
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -245,26 +251,16 @@ const BookingHistory = () => {
 
   const getStatusTag = (status) => {
     switch (status) {
-      case "completed":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="success">
-            Đã hoàn thành
-          </Tag>
-        );
-      case "upcoming":
-        return (
-          <Tag icon={<ClockCircleOutlined />} color="processing">
-            Sắp tới
-          </Tag>
-        );
+      case "pending":
+        return <Tag icon={<ClockCircleOutlined />} color="orange">Chờ xác nhận</Tag>;
+      case "confirmed":
+        return <Tag icon={<CheckCircleOutlined />} color="green">Đã xác nhận</Tag>;
       case "cancelled":
-        return (
-          <Tag icon={<CloseCircleOutlined />} color="error">
-            Đã hủy
-          </Tag>
-        );
+        return <Tag icon={<CloseCircleOutlined />} color="red">Đã hủy</Tag>;
+      case "refunded":
+        return <Tag icon={<CheckCircleOutlined />} color="blue">Đã hoàn tiền</Tag>;
       default:
-        return <Tag color="default">{status}</Tag>;
+        return null;
     }
   };
 
@@ -488,7 +484,7 @@ const BookingHistory = () => {
                 Đóng
               </Button>,
               selectedBooking.status === "upcoming" && (
-                <Button key="cancel" danger>
+                <Button key="cancel" danger onClick={() => handleCancelBooking(selectedBooking.id)}>
                   Hủy đặt phòng
                 </Button>
               ),

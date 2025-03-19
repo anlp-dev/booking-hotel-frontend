@@ -13,6 +13,7 @@ import RoleBaseRoute from "./security/RoleBaseRoute.jsx";
 import Checkout from "./page/customers/Checkout.jsx";
 import BookingSuccess from "./page/customers/BookingSuccess.jsx";
 import BookingHistory from "./page/customers/BookingHistory.jsx";
+import BookingCancelRefund from "./page/customers/BookingCancelRefund.jsx";
 import RoomListing from "./page/customers/RoomListing.jsx";
 import PaymentHistory from "./page/customers/paymentHistory.jsx";
 import RoomDetails from "./page/room/RoomDetails.jsx";
@@ -47,6 +48,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/booking-success" element={<BookingSuccess />} />
             <Route path="/booking-history" element={<BookingHistory />} />
+            <Route path="/booking-cancel-refund/:bookingId" element={<BookingCancelRefund />} />
           </Route>
           {/* Catch-all route for undefined routes */}
           <Route path="*" element={<Navigate to="/404" />} />
