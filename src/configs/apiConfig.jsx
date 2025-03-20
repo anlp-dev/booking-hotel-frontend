@@ -11,7 +11,7 @@ const getAuthHeaders = (token) => ({
 });
 
 const apiConfig = {
-    baseUrl: API_URL_PROD,
+    baseUrl: API_URL,
     headers,
     getAuthHeaders,
 };
