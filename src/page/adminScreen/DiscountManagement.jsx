@@ -207,7 +207,7 @@ const DiscountManagement = () => {
     const fetchDiscount = async () => {
       try {
         setIsLoading(true);
-        const discounts = await AdminDiscountService.getAllDiscount();
+        const discounts = await AdminDiscountService.getDiscount();
         setDiscounts(discounts);
       } catch (error) {
         notifyError(error.message);
