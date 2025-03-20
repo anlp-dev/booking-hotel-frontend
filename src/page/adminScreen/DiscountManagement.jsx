@@ -216,7 +216,7 @@ const DiscountManagement = () => {
       try {
         setIsLoading(true);
         const discounts = await AdminDiscountService.getDiscount();
-        setDiscounts(discounts);
+        setDiscounts(discounts.data);
       } catch (error) {
         notifyError(error.message);
         console.error("Lỗi khi lấy danh sách vật tư:", error.message);
