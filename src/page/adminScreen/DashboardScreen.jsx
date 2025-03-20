@@ -7,6 +7,7 @@ import ManageUser from "./UserManagement.jsx";
 import RoleBaseRoute from "../../security/RoleBaseRoute.jsx";
 import RolePermissionManagement from "./RoleManage.jsx";
 import FacilityManagement from "./FacilityManagement.jsx";
+import DiscountManagement from "./DiscountManagement.jsx";
 import RouteManagement from "./RouteManagement.jsx";
 import BookingManagement from "./BookingManagement.jsx";
 import RoomManagement from "./RoomManage.jsx";
@@ -37,6 +38,14 @@ export default function Dashboard() {
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
                 <FacilityManagement />
+              </RoleBaseRoute>
+            }
+          />
+          <Route
+            path="/manageDiscount"
+            element={
+              <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
+                <DiscountManagement />
               </RoleBaseRoute>
             }
           />
