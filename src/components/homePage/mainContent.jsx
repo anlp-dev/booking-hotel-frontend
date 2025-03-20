@@ -77,7 +77,7 @@ function MainContent() {
       try {
         const response = await getRoomList();
         console.log("response", response);
-        setRoom(response);
+        setRoom(response.data);
       } catch (error) {
         console.log(error);
         message.error("Không thể lấy thông tin phòng");

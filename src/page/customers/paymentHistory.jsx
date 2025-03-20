@@ -17,6 +17,7 @@ import {
   Statistic,
   Input,
   Tabs,
+  Alert,
 } from "antd";
 import {
   HistoryOutlined,
@@ -47,91 +48,103 @@ const PaymentHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  // Mock data for payment history
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockPayments = [
-        {
-          _id: "PAY-123456",
-          booking_id: {
-            _id: "BK-123456",
-            hotelName: "Luxury Palace Hotel & Spa",
-            roomType: "Deluxe Room",
-            checkIn: "2023-07-15",
-            checkOut: "2023-07-18",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 3500000,
-          payment_date: "2023-07-01T12:30:45",
-          method: "credit_card",
-          status: "paid",
-        },
-        {
-          _id: "PAY-234567",
-          booking_id: {
-            _id: "BK-234567",
-            hotelName: "Grand Riverside Resort",
-            roomType: "Premium Suite",
-            checkIn: "2023-08-10",
-            checkOut: "2023-08-15",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 5200000,
-          payment_date: "2023-07-20T10:15:30",
-          method: "bank_transfer",
-          status: "paid",
-        },
-        {
-          _id: "PAY-345678",
-          booking_id: {
-            _id: "BK-345678",
-            hotelName: "Seaside Paradise Hotel",
-            roomType: "Ocean View Room",
-            checkIn: "2023-06-01",
-            checkOut: "2023-06-05",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 4800000,
-          payment_date: "2023-05-15T09:45:20",
-          method: "paypal",
-          status: "paid",
-        },
-        {
-          _id: "PAY-456789",
-          booking_id: {
-            _id: "BK-456789",
-            hotelName: "Mountain View Resort",
-            roomType: "Mountain Suite",
-            checkIn: "2023-09-20",
-            checkOut: "2023-09-25",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 6300000,
-          payment_date: "2023-08-10T14:25:10",
-          method: "bank_transfer",
-          status: "unpaid",
-        },
-        {
-          _id: "PAY-567890",
-          booking_id: {
-            _id: "BK-567890",
-            hotelName: "City Central Hotel",
-            roomType: "Business Room",
-            checkIn: "2023-05-05",
-            checkOut: "2023-05-07", 
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 1800000,
-          payment_date: "2023-04-20T11:35:55",
-          method: "credit_card",
-          status: "failed",
-        },
-      ];
+    // In a real application, fetch payment history from the API
+    // Example:
+    // const fetchPayments = async () => {
+    //   try {
+    //     const response = await fetch('api/payments/history');
+    //     const data = await response.json();
+    //     if (data.success) {
+    //       setPayments(data.data);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching payment history:', error);
+    //   }
+    // };
+    // fetchPayments();
 
-      setPayments(mockPayments);
-      setLoading(false);
-    }, 1500);
+    // Mock data for payment history
+    const mockPayments = [
+      {
+        _id: "PAY-123456",
+        booking_id: {
+          _id: "BK-123456",
+          hotelName: "Luxury Palace Hotel & Spa",
+          roomType: "Deluxe Room",
+          checkIn: "2023-07-15",
+          checkOut: "2023-07-18",
+          customerName: "Nguyễn Văn A",
+        },
+        amount: 3500000,
+        payment_date: "2023-07-01T12:30:45",
+        method: "credit_card",
+        status: "paid",
+      },
+      {
+        _id: "PAY-234567",
+        booking_id: {
+          _id: "BK-234567",
+          hotelName: "Grand Riverside Resort",
+          roomType: "Premium Suite",
+          checkIn: "2023-08-10",
+          checkOut: "2023-08-15",
+          customerName: "Nguyễn Văn A",
+        },
+        amount: 5200000,
+        payment_date: "2023-07-20T10:15:30",
+        method: "bank_transfer",
+        status: "paid",
+      },
+      {
+        _id: "PAY-345678",
+        booking_id: {
+          _id: "BK-345678",
+          hotelName: "Seaside Paradise Hotel",
+          roomType: "Ocean View Room",
+          checkIn: "2023-06-01",
+          checkOut: "2023-06-05",
+          customerName: "Nguyễn Văn A",
+        },
+        amount: 4800000,
+        payment_date: "2023-05-15T09:45:20",
+        method: "paypal",
+        status: "paid",
+      },
+      {
+        _id: "PAY-456789",
+        booking_id: {
+          _id: "BK-456789",
+          hotelName: "Mountain View Resort",
+          roomType: "Mountain Suite",
+          checkIn: "2023-09-20",
+          checkOut: "2023-09-25",
+          customerName: "Nguyễn Văn A",
+        },
+        amount: 6300000,
+        payment_date: "2023-08-10T14:25:10",
+        method: "bank_transfer",
+        status: "unpaid",
+      },
+      {
+        _id: "PAY-567890",
+        booking_id: {
+          _id: "BK-567890",
+          hotelName: "City Central Hotel",
+          roomType: "Business Room",
+          checkIn: "2023-05-05",
+          checkOut: "2023-05-07", 
+          customerName: "Nguyễn Văn A",
+        },
+        amount: 1800000,
+        payment_date: "2023-04-20T11:35:55",
+        method: "credit_card",
+        status: "failed",
+      },
+    ];
+
+    setPayments(mockPayments);
+    setLoading(false);
   }, []);
 
   const showModal = (payment) => {
@@ -151,33 +164,32 @@ const PaymentHistory = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" };
-    return new Date(dateString).toLocaleDateString("vi-VN", options);
+    const date = new Date(dateString);
+    return date.toLocaleString("vi-VN");
   };
 
   const getStatusTag = (status) => {
+    let color = "default";
+    let text = "Không xác định";
+
     switch (status) {
       case "paid":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="success">
-            Đã thanh toán
-          </Tag>
-        );
+        color = "success";
+        text = "Đã thanh toán";
+        break;
       case "unpaid":
-        return (
-          <Tag icon={<ClockCircleOutlined />} color="warning">
-            Chưa thanh toán
-          </Tag>
-        );
+        color = "warning";
+        text = "Chưa thanh toán";
+        break;
       case "failed":
-        return (
-          <Tag icon={<CloseCircleOutlined />} color="error">
-            Thanh toán thất bại
-          </Tag>
-        );
+        color = "error";
+        text = "Thanh toán thất bại";
+        break;
       default:
-        return <Tag color="default">{status}</Tag>;
+        break;
     }
+
+    return <Tag color={color}>{text}</Tag>;
   };
 
   const getPaymentMethodIcon = (method) => {
@@ -208,6 +220,46 @@ const PaymentHistory = () => {
       default:
         return method;
     }
+  };
+
+  const renderVnpayResponseMessage = (payment) => {
+    if (!payment.vnpay_response_code) return null;
+    
+    const messages = {
+      '00': 'Giao dịch thành công',
+      '01': 'Giao dịch đã tồn tại',
+      '02': 'Merchant không hợp lệ',
+      '03': 'Dữ liệu gửi sang không đúng định dạng',
+      '04': 'Khởi tạo GD không thành công do Website đang bị tạm khóa',
+      '05': 'Giao dịch không thành công do: Quý khách nhập sai mật khẩu quá số lần quy định',
+      '06': 'Giao dịch không thành công do Quý khách nhập sai mật khẩu',
+      '07': 'Giao dịch bị nghi ngờ gian lận',
+      '08': 'Giao dịch không thành công do: Hệ thống Ngân hàng đang bảo trì',
+      '09': 'Giao dịch không thành công do: Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ Internet Banking',
+      '10': 'Khách hàng xác thực thông tin thẻ/tài khoản không đúng quá 3 lần',
+      '11': 'Đã hết hạn chờ thanh toán',
+      '12': 'Thẻ/Tài khoản của khách hàng bị khóa',
+      '13': 'Quý khách nhập sai mật khẩu xác thực giao dịch',
+      '24': 'Giao dịch bị hủy',
+      '51': 'Tài khoản không đủ số dư để thực hiện giao dịch',
+      '65': 'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày',
+      '75': 'Ngân hàng thanh toán đang bảo trì',
+      '79': 'KH nhập sai mật khẩu thanh toán quá số lần quy định',
+      '99': 'Lỗi không xác định'
+    };
+    
+    const message = messages[payment.vnpay_response_code] || 'Không có thông tin';
+    const type = payment.vnpay_response_code === '00' ? 'success' : 'error';
+    
+    return (
+      <Alert
+        message={`Mã phản hồi: ${payment.vnpay_response_code}`}
+        description={message}
+        type={type}
+        showIcon
+        style={{ marginTop: 16, marginBottom: 16 }}
+      />
+    );
   };
 
   const filteredPayments = payments.filter((payment) => {
@@ -468,7 +520,14 @@ const PaymentHistory = () => {
                     <Descriptions.Item label="Trạng thái">
                       {getStatusTag(selectedPayment.status)}
                     </Descriptions.Item>
+                    {selectedPayment.vnpay_transaction_id && (
+                      <Descriptions.Item label="Mã giao dịch VNPAY">
+                        {selectedPayment.vnpay_transaction_id}
+                      </Descriptions.Item>
+                    )}
                   </Descriptions>
+
+                  {selectedPayment.vnpay_response_code && renderVnpayResponseMessage(selectedPayment)}
 
                   <Divider />
 

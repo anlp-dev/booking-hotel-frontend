@@ -1,6 +1,8 @@
 import apiConfig from "../configs/apiConfig.jsx";
 import fetchUtils from "../utils/fetchUtils.jsx";
 
+const { endpoints } = apiConfig;
+
 const BookingService = {
     async getAllBookings(page = 0, size = 10, searchTerm = '') {
         try {
@@ -10,7 +12,7 @@ const BookingService = {
                 search: searchTerm
             }).toString();
             
-            return await fetchUtils.get(`/admin/bookings?${queryParams}`);
+            return await fetchUtils.get(`${endpoints.ADMIN.BOOKINGS}?${queryParams}`);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -18,7 +20,7 @@ const BookingService = {
     
     async getBookingById(id) {
         try {
-            return await fetchUtils.get(`/admin/bookings/${id}`);
+            return await fetchUtils.get(endpoints.ADMIN.BOOKING_DETAIL(id));
         } catch (e) {
             throw new Error(e.message);
         }
@@ -26,7 +28,7 @@ const BookingService = {
     
     async createBooking(bookingData) {
         try {
-            return await fetchUtils.post(`/admin/bookings`, bookingData);
+            return await fetchUtils.post(endpoints.ADMIN.BOOKINGS, bookingData);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -34,7 +36,7 @@ const BookingService = {
     
     async updateBooking(id, bookingData) {
         try {
-            return await fetchUtils.put(`/admin/bookings/${id}`, bookingData);
+            return await fetchUtils.put(endpoints.ADMIN.BOOKING_DETAIL(id), bookingData);
         } catch (e) {
             throw new Error(e.message);
         }
@@ -42,7 +44,7 @@ const BookingService = {
     
     async updateBookingStatus(id, status) {
         try {
-            return await fetchUtils.put(`/admin/bookings/${id}/status`, { status });
+            return await fetchUtils.put(endpoints.ADMIN.BOOKING_STATUS(id), { status });
         } catch (e) {
             throw new Error(e.message);
         }
@@ -50,7 +52,7 @@ const BookingService = {
     
     async deleteBooking(id) {
         try {
-            return await fetchUtils.remove(`/admin/bookings/${id}`);
+            return await fetchUtils.remove(endpoints.ADMIN.BOOKING_DETAIL(id));
         } catch (e) {
             throw new Error(e.message);
         }
@@ -60,7 +62,7 @@ const BookingService = {
         try {
             const token = fetchUtils.getAuthToken();
             
-            const res = await fetch(`${apiConfig.baseUrl}/admin/bookings/export`, {
+            const res = await fetch(`${apiConfig.baseUrl}${endpoints.ADMIN.EXPORT_BOOKINGS}`, {
                 method: "GET",
                 headers: apiConfig.getAuthHeaders(token),
             });
@@ -79,36 +81,81 @@ const BookingService = {
 
     async createBookingCustomer(bookingData) {
       try {
-          return await fetchUtils.post(`/booking/create`, bookingData);
+          return await fetchUtils.post(endpoints.BOOKING.CREATE, bookingData);
       } catch (e) {
           throw new Error(e.message);
       }
-  },
+    },
     
     async getAllRooms() {
         try {
-            return await fetchUtils.get(`/admin/rooms`);
+            return await fetchUtils.get(endpoints.ADMIN.ROOMS);
         } catch (e) {
             throw new Error(e.message);
         }
     },
 
+    // Customer methods
+    async getUserBookings(userId) {
+      try {
+        return await fetchUtils.get(endpoints.BOOKING.USER_BOOKINGS(userId));
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    },
+    
+    async getCustomerBookingById(bookingId) {
+      try {
+        return await fetchUtils.get(endpoints.BOOKING.GET_BY_ID(bookingId));
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    },
+
     // Add cancellation methods
-    async cancelBooking(bookingData) {
-      return await fetchUtils.post(`/booking/cancel`, bookingData);
+    async cancelBooking(cancelData) {
+      try {
+        return await fetchUtils.post(endpoints.BOOKING.CANCEL, cancelData);
+      } catch (e) {
+        throw new Error(e.message);
+      }
     },
 
     async getRefundDetails(bookingId) {
-      return await fetchUtils.get(`/booking/refund/${bookingId}`);
+      try {
+        return await fetchUtils.get(endpoints.REFUND.GET_DETAILS(bookingId));
+      } catch (e) {
+        throw new Error(e.message);
+      }
     },
 
     async submitRefundInfo(refundData) {
-      return await fetchUtils.post(`/booking/refund/submit`, refundData);
+      try {
+        return await fetchUtils.post(endpoints.REFUND.SUBMIT_INFO, refundData);
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    },
+    
+    async getRefundStatus(refundId) {
+      try {
+        return await fetchUtils.get(endpoints.REFUND.GET_STATUS(refundId));
+      } catch (e) {
+        throw new Error(e.message);
+      }
     },
 
     // Admin method to complete refund
-    async completeRefund(refundId) {
-      return await fetchUtils.post(`/booking/refund/complete`, { refund_id: refundId });
+    async completeRefund(refundId, adminData) {
+      try {
+        return await fetchUtils.post(endpoints.REFUND.COMPLETE, { 
+          refund_id: refundId,
+          admin_id: adminData.adminId,
+          notes: adminData.notes || ''
+        });
+      } catch (e) {
+        throw new Error(e.message);
+      }
     },
 };
 

@@ -14,6 +14,7 @@ import Checkout from "./page/customers/Checkout.jsx";
 import BookingSuccess from "./page/customers/BookingSuccess.jsx";
 import BookingHistory from "./page/customers/BookingHistory.jsx";
 import BookingCancelRefund from "./page/customers/BookingCancelRefund.jsx";
+import RefundStatus from "./page/customers/RefundStatus.jsx";
 import RoomListing from "./page/customers/RoomListing.jsx";
 import PaymentHistory from "./page/customers/paymentHistory.jsx";
 import RoomDetails from "./page/room/RoomDetails.jsx";
@@ -49,6 +50,7 @@ function App() {
             <Route path="/booking-success" element={<BookingSuccess />} />
             <Route path="/booking-history" element={<BookingHistory />} />
             <Route path="/booking-cancel-refund/:bookingId" element={<BookingCancelRefund />} />
+            <Route path="/refund-status/:refundId" element={<RefundStatus />} />
           </Route>
           {/* Catch-all route for undefined routes */}
           <Route path="*" element={<Navigate to="/404" />} />

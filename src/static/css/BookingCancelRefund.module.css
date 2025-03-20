@@ -4,6 +4,14 @@
   min-height: calc(100vh - 64px - 70px);
 }
 
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
 .booking-cancel-card,
 .refund-method-card,
 .refund-confirmation-card {
@@ -56,5 +64,10 @@
 @media (max-width: 768px) {
   .refund-method-option {
     margin-bottom: 16px;
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
 } 
