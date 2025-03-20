@@ -25,7 +25,6 @@ import {
   message,
   Popconfirm,
   Alert,
-  notification,
 } from "antd";
 import {
   HistoryOutlined,
@@ -45,9 +44,10 @@ import {
   EyeOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
+
 import styles from "../../static/css/BookingHistory.module.css";
 import BookingService from "../../services/BookingService";
-import ModalNotification from "../../components/cancelBooking/ModalNotification";
+
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -55,16 +55,12 @@ const { TabPane } = Tabs;
 const BookingHistory = () => {
   // const { userId } = useAppContext();
   const userId = "67d86459885b58e3b1695066";
-  const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [selectedCancelBooking, setSelectedCancelBooking] = useState(null);
-  const [returnAmount, setReturnAmount] = useState(0);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   // Mock data for bookings history
   // Simulate API call
@@ -150,18 +146,12 @@ const BookingHistory = () => {
         );
       case "cancelled":
         return (
-          <Tag icon={<CloseCircleOutlined />} color="red">
+          <Tag icon={<CloseCircleOutlined />} color="error">
             Đã hủy
           </Tag>
         );
-      case "refunded":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="blue">
-            Đã hoàn tiền
-          </Tag>
-        );
       default:
-        return null;
+        return <Tag color="default">{status}</Tag>;
     }
   };
 
@@ -182,13 +172,12 @@ const BookingHistory = () => {
   });
 
   const handleCancelBooking = (booking) => {
-    setSelectedCancelBooking(booking);
+    console.log("booking", booking);
     if (booking.status === "pending") {
       // Directly cancel the booking
       cancelBooking(booking);
     } else if (booking.status === "confirmed") {
       // Show refund policy and confirmation modal
-      calculateRefund(booking);
       showRefundPolicyModal(booking);
     }
   };
@@ -205,9 +194,7 @@ const BookingHistory = () => {
         </div>
       ),
       onOk() {
-        // calculateRefund(booking);
-        setIsCancelModalVisible(true);
-        cancelBooking(booking, returnAmount);
+        calculateRefund(booking);
       },
     });
   };
@@ -224,18 +211,16 @@ const BookingHistory = () => {
       refundAmount = booking.totalAmount * 0.5;
     }
 
-    setReturnAmount(refundAmount);
-    // // Proceed with cancellation and refund
+    // Proceed with cancellation and refund
     cancelBooking(booking, refundAmount);
   };
 
   const cancelBooking = async (booking, refundAmount = 0) => {
     try {
-      const response = await BookingService.updateBookingStatus(
-        booking.id,
-        "cancelled"
-      );
-
+      const response = await BookingService.updateBooking(booking.id, {
+        status: "cancelled",
+      });
+      console.log("response cancel booking", response);
       if (response.status === 200) {
         <Alert
           message="Hủy Phòng Thành Công"
@@ -369,7 +354,6 @@ const BookingHistory = () => {
 
   return (
     <Layout className={styles.layout}>
-      {contextHolder}
       <Content className={styles.content}>
         <div className={styles.pageHeader}>
           <div className={styles.titleSection}>
@@ -479,11 +463,7 @@ const BookingHistory = () => {
                 Đóng
               </Button>,
               selectedBooking.status === "upcoming" && (
-                <Button
-                  key="cancel"
-                  danger
-                  onClick={() => handleCancelBooking(selectedBooking.id)}
-                >
+                <Button key="cancel" danger>
                   Hủy đặt phòng
                 </Button>
               ),
@@ -665,14 +645,6 @@ const BookingHistory = () => {
               </Col>
             </Row>
           </Modal>
-        )}
-
-        {selectedCancelBooking && (
-          <ModalNotification
-            isCancelModalVisible={isCancelModalVisible}
-            setSelectedCancelBooking={setSelectedCancelBooking}
-            selectedCancelBooking={selectedCancelBooking}
-          />
         )}
       </Content>
     </Layout>

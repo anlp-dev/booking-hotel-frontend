@@ -45,9 +45,10 @@ import {
   EyeOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
+
 import styles from "../../static/css/BookingHistory.module.css";
 import BookingService from "../../services/BookingService";
-import ModalNotification from "../../components/cancelBooking/ModalNotification";
+
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -55,7 +56,7 @@ const { TabPane } = Tabs;
 const BookingHistory = () => {
   // const { userId } = useAppContext();
   const userId = "67d86459885b58e3b1695066";
-  const [api, contextHolder] = notification.useNotification();
+  const [contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -150,18 +151,12 @@ const BookingHistory = () => {
         );
       case "cancelled":
         return (
-          <Tag icon={<CloseCircleOutlined />} color="red">
+          <Tag icon={<CloseCircleOutlined />} color="error">
             Đã hủy
           </Tag>
         );
-      case "refunded":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="blue">
-            Đã hoàn tiền
-          </Tag>
-        );
       default:
-        return null;
+        return <Tag color="default">{status}</Tag>;
     }
   };
 
@@ -181,38 +176,90 @@ const BookingHistory = () => {
     return booking.status === activeTab && matchesSearch;
   });
 
+  // const openNotification = (placement) => {
+  //   api.info({
+  //     message: `Hủy đặt phòng thành công`,
+  //     description: (
+  //       <div>
+  //         <p>Bạn đã hủy đặt phòng thành công.</p>
+  //         <div style={{ display: "flex", gap: "10px", width: "50%" }}>
+  //           <Card
+  //             title="Thông tin khách hàng"
+  //             bordered={false}
+  //             className={styles.detailCard}
+  //           >
+  //             <Descriptions column={1}>
+  //               <Descriptions.Item label="Họ tên">
+  //                 <UserOutlined /> {selectedCancelBooking.customerName}
+  //               </Descriptions.Item>
+  //               <Descriptions.Item label="Email">
+  //                 <MailOutlined /> {selectedCancelBooking.email}
+  //               </Descriptions.Item>
+  //               <Descriptions.Item label="Số điện thoại">
+  //                 <PhoneOutlined /> {selectedCancelBooking.phone}
+  //               </Descriptions.Item>
+  //             </Descriptions>
+  //           </Card>
+
+  //           <Card
+  //             title="Thông tin thanh toán"
+  //             bordered={false}
+  //             className={styles.detailCard}
+  //           >
+  //             <Descriptions column={1}>
+  //               <Descriptions.Item label="Phương thức thanh toán">
+  //                 <CreditCardOutlined /> {selectedCancelBooking.paymentMethod}
+  //               </Descriptions.Item>
+  //               <Descriptions.Item label="Mã thanh toán">
+  //                 {selectedCancelBooking.paymentId}
+  //               </Descriptions.Item>
+  //               <Descriptions.Item label="Ngày đặt phòng">
+  //                 {formatDate(selectedCancelBooking.bookingDate)}
+  //               </Descriptions.Item>
+  //             </Descriptions>
+
+  //             <div className={styles.totalAmount}>
+  //               <Text>Tổng tiền:</Text>
+  //               <Text strong className={styles.amountValue}>
+  //                 {formatCurrency(selectedCancelBooking.totalAmount)}
+  //               </Text>
+  //             </div>
+  //           </Card>
+  //         </div>
+
+  //         <br />
+  //         <div>
+  //           <p>
+  //             Tiền bạn đặt cọc sẽ được hoàn vào tài khoản bạn dùng để thanh toán
+  //             khi cọc.
+  //           </p>
+  //           \
+  //           <p>
+  //             {" "}
+  //             Chúng tôi đã gửi mail xác nhận hủy phòng và thông tin hủy phòng
+  //             đến email của bạn. Vui lòng kiểm tra mail để biết thêm chi tiết.
+  //           </p>
+  //         </div>
+  //       </div>
+  //     ),
+  //     placement,
+  //   });
+  // };
+
   const handleCancelBooking = (booking) => {
     setSelectedCancelBooking(booking);
     if (booking.status === "pending") {
       // Directly cancel the booking
       cancelBooking(booking);
     } else if (booking.status === "confirmed") {
-      // Show refund policy and confirmation modal
-      calculateRefund(booking);
-      showRefundPolicyModal(booking);
+      // Calculate refund and then show refund policy modal
+      calculateRefund(booking, () => {
+        showRefundPolicyModal(booking);
+      });
     }
   };
 
-  const showRefundPolicyModal = (booking) => {
-    Modal.confirm({
-      title: "Chính sách hoàn tiền",
-      content: (
-        <div>
-          <p>Hủy trước 24 giờ: Hoàn lại 100% tiền đặt cọc</p>
-          <p>Hủy trong 24-48 giờ: Hoàn lại 50% tiền đặt cọc</p>
-          <p>Hủy sau 48h: Không hoàn tiền</p>
-          <p>Bạn có chắc chắn muốn hủy đặt phòng này không?</p>
-        </div>
-      ),
-      onOk() {
-        // calculateRefund(booking);
-        setIsCancelModalVisible(true);
-        cancelBooking(booking, returnAmount);
-      },
-    });
-  };
-
-  const calculateRefund = (booking) => {
+  const calculateRefund = (booking, callback) => {
     const now = new Date();
     const checkInDate = new Date(booking.checkIn);
     const hoursBeforeCheckIn = (checkInDate - now) / (1000 * 60 * 60);
@@ -225,8 +272,29 @@ const BookingHistory = () => {
     }
 
     setReturnAmount(refundAmount);
-    // // Proceed with cancellation and refund
-    cancelBooking(booking, refundAmount);
+    if (callback) callback();
+  };
+
+  const showRefundPolicyModal = (booking) => {
+    Modal.confirm({
+      title: "Chính sách hoàn tiền",
+      content: (
+        <div>
+          <p>Hủy trước 24 giờ: Hoàn lại 100% tiền đặt cọc</p>
+          <p>Hủy trong 24-48 giờ: Hoàn lại 50% tiền đặt cọc</p>
+          <p>Hủy sau 48h: Không hoàn tiền</p>
+          <p>Bạn có chắc chắn muốn hủy đặt phòng này không?</p>
+          <br />
+          <p>
+            <b>Bạn sẽ được hoàn lại: {formatCurrency(returnAmount)}</b>
+          </p>
+        </div>
+      ),
+      onOk() {
+        setIsCancelModalVisible(true);
+        cancelBooking(booking, returnAmount);
+      },
+    });
   };
 
   const cancelBooking = async (booking, refundAmount = 0) => {
@@ -235,7 +303,7 @@ const BookingHistory = () => {
         booking.id,
         "cancelled"
       );
-
+      console.log("response cancel booking", response);
       if (response.status === 200) {
         <Alert
           message="Hủy Phòng Thành Công"
@@ -479,11 +547,7 @@ const BookingHistory = () => {
                 Đóng
               </Button>,
               selectedBooking.status === "upcoming" && (
-                <Button
-                  key="cancel"
-                  danger
-                  onClick={() => handleCancelBooking(selectedBooking.id)}
-                >
+                <Button key="cancel" danger>
                   Hủy đặt phòng
                 </Button>
               ),
@@ -668,11 +732,83 @@ const BookingHistory = () => {
         )}
 
         {selectedCancelBooking && (
-          <ModalNotification
-            isCancelModalVisible={isCancelModalVisible}
-            setSelectedCancelBooking={setSelectedCancelBooking}
-            selectedCancelBooking={selectedCancelBooking}
-          />
+          <Modal
+            title="Thông tin hoàn tiền"
+            open={isCancelModalVisible}
+            onOk={() => setSelectedCancelBooking(false)}
+            footer={[
+              <Button
+                key="submit"
+                onClick={() => setSelectedCancelBooking(false)}
+              >
+                Tôi hiểu rồi
+              </Button>,
+            ]}
+          >
+            <div>
+              <p>Bạn đã hủy đặt phòng thành công.</p>
+              <div style={{ display: "flex", gap: "10px", width: "50%" }}>
+                <Card
+                  title="Thông tin khách hàng"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="Họ tên">
+                      <UserOutlined /> {selectedCancelBooking.customerName}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Email">
+                      <MailOutlined /> {selectedCancelBooking.email}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Số điện thoại">
+                      <PhoneOutlined /> {selectedCancelBooking.phone}
+                    </Descriptions.Item>
+                  </Descriptions>
+                </Card>
+
+                <Card
+                  title="Thông tin thanh toán"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="Phương thức thanh toán">
+                      <CreditCardOutlined />{" "}
+                      {selectedCancelBooking.paymentMethod}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Mã thanh toán">
+                      {selectedCancelBooking.paymentId}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Ngày đặt phòng">
+                      {formatDate(selectedCancelBooking.bookingDate)}
+                    </Descriptions.Item>
+                  </Descriptions>
+
+                  <div className={styles.totalAmount}>
+                    <Text>Tổng tiền:</Text>
+                    <Text strong className={styles.amountValue}>
+                      {formatCurrency(selectedCancelBooking.totalAmount)}
+                    </Text>
+                  </div>
+                </Card>
+              </div>
+
+              <br />
+              <div>
+                <p>
+                  Tiền bạn đặt cọc sẽ được hoàn vào tài khoản bạn dùng để thanh
+                  toán khi cọc.
+                </p>
+
+                <p>
+                  {" "}
+                  Chúng tôi đã gửi mail xác nhận hủy phòng và thông tin hủy
+                  phòng đến email của bạn. Vui lòng kiểm tra mail để biết thêm
+                  chi tiết.
+                </p>
+              </div>
+            </div>
+          </Modal>
         )}
       </Content>
     </Layout>

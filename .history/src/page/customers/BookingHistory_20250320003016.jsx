@@ -22,10 +22,6 @@ import {
   Image,
   Statistic,
   Input,
-  message,
-  Popconfirm,
-  Alert,
-  notification,
 } from "antd";
 import {
   HistoryOutlined,
@@ -40,14 +36,16 @@ import {
   SearchOutlined,
   StarOutlined,
   HomeOutlined,
+  PrinterOutlined,
   FileTextOutlined,
   MailOutlined,
   EyeOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
+
 import styles from "../../static/css/BookingHistory.module.css";
 import BookingService from "../../services/BookingService";
-import ModalNotification from "../../components/cancelBooking/ModalNotification";
+
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -55,16 +53,12 @@ const { TabPane } = Tabs;
 const BookingHistory = () => {
   // const { userId } = useAppContext();
   const userId = "67d86459885b58e3b1695066";
-  const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [selectedCancelBooking, setSelectedCancelBooking] = useState(null);
-  const [returnAmount, setReturnAmount] = useState(0);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   // Mock data for bookings history
   // Simulate API call
@@ -75,11 +69,10 @@ const BookingHistory = () => {
       if (response.status === 200) {
         // Map the new data structure to the existing state structure
         const mappedBookings = response.data.map((booking) => ({
-          id: booking._id,
-          code: booking.code,
-          hotelName: booking.room_id.hotel_id.name,
-          hotelAddress: booking.room_id.hotel_id.address,
-          hotelImage: booking.room_id.hotel_id.images[0],
+          id: booking.code,
+          hotelName: booking.room_id.hotel_id, // Assuming hotel_id is a name or needs to be fetched
+          hotelAddress: "", // Address needs to be fetched or added
+          hotelImage: booking.room_id.images[0],
           roomType: booking.room_id.type,
           roomImage: booking.room_id.images[0],
           checkIn: booking.check_in,
@@ -87,14 +80,12 @@ const BookingHistory = () => {
           guests: booking.room_id.capacity,
           status: booking.status,
           totalAmount: booking.total_price,
-          paymentMethod: booking.payment_method || "vnpayqr",
-          paymentId: booking.payment_id || "N/A",
+          paymentMethod: "", // Payment method needs to be added
+          paymentId: "", // Payment ID needs to be added
           bookingDate: booking.created_at,
-          rating: booking.room_id.hotel_id.rating || null,
-          review: booking.review || null,
-          amenities: booking.room_id.facility_id.map(
-            (facility) => facility.name
-          ),
+          rating: null, // Rating needs to be added if available
+          review: null, // Review needs to be added if available
+          amenities: booking.room_id.facility_id, // Assuming these are amenities
           customerName: booking.user_id.username,
           email: booking.user_id.email,
           phone: booking.user_id.phone || "",
@@ -111,6 +102,166 @@ const BookingHistory = () => {
       fetchBookingByUser();
       setLoading(false);
     }
+    // setTimeout(() => {
+    //   const mockBookings = [
+    //     {
+    //       id: "BK-123456",
+    //       hotelName: "Luxury Palace Hotel & Spa",
+    //       hotelAddress: "123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
+    //       hotelImage:
+    //         "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop",
+    //       roomType: "Deluxe Room",
+    //       roomImage:
+    //         "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop",
+    //       checkIn: "2023-07-15",
+    //       checkOut: "2023-07-18",
+    //       guests: 2,
+    //       status: "completed",
+    //       totalAmount: 3500000,
+    //       paymentMethod: "Credit Card",
+    //       paymentId: "PAY-123456",
+    //       bookingDate: "2023-07-01",
+    //       rating: 4.5,
+    //       review: "Dịch vụ tuyệt vời, phòng sạch sẽ và nhân viên thân thiện.",
+    //       amenities: [
+    //         "Wifi miễn phí",
+    //         "Điều hòa",
+    //         "Minibar",
+    //         "Bể bơi",
+    //         "Bữa sáng miễn phí",
+    //       ],
+    //       customerName: "Nguyễn Văn A",
+    //       email: "nguyenvana@example.com",
+    //       phone: "0912345678",
+    //     },
+    //     {
+    //       id: "BK-234567",
+    //       hotelName: "Grand Riverside Resort",
+    //       hotelAddress: "456 Võ Văn Kiệt, Quận 5, TP. Hồ Chí Minh",
+    //       hotelImage:
+    //         "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop",
+    //       roomType: "Premium Suite",
+    //       roomImage:
+    //         "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=2074&auto=format&fit=crop",
+    //       checkIn: "2023-08-10",
+    //       checkOut: "2023-08-15",
+    //       guests: 3,
+    //       status: "upcoming",
+    //       totalAmount: 5200000,
+    //       paymentMethod: "Banking Transfer",
+    //       paymentId: "PAY-234567",
+    //       bookingDate: "2023-07-20",
+    //       rating: null,
+    //       review: null,
+    //       amenities: [
+    //         "Wifi miễn phí",
+    //         "Điều hòa",
+    //         "Minibar",
+    //         "Bể bơi",
+    //         "Spa",
+    //         "Gym",
+    //       ],
+    //       customerName: "Nguyễn Văn A",
+    //       email: "nguyenvana@example.com",
+    //       phone: "0912345678",
+    //     },
+    //     {
+    //       id: "BK-345678",
+    //       hotelName: "Seaside Paradise Hotel",
+    //       hotelAddress: "789 Trần Phú, Nha Trang, Khánh Hòa",
+    //       hotelImage:
+    //         "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop",
+    //       roomType: "Ocean View Room",
+    //       roomImage:
+    //         "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop",
+    //       checkIn: "2023-06-01",
+    //       checkOut: "2023-06-05",
+    //       guests: 2,
+    //       status: "completed",
+    //       totalAmount: 4800000,
+    //       paymentMethod: "Credit Card",
+    //       paymentId: "PAY-345678",
+    //       bookingDate: "2023-05-15",
+    //       rating: 5,
+    //       review: "Khách sạn tuyệt vời với view biển đẹp, sẽ quay lại lần sau!",
+    //       amenities: [
+    //         "Wifi miễn phí",
+    //         "Điều hòa",
+    //         "Minibar",
+    //         "Bể bơi vô cực",
+    //         "Bữa sáng miễn phí",
+    //         "Bar trên sân thượng",
+    //       ],
+    //       customerName: "Nguyễn Văn A",
+    //       email: "nguyenvana@example.com",
+    //       phone: "0912345678",
+    //     },
+    //     {
+    //       id: "BK-456789",
+    //       hotelName: "Mountain View Resort",
+    //       hotelAddress: "101 Hoàng Liên, Sa Pa, Lào Cai",
+    //       hotelImage:
+    //         "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop",
+    //       roomType: "Mountain Suite",
+    //       roomImage:
+    //         "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=2074&auto=format&fit=crop",
+    //       checkIn: "2023-09-20",
+    //       checkOut: "2023-09-25",
+    //       guests: 4,
+    //       status: "upcoming",
+    //       totalAmount: 6300000,
+    //       paymentMethod: "Banking Transfer",
+    //       paymentId: "PAY-456789",
+    //       bookingDate: "2023-08-10",
+    //       rating: null,
+    //       review: null,
+    //       amenities: [
+    //         "Wifi miễn phí",
+    //         "Điều hòa",
+    //         "Minibar",
+    //         "Lò sưởi",
+    //         "Bữa sáng miễn phí",
+    //         "Tour leo núi",
+    //       ],
+    //       customerName: "Nguyễn Văn A",
+    //       email: "nguyenvana@example.com",
+    //       phone: "0912345678",
+    //     },
+    //     {
+    //       id: "BK-567890",
+    //       hotelName: "City Central Hotel",
+    //       hotelAddress: "222 Lý Tự Trọng, Quận 1, TP. Hồ Chí Minh",
+    //       hotelImage:
+    //         "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit=crop",
+    //       roomType: "Business Room",
+    //       roomImage:
+    //         "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=2070&auto=format&fit=crop",
+    //       checkIn: "2023-05-05",
+    //       checkOut: "2023-05-07",
+    //       guests: 1,
+    //       status: "cancelled",
+    //       totalAmount: 1800000,
+    //       paymentMethod: "Credit Card",
+    //       paymentId: "PAY-567890",
+    //       bookingDate: "2023-04-20",
+    //       rating: null,
+    //       review: null,
+    //       amenities: [
+    //         "Wifi miễn phí",
+    //         "Điều hòa",
+    //         "Minibar",
+    //         "Bàn làm việc",
+    //         "Bữa sáng miễn phí",
+    //       ],
+    //       customerName: "Nguyễn Văn A",
+    //       email: "nguyenvana@example.com",
+    //       phone: "0912345678",
+    //     },
+    //   ];
+
+    //   setBookings(mockBookings);
+    //   setLoading(false);
+    // }, 1500);
   }, []);
 
   const showModal = (booking) => {
@@ -136,13 +287,13 @@ const BookingHistory = () => {
 
   const getStatusTag = (status) => {
     switch (status) {
-      case "confirmed":
+      case "completed":
         return (
           <Tag icon={<CheckCircleOutlined />} color="success">
             Đã hoàn thành
           </Tag>
         );
-      case "pending":
+      case "upcoming":
         return (
           <Tag icon={<ClockCircleOutlined />} color="processing">
             Sắp tới
@@ -150,18 +301,12 @@ const BookingHistory = () => {
         );
       case "cancelled":
         return (
-          <Tag icon={<CloseCircleOutlined />} color="red">
+          <Tag icon={<CloseCircleOutlined />} color="error">
             Đã hủy
           </Tag>
         );
-      case "refunded":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="blue">
-            Đã hoàn tiền
-          </Tag>
-        );
       default:
-        return null;
+        return <Tag color="default">{status}</Tag>;
     }
   };
 
@@ -180,75 +325,6 @@ const BookingHistory = () => {
     if (activeTab === "all") return matchesSearch;
     return booking.status === activeTab && matchesSearch;
   });
-
-  const handleCancelBooking = (booking) => {
-    setSelectedCancelBooking(booking);
-    if (booking.status === "pending") {
-      // Directly cancel the booking
-      cancelBooking(booking);
-    } else if (booking.status === "confirmed") {
-      // Show refund policy and confirmation modal
-      calculateRefund(booking);
-      showRefundPolicyModal(booking);
-    }
-  };
-
-  const showRefundPolicyModal = (booking) => {
-    Modal.confirm({
-      title: "Chính sách hoàn tiền",
-      content: (
-        <div>
-          <p>Hủy trước 24 giờ: Hoàn lại 100% tiền đặt cọc</p>
-          <p>Hủy trong 24-48 giờ: Hoàn lại 50% tiền đặt cọc</p>
-          <p>Hủy sau 48h: Không hoàn tiền</p>
-          <p>Bạn có chắc chắn muốn hủy đặt phòng này không?</p>
-        </div>
-      ),
-      onOk() {
-        // calculateRefund(booking);
-        setIsCancelModalVisible(true);
-        cancelBooking(booking, returnAmount);
-      },
-    });
-  };
-
-  const calculateRefund = (booking) => {
-    const now = new Date();
-    const checkInDate = new Date(booking.checkIn);
-    const hoursBeforeCheckIn = (checkInDate - now) / (1000 * 60 * 60);
-    let refundAmount = 0;
-
-    if (hoursBeforeCheckIn > 48) {
-      refundAmount = booking.totalAmount;
-    } else if (hoursBeforeCheckIn >= 24) {
-      refundAmount = booking.totalAmount * 0.5;
-    }
-
-    setReturnAmount(refundAmount);
-    // // Proceed with cancellation and refund
-    cancelBooking(booking, refundAmount);
-  };
-
-  const cancelBooking = async (booking, refundAmount = 0) => {
-    try {
-      const response = await BookingService.updateBookingStatus(
-        booking.id,
-        "cancelled"
-      );
-
-      if (response.status === 200) {
-        <Alert
-          message="Hủy Phòng Thành Công"
-          description={`Hủy đặt phòng mã ${booking.code} với số tiền hoàn trả ${refundAmount}`}
-          type="success"
-          showIcon
-        />;
-        fetchBookingByUser();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const columns = [
     {
@@ -315,26 +391,16 @@ const BookingHistory = () => {
       ),
     },
     {
-      title: "Ghi chú",
-      dataIndex: "note",
-      key: "note",
-      render: (note) => (
-        <Text className={styles.dateInfo}>
-          {note ? note : "Không có ghi chú"}
-        </Text>
-      ),
+      title: "Đánh giá",
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) =>
+        rating ? (
+          <Rate disabled defaultValue={rating} allowHalf />
+        ) : (
+          <Text type="secondary">Chưa đánh giá</Text>
+        ),
     },
-    // {
-    //   title: "Đánh giá",
-    //   dataIndex: "rating",
-    //   key: "rating",
-    //   render: (rating) =>
-    //     rating ? (
-    //       <Rate disabled defaultValue={rating} allowHalf />
-    //     ) : (
-    //       <Text type="secondary">Chưa đánh giá</Text>
-    //     ),
-    // },
     {
       title: "Thao tác",
       key: "action",
@@ -348,20 +414,6 @@ const BookingHistory = () => {
           >
             Chi tiết
           </Button>
-          {(record.status === "pending" || record.status === "confirmed") && (
-            <Popconfirm
-              title="Hủy đặt phòng"
-              description="Bạn có chắc chắn muốn hủy đặt phòng này không?"
-              onConfirm={() => handleCancelBooking(record)}
-              onCancel={() => message.error("Click on No")}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button type="primary" danger ghost>
-                Hủy
-              </Button>
-            </Popconfirm>
-          )}
         </Space>
       ),
     },
@@ -369,7 +421,6 @@ const BookingHistory = () => {
 
   return (
     <Layout className={styles.layout}>
-      {contextHolder}
       <Content className={styles.content}>
         <div className={styles.pageHeader}>
           <div className={styles.titleSection}>
@@ -479,14 +530,17 @@ const BookingHistory = () => {
                 Đóng
               </Button>,
               selectedBooking.status === "upcoming" && (
-                <Button
-                  key="cancel"
-                  danger
-                  onClick={() => handleCancelBooking(selectedBooking.id)}
-                >
+                <Button key="cancel" danger>
                   Hủy đặt phòng
                 </Button>
               ),
+              <Button
+                key="print"
+                icon={<PrinterOutlined />}
+                onClick={() => window.print()}
+              >
+                In hóa đơn
+              </Button>,
               selectedBooking.status === "completed" &&
                 !selectedBooking.review && (
                   <Button key="review" type="primary" icon={<StarOutlined />}>
@@ -665,14 +719,6 @@ const BookingHistory = () => {
               </Col>
             </Row>
           </Modal>
-        )}
-
-        {selectedCancelBooking && (
-          <ModalNotification
-            isCancelModalVisible={isCancelModalVisible}
-            setSelectedCancelBooking={setSelectedCancelBooking}
-            selectedCancelBooking={selectedCancelBooking}
-          />
         )}
       </Content>
     </Layout>

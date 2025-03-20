@@ -76,7 +76,6 @@ const LayoutUser = () => {
         <Routes>
           {/* <Route path="profile" element={<UserProfile />} /> */}
           <Route path="booking-history" element={<BookingHistory />} />
-          {/* <Route path="booking-cancel-refund/:bookingId" element={<BookingCancelRefund />} /> */}
           <Route path="payment-history" element={<PaymentHistory />} />
           {/* <Route path="*" element={<UserProfile />} /> */}
         </Routes>

@@ -1,7 +1,6 @@
-import apiConfig from "../configs/apiConfig";
 import fetchUtils from "../utils/fetchUtils.jsx";
 
-const endpoint = `/room`;
+const endpoint = `/api/room`;
 
 export const getRoomList = async () => {
   try {
@@ -13,7 +12,6 @@ export const getRoomList = async () => {
 
 export const getRoomById = async (id) => {
   try {
-    console.log(id, "id");
     return await fetchUtils.get(`${endpoint}/get-by-id/${id}`, false);
   } catch (e) {
     console.log("error: ", e.message);

@@ -22,10 +22,6 @@ import {
   Image,
   Statistic,
   Input,
-  message,
-  Popconfirm,
-  Alert,
-  notification,
 } from "antd";
 import {
   HistoryOutlined,
@@ -45,9 +41,10 @@ import {
   EyeOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
+
 import styles from "../../static/css/BookingHistory.module.css";
 import BookingService from "../../services/BookingService";
-import ModalNotification from "../../components/cancelBooking/ModalNotification";
+
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
@@ -55,16 +52,12 @@ const { TabPane } = Tabs;
 const BookingHistory = () => {
   // const { userId } = useAppContext();
   const userId = "67d86459885b58e3b1695066";
-  const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [selectedCancelBooking, setSelectedCancelBooking] = useState(null);
-  const [returnAmount, setReturnAmount] = useState(0);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   // Mock data for bookings history
   // Simulate API call
@@ -75,8 +68,7 @@ const BookingHistory = () => {
       if (response.status === 200) {
         // Map the new data structure to the existing state structure
         const mappedBookings = response.data.map((booking) => ({
-          id: booking._id,
-          code: booking.code,
+          id: booking.code,
           hotelName: booking.room_id.hotel_id.name,
           hotelAddress: booking.room_id.hotel_id.address,
           hotelImage: booking.room_id.hotel_id.images[0],
@@ -150,18 +142,12 @@ const BookingHistory = () => {
         );
       case "cancelled":
         return (
-          <Tag icon={<CloseCircleOutlined />} color="red">
+          <Tag icon={<CloseCircleOutlined />} color="error">
             Đã hủy
           </Tag>
         );
-      case "refunded":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="blue">
-            Đã hoàn tiền
-          </Tag>
-        );
       default:
-        return null;
+        return <Tag color="default">{status}</Tag>;
     }
   };
 
@@ -182,13 +168,11 @@ const BookingHistory = () => {
   });
 
   const handleCancelBooking = (booking) => {
-    setSelectedCancelBooking(booking);
     if (booking.status === "pending") {
       // Directly cancel the booking
       cancelBooking(booking);
     } else if (booking.status === "confirmed") {
       // Show refund policy and confirmation modal
-      calculateRefund(booking);
       showRefundPolicyModal(booking);
     }
   };
@@ -205,9 +189,7 @@ const BookingHistory = () => {
         </div>
       ),
       onOk() {
-        // calculateRefund(booking);
-        setIsCancelModalVisible(true);
-        cancelBooking(booking, returnAmount);
+        calculateRefund(booking);
       },
     });
   };
@@ -224,30 +206,16 @@ const BookingHistory = () => {
       refundAmount = booking.totalAmount * 0.5;
     }
 
-    setReturnAmount(refundAmount);
-    // // Proceed with cancellation and refund
+    // Proceed with cancellation and refund
     cancelBooking(booking, refundAmount);
   };
 
-  const cancelBooking = async (booking, refundAmount = 0) => {
-    try {
-      const response = await BookingService.updateBookingStatus(
-        booking.id,
-        "cancelled"
-      );
-
-      if (response.status === 200) {
-        <Alert
-          message="Hủy Phòng Thành Công"
-          description={`Hủy đặt phòng mã ${booking.code} với số tiền hoàn trả ${refundAmount}`}
-          type="success"
-          showIcon
-        />;
-        fetchBookingByUser();
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const cancelBooking = (booking, refundAmount = 0) => {
+    // Call backend API to cancel booking and process refund
+    // Send email notification to user
+    console.log(
+      `Cancelling booking ${booking.id} with refund: ${refundAmount}`
+    );
   };
 
   const columns = [
@@ -349,18 +317,9 @@ const BookingHistory = () => {
             Chi tiết
           </Button>
           {(record.status === "pending" || record.status === "confirmed") && (
-            <Popconfirm
-              title="Hủy đặt phòng"
-              description="Bạn có chắc chắn muốn hủy đặt phòng này không?"
-              onConfirm={() => handleCancelBooking(record)}
-              onCancel={() => message.error("Click on No")}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button type="primary" danger ghost>
-                Hủy
-              </Button>
-            </Popconfirm>
+            <Button type="danger" onClick={() => handleCancelBooking(record)}>
+              Hủy
+            </Button>
           )}
         </Space>
       ),
@@ -369,7 +328,6 @@ const BookingHistory = () => {
 
   return (
     <Layout className={styles.layout}>
-      {contextHolder}
       <Content className={styles.content}>
         <div className={styles.pageHeader}>
           <div className={styles.titleSection}>
@@ -479,11 +437,7 @@ const BookingHistory = () => {
                 Đóng
               </Button>,
               selectedBooking.status === "upcoming" && (
-                <Button
-                  key="cancel"
-                  danger
-                  onClick={() => handleCancelBooking(selectedBooking.id)}
-                >
+                <Button key="cancel" danger>
                   Hủy đặt phòng
                 </Button>
               ),
@@ -665,14 +619,6 @@ const BookingHistory = () => {
               </Col>
             </Row>
           </Modal>
-        )}
-
-        {selectedCancelBooking && (
-          <ModalNotification
-            isCancelModalVisible={isCancelModalVisible}
-            setSelectedCancelBooking={setSelectedCancelBooking}
-            selectedCancelBooking={selectedCancelBooking}
-          />
         )}
       </Content>
     </Layout>
