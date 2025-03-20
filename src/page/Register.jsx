@@ -114,7 +114,7 @@ const Register = () => {
       setLoading(true); // Set loading to true when form is submitted
       try {
         const response = await axios.post(
-          "http://localhost:9999/register/account",
+          "http://localhost:9999/api/register/account",
           values
         );
         console.log("Response:", response);
