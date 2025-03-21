@@ -7,6 +7,7 @@ import { Menu } from "antd";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import BookingHistory from "../customers/BookingHistory";
 import PaymentHistory from "../customers/paymentHistory";
+import Profile from "../customers/Profile";
 
 const LayoutUser = () => {
   const location = useLocation();
@@ -77,7 +78,7 @@ const LayoutUser = () => {
           {/* <Route path="profile" element={<UserProfile />} /> */}
           <Route path="booking-history" element={<BookingHistory />} />
           <Route path="payment-history" element={<PaymentHistory />} />
-          {/* <Route path="*" element={<UserProfile />} /> */}
+          <Route path="profile" element={<Profile />} />
         </Routes>
       </div>
     </div>

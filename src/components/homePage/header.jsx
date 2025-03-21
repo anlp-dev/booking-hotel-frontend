@@ -79,7 +79,7 @@ function Header() {
   const userMenu = (
     <Menu style={{ width: 150, listStyleType: "none", padding: 15 }}>
       <Menu.Item key="1">
-        <a href="/information/account">Tài khoản</a>
+        <a href="/information/profile">Tài khoản</a>
       </Menu.Item>
       <Menu.Item key="2">
         <a href="/information/payment-history">Lịch sử trả tiền</a>

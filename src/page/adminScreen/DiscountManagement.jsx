@@ -302,36 +302,7 @@ const DiscountManagement = () => {
     }
   };
 
-  const renderStatusChip = (status) => {
-    let color = 'default';
-
-    switch (role) {
-      case 'active':
-        color = 'primary';
-        break;
-      case 'expired':
-        color = 'secondary';
-        break;
-      case 'disabled':
-        color = 'info';
-        break;
-      default:
-        color = 'default';
-    }
-
-    return (
-      <Chip
-        label={status}
-        color={color}
-        size="small"
-        sx={{
-          borderRadius: '12px',
-          fontWeight: 500,
-          '& .MuiChip-label': { px: 1 }
-        }}
-      />
-    );
-  };
+  
 
   return (
     <Container maxWidth={false}>
