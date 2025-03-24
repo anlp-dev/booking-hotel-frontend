@@ -9,7 +9,9 @@ import RolePermissionManagement from "./RoleManage.jsx";
 import FacilityManagement from "./FacilityManagement.jsx";
 import DiscountManagement from "./DiscountManagement.jsx";
 import RouteManagement from "./RouteManagement.jsx";
-import BookingManagement from "./BookingManagement.jsx"
+import BookingManagement from "./BookingManagement.jsx";
+import PaymentManagement from "./PaymentManage.jsx";
+import RoomManagement from "./RoomManage.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -41,6 +43,10 @@ export default function Dashboard() {
             }
           />
           <Route
+            path="/managePayment"
+            element={
+              <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
+                <PaymentManagement />
             path="/manageDiscount"
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
