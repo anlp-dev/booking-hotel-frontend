@@ -207,8 +207,8 @@ const DiscountManagement = () => {
     const fetchDiscount = async () => {
       try {
         setIsLoading(true);
-        const discounts = await AdminDiscountService.getDiscount();
-        setDiscounts(discounts);
+        const discounts = await AdminDiscountService.getAllDiscount();
+        setDiscounts(discounts.data);
       } catch (error) {
         notifyError(error.message);
         console.error("Lỗi khi lấy danh sách mã giảm giá:", error.message);

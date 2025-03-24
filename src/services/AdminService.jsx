@@ -48,6 +48,14 @@ const AdminService = {
         }catch (e) {
             throw new Error(e);
         }
+    },
+
+    async getBooking(){
+        try{
+            return await fetchUtils.get("/admin/booking")
+        }catch (e) {
+            throw new Error(e);
+        }
     }
 }
 
