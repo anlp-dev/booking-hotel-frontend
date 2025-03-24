@@ -7,6 +7,7 @@ import { Menu } from "antd";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import BookingHistory from "../customers/BookingHistory";
 import PaymentHistory from "../customers/paymentHistory";
+import Profile from "../customers/Profile";
 
 const LayoutUser = () => {
   const location = useLocation();
@@ -18,7 +19,7 @@ const LayoutUser = () => {
     ? "2"
     : currentPath.includes("/information/payment-history")
     ? "3"
-    : "1";
+    :  "1";
 
   // Function to handle menu item clicks
   const handleMenuClick = (e) => {
@@ -77,6 +78,7 @@ const LayoutUser = () => {
           {/* <Route path="profile" element={<UserProfile />} /> */}
           <Route path="booking-history" element={<BookingHistory />} />
           <Route path="payment-history" element={<PaymentHistory />} />
+          <Route path="profile" element={<Profile/>}/>
           {/* <Route path="*" element={<UserProfile />} /> */}
         </Routes>
       </div>
