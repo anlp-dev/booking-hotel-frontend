@@ -11,8 +11,11 @@ import {useNavigate} from "react-router-dom";
 import {notifySuccess} from "../../components/notification/ToastNotification.jsx";
 import authService from "../../services/AuthService.jsx";
 import "../../static/css/styles.css";
+
+
 import {useState, useEffect} from "react";
 import {jwtDecode} from "jwt-decode";
+
 
 const {Header: AntHeader} = Layout;
 
@@ -150,6 +153,7 @@ function Header() {
                     label: "Tour du lịch",
                 },
             ]}
+
         />
     );
 
@@ -165,6 +169,7 @@ function Header() {
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
             }}
         >
+
             {/* Left section with logo and dropdown */}
             <div style={{display: "flex", alignItems: "center"}}>
                 <img
@@ -247,6 +252,7 @@ function Header() {
             </div>
         </AntHeader>
     );
+
 }
 
 export default Header;

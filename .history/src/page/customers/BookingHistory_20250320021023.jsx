@@ -4,18 +4,28 @@ import {
   Typography,
   Card,
   Table,
+  Tag,
   Button,
   Space,
   Modal,
+  Descriptions,
+  Divider,
   Empty,
   Skeleton,
   Avatar,
+  Row,
+  Col,
+  Timeline,
   Tabs,
+  Rate,
   Badge,
+  Image,
+  Statistic,
   Input,
   message,
   Popconfirm,
-  Tag,
+  Alert,
+  notification,
 } from "antd";
 import {
   HistoryOutlined,
@@ -24,44 +34,42 @@ import {
   ClockCircleOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
+  UserOutlined,
+  CreditCardOutlined,
+  PhoneOutlined,
   SearchOutlined,
+  StarOutlined,
   HomeOutlined,
+  FileTextOutlined,
+  MailOutlined,
   EyeOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
+
 import styles from "../../static/css/BookingHistory.module.css";
 import BookingService from "../../services/BookingService";
-import ModalNotification from "../../components/cancelBooking/ModalNotification";
-import ModalDetailBooking from "../../components/cancelBooking/ModalDetailBooking";
-import {
-  calculateNights,
-  formatCurrency,
-  formatDate,
-} from "../../components/function/format";
-import { showMessage } from "../../components/notification/Message";
-import { useAppContext } from "../../context/AppContext";
-const { Title, Text } = Typography;
+
+const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const BookingHistory = () => {
-  const { userId } = useAppContext();
-  const [messageApi, contextHolder] = message.useMessage();
+  // const { userId } = useAppContext();
+  const userId = "67d86459885b58e3b1695066";
+  const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [selectedCancelBooking, setSelectedCancelBooking] = useState(null);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   // Mock data for bookings history
   // Simulate API call
   const fetchBookingByUser = async () => {
     try {
       const response = await BookingService.getBookingByUser(userId);
-
+      console.log("response booking", response);
       if (response.status === 200) {
         // Map the new data structure to the existing state structure
         const mappedBookings = response.data.map((booking) => ({
@@ -70,7 +78,6 @@ const BookingHistory = () => {
           hotelName: booking.room_id.hotel_id.name,
           hotelAddress: booking.room_id.hotel_id.address,
           hotelImage: booking.room_id.hotel_id.images[0],
-          roomId: booking.room_id._id,
           roomType: booking.room_id.type,
           roomImage: booking.room_id.images[0],
           checkIn: booking.check_in,
@@ -89,7 +96,6 @@ const BookingHistory = () => {
           customerName: booking.user_id.username,
           email: booking.user_id.email,
           phone: booking.user_id.phone || "",
-          createdAt: booking.created_at,
         }));
         setBookings(mappedBookings);
       }
@@ -114,6 +120,49 @@ const BookingHistory = () => {
     setIsModalVisible(false);
   };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("vi-VN", options);
+  };
+
+  const getStatusTag = (status) => {
+    switch (status) {
+      case "confirmed":
+        return (
+          <Tag icon={<CheckCircleOutlined />} color="success">
+            Đã hoàn thành
+          </Tag>
+        );
+      case "pending":
+        return (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            Sắp tới
+          </Tag>
+        );
+      case "cancelled":
+        return (
+          <Tag icon={<CloseCircleOutlined />} color="error">
+            Đã hủy
+          </Tag>
+        );
+      default:
+        return <Tag color="default">{status}</Tag>;
+    }
+  };
+
+  const calculateNights = (checkIn, checkOut) => {
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+    return Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     const matchesSearch =
       booking.hotelName.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -124,23 +173,13 @@ const BookingHistory = () => {
     return booking.status === activeTab && matchesSearch;
   });
 
-  // const handleOK = (booking) => {
-  //   // calculateRefund(booking);
-  //   if (returnAmount > 0) {
-  //     setIsCancelModalVisible(true);
-  //     // cancelBookingConfirmed(booking, returnAmount);
-  //     console.log("returnAmount", returnAmount);
-  //     console.log("booking", booking);
-  //   }
-  // };
-
   const handleCancelBooking = (booking) => {
-    setSelectedCancelBooking(booking);
+    console.log("booking", booking);
     if (booking.status === "pending") {
-      cancelBookingPending(booking);
+      // Directly cancel the booking
+      cancelBooking(booking);
     } else if (booking.status === "confirmed") {
       // Show refund policy and confirmation modal
-      // calculateRefund(booking);
       showRefundPolicyModal(booking);
     }
   };
@@ -150,27 +189,22 @@ const BookingHistory = () => {
       title: "Chính sách hoàn tiền",
       content: (
         <div>
-          <p>Hủy trước 48 giờ: Hoàn lại 100% tiền đặt cọc</p>
+          <p>Hủy trước 24 giờ: Hoàn lại 100% tiền đặt cọc</p>
           <p>Hủy trong 24-48 giờ: Hoàn lại 50% tiền đặt cọc</p>
-          <p>Hủy trong vòng 24h trước ngày checkin: Không hoàn tiền</p>
+          <p>Hủy sau 48h: Không hoàn tiền</p>
           <p>Bạn có chắc chắn muốn hủy đặt phòng này không?</p>
         </div>
       ),
-      onOk: () => {
+      onOk() {
         calculateRefund(booking);
-        // handleOK(booking); // Đảm bảo refund đã được tính toán xong trước khi mở ModalNotification
       },
     });
   };
 
   const calculateRefund = (booking) => {
-    console.log("checkIn booking", booking.checkIn);
-    console.log("checkOut booking", booking.checkOut);
     const now = new Date();
     const checkInDate = new Date(booking.checkIn);
     const hoursBeforeCheckIn = (checkInDate - now) / (1000 * 60 * 60);
-
-    console.log("hoursBeforeCheckIn", hoursBeforeCheckIn);
     let refundAmount = 0;
 
     if (hoursBeforeCheckIn > 48) {
@@ -179,77 +213,28 @@ const BookingHistory = () => {
       refundAmount = booking.totalAmount * 0.5;
     }
 
-    // setReturnAmount(refundAmount);
-    cancelBookingConfirmed(booking, refundAmount);
-    setIsCancelModalVisible(true);
-    console.log("refundAmount is not greater than 0", refundAmount);
-
-    // // Proceed with cancellation and refund
+    // Proceed with cancellation and refund
+    cancelBooking(booking, refundAmount);
   };
 
-  const cancelBookingPending = async (booking) => {
+  const cancelBooking = async (booking, refundAmount = 0) => {
     try {
       const response = await BookingService.updateBookingStatus(
         booking.id,
         "cancelled"
       );
-
+      console.log("response cancel booking", response);
       if (response.status === 200) {
-        showMessage("success", "Hủy đặt phòng thành công", messageApi);
+        <Alert
+          message="Hủy Phòng Thành Công"
+          description={`Hủy đặt phòng mã ${booking.code} với số tiền hoàn trả ${refundAmount}`}
+          type="success"
+          showIcon
+        />;
         fetchBookingByUser();
       }
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const cancelBookingConfirmed = async (booking, refundAmount = 0) => {
-    try {
-      const response = await BookingService.cancelBooking({
-        booking,
-        refundAmount,
-      });
-      if (response.status === 200) {
-        showMessage(
-          "success",
-          `Hủy đặt phòng mã ${booking.code} với số tiền hoàn trả ${refundAmount}`,
-          messageApi
-        );
-        fetchBookingByUser();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getStatusTag = (status) => {
-    switch (status) {
-      case "confirmed":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="success">
-            Đã thanh toán
-          </Tag>
-        );
-      case "pending":
-        return (
-          <Tag icon={<ClockCircleOutlined />} color="processing">
-            Chưa thanh toán
-          </Tag>
-        );
-      case "cancelled":
-        return (
-          <Tag icon={<CloseCircleOutlined />} color="red">
-            Đã hủy
-          </Tag>
-        );
-      case "refunded":
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="blue">
-            Đã hoàn tiền
-          </Tag>
-        );
-      default:
-        return null;
     }
   };
 
@@ -327,7 +312,17 @@ const BookingHistory = () => {
         </Text>
       ),
     },
-
+    // {
+    //   title: "Đánh giá",
+    //   dataIndex: "rating",
+    //   key: "rating",
+    //   render: (rating) =>
+    //     rating ? (
+    //       <Rate disabled defaultValue={rating} allowHalf />
+    //     ) : (
+    //       <Text type="secondary">Chưa đánh giá</Text>
+    //     ),
+    // },
     {
       title: "Thao tác",
       key: "action",
@@ -388,7 +383,7 @@ const BookingHistory = () => {
             tabBarExtraContent={
               <div className={styles.tabExtra}>
                 <Badge
-                  count={bookings.filter((b) => b.status === "pending").length}
+                  count={bookings.filter((b) => b.status === "upcoming").length}
                   offset={[-5, 5]}
                 >
                   <Button icon={<FilterOutlined />}>Lọc</Button>
@@ -409,19 +404,19 @@ const BookingHistory = () => {
               tab={
                 <span>
                   <CheckCircleOutlined />
-                  Đã thanh toán
+                  Đã hoàn thành
                 </span>
               }
-              key="confirmed"
+              key="completed"
             />
             <TabPane
               tab={
                 <span>
                   <ClockCircleOutlined />
-                  Chưa thanh toán
+                  Sắp tới
                 </span>
               }
-              key="pending"
+              key="upcoming"
             />
             <TabPane
               tab={
@@ -458,20 +453,202 @@ const BookingHistory = () => {
         </Card>
 
         {selectedBooking && (
-          <ModalDetailBooking
-            selectedBooking={selectedBooking}
-            isModalVisible={isModalVisible}
-            handleCancel={handleCancel}
-            handleCancelBooking={handleCancelBooking}
-          />
-        )}
+          <Modal
+            title={
+              <div className={styles.modalTitle}>
+                <HistoryOutlined className={styles.modalTitleIcon} />
+                Chi tiết đặt phòng
+              </div>
+            }
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={[
+              <Button key="back" onClick={handleCancel}>
+                Đóng
+              </Button>,
+              selectedBooking.status === "upcoming" && (
+                <Button key="cancel" danger>
+                  Hủy đặt phòng
+                </Button>
+              ),
+              selectedBooking.status === "completed" &&
+                !selectedBooking.review && (
+                  <Button key="review" type="primary" icon={<StarOutlined />}>
+                    Đánh giá
+                  </Button>
+                ),
+            ]}
+            width={800}
+            className={styles.detailModal}
+          >
+            <div className={styles.bookingId}>
+              <FileTextOutlined /> Mã đặt phòng:{" "}
+              <Text strong>{selectedBooking.id}</Text>
+            </div>
 
-        {selectedCancelBooking && (
-          <ModalNotification
-            isCancelModalVisible={isCancelModalVisible}
-            setSelectedCancelBooking={setSelectedCancelBooking}
-            selectedCancelBooking={selectedCancelBooking}
-          />
+            <div className={styles.hotelDetailHeader}>
+              <Image
+                src={selectedBooking.hotelImage}
+                alt={selectedBooking.hotelName}
+                className={styles.hotelDetailImage}
+                width={200}
+              />
+              <div className={styles.hotelDetailInfo}>
+                <Title level={4}>{selectedBooking.hotelName}</Title>
+                <Text>
+                  <EnvironmentOutlined /> {selectedBooking.hotelAddress}
+                </Text>
+                <div className={styles.statusContainer}>
+                  {getStatusTag(selectedBooking.status)}
+                </div>
+              </div>
+            </div>
+
+            <Divider />
+
+            <Row gutter={[24, 24]}>
+              <Col xs={24} md={12}>
+                <Card
+                  title="Thông tin đặt phòng"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
+                  <div className={styles.roomImageContainer}>
+                    <Image
+                      src={selectedBooking.roomImage}
+                      alt={selectedBooking.roomType}
+                      className={styles.roomDetailImage}
+                    />
+                    <Badge.Ribbon
+                      text={selectedBooking.roomType}
+                      color="blue"
+                    />
+                  </div>
+
+                  <Timeline
+                    className={styles.timeline}
+                    items={[
+                      {
+                        color: "green",
+                        children: (
+                          <>
+                            <Text strong>Check-in:</Text>{" "}
+                            {formatDate(selectedBooking.checkIn)}
+                          </>
+                        ),
+                        dot: <CalendarOutlined />,
+                      },
+                      {
+                        color: "red",
+                        children: (
+                          <>
+                            <Text strong>Check-out:</Text>{" "}
+                            {formatDate(selectedBooking.checkOut)}
+                          </>
+                        ),
+                        dot: <CalendarOutlined />,
+                      },
+                    ]}
+                  />
+
+                  <Row gutter={16} className={styles.statsRow}>
+                    <Col span={12}>
+                      <Statistic
+                        title="Số đêm"
+                        value={calculateNights(
+                          selectedBooking.checkIn,
+                          selectedBooking.checkOut
+                        )}
+                        suffix="đêm"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic
+                        title="Số khách"
+                        value={selectedBooking.guests}
+                        suffix="người"
+                      />
+                    </Col>
+                  </Row>
+
+                  <Divider />
+
+                  <div className={styles.amenitiesSection}>
+                    <Text strong>Tiện nghi phòng:</Text>
+                    <div className={styles.amenitiesTags}>
+                      {selectedBooking.amenities.map((amenity, index) => (
+                        <Tag key={index} color="blue">
+                          {amenity}
+                        </Tag>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+
+              <Col xs={24} md={12}>
+                <Card
+                  title="Thông tin khách hàng"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="Họ tên">
+                      <UserOutlined /> {selectedBooking.customerName}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Email">
+                      <MailOutlined /> {selectedBooking.email}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Số điện thoại">
+                      <PhoneOutlined /> {selectedBooking.phone}
+                    </Descriptions.Item>
+                  </Descriptions>
+                </Card>
+
+                <Card
+                  title="Thông tin thanh toán"
+                  bordered={false}
+                  className={styles.detailCard}
+                >
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="Phương thức thanh toán">
+                      <CreditCardOutlined /> {selectedBooking.paymentMethod}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Mã thanh toán">
+                      {selectedBooking.paymentId}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Ngày đặt phòng">
+                      {formatDate(selectedBooking.bookingDate)}
+                    </Descriptions.Item>
+                  </Descriptions>
+
+                  <div className={styles.totalAmount}>
+                    <Text>Tổng tiền:</Text>
+                    <Text strong className={styles.amountValue}>
+                      {formatCurrency(selectedBooking.totalAmount)}
+                    </Text>
+                  </div>
+                </Card>
+
+                {selectedBooking.review && (
+                  <Card
+                    title="Đánh giá của bạn"
+                    bordered={false}
+                    className={styles.detailCard}
+                  >
+                    <Rate
+                      disabled
+                      defaultValue={selectedBooking.rating}
+                      allowHalf
+                    />
+                    <Paragraph className={styles.reviewText}>
+                      {selectedBooking.review}
+                    </Paragraph>
+                  </Card>
+                )}
+              </Col>
+            </Row>
+          </Modal>
         )}
       </Content>
     </Layout>

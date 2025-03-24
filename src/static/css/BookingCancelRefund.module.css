@@ -1,0 +1,60 @@
+.site-layout-content {
+  padding: 24px;
+  background: #fff;
+  min-height: calc(100vh - 64px - 70px);
+}
+
+.booking-cancel-card,
+.refund-method-card,
+.refund-confirmation-card {
+  margin-bottom: 24px;
+}
+
+.refund-method-option {
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.refund-method-option:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.policy-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.policy-table th, 
+.policy-table td {
+  border: 1px solid #e8e8e8;
+  padding: 12px;
+  text-align: left;
+}
+
+.policy-table th {
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+.warning-icon {
+  color: #faad14;
+  margin-right: 8px;
+}
+
+.success-icon {
+  color: #52c41a;
+  margin-right: 8px;
+}
+
+.error-icon {
+  color: #ff4d4f;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .refund-method-option {
+    margin-bottom: 16px;
+  }
+} 

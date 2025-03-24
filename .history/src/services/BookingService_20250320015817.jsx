@@ -48,20 +48,17 @@ const BookingService = {
     }
   },
 
-  async updateBookingStatus(id, status) {
+  async cancelBooking(id) {
     try {
-      return await fetchUtils.put(`/booking/update-status`, { id, status });
+      return await fetchUtils.put(`/booking/${id}`, { status: "cancelled" });
     } catch (e) {
       throw new Error(e.message);
     }
   },
 
-  async cancelBooking(booking, refundAmount) {
+  async updateBookingStatus(id, status) {
     try {
-      return await fetchUtils.put(`/booking/cancel-booking`, {
-        booking,
-        refundAmount,
-      });
+      return await fetchUtils.put(`/admin/bookings/${id}/status`, { status });
     } catch (e) {
       throw new Error(e.message);
     }
@@ -104,34 +101,13 @@ const BookingService = {
     }
   },
 
-  // async getAllRooms() {
-  //   try {
-  //     return await fetchUtils.get(`/admin/rooms`);
-  //   } catch (e) {
-  //     throw new Error(e.message);
-  //   }
-  // },
-
-  // // Add cancellation methods
-  // async cancelBooking(bookingData) {
-  //   return await fetchUtils.post(`/booking/cancel`, bookingData);
-  // },
-
-  async getRefundDetails(bookingId) {
-    return await fetchUtils.get(`/booking/refund/${bookingId}`);
+  async getAllRooms() {
+    try {
+      return await fetchUtils.get(`/admin/rooms`);
+    } catch (e) {
+      throw new Error(e.message);
+    }
   },
-
-  async submitRefundInfo(refundData) {
-    return await fetchUtils.post(`/booking/refund/submit`, refundData);
-  },
-
-  // Admin method to complete refund
-  async completeRefund(refundId) {
-    return await fetchUtils.post(`/booking/refund/complete`, {
-      refund_id: refundId,
-    });
-  },
-
 };
 
 export default BookingService;

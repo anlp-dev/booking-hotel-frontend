@@ -10,7 +10,9 @@ import FacilityManagement from "./FacilityManagement.jsx";
 import DiscountManagement from "./DiscountManagement.jsx";
 import RouteManagement from "./RouteManagement.jsx";
 import BookingManagement from "./BookingManagement.jsx";
+
 import PaymentManagement from "./PaymentManage.jsx";
+
 import RoomManagement from "./RoomManage.jsx";
 
 export default function Dashboard() {
@@ -67,10 +69,18 @@ export default function Dashboard() {
             }
           />
           <Route
+            path="/manageRoom"
+            element={
+              <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
+                <RoomManagement />
+              </RoleBaseRoute>
+            }
+          />
+          <Route
             path="/bookingManagement"
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
-                <BookingManagement/>
+                <BookingManagement />
               </RoleBaseRoute>
             }
           />
@@ -78,11 +88,12 @@ export default function Dashboard() {
             path="/routeManagement"
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
-                <RouteManagement/>
+                <RouteManagement />
               </RoleBaseRoute>
             }
           />
           <Route path="/manageUser" element={<ManageUser />} />
+          {/* <Route path="/manageRoom" element={<RoomManagement />} /> */}
         </Routes>
       </Box>
     </Box>
