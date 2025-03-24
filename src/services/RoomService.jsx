@@ -1,6 +1,6 @@
 import fetchUtils from "../utils/fetchUtils.jsx";
 
-const endpoint = `/api/room`;
+const endpoint = `/room`;
 
 export const getRoomList = async () => {
   try {

@@ -108,13 +108,14 @@ const RoomManagement = () => {
       const response = await getRoomList();
       if (response) {
         console.log("response", response);
-        setRooms(response);
-        setSearchRoom(response);
+        setRooms(response.data);
+        setSearchRoom(response.data);
         const roomStatus = {
           total: response.length,
-          available: response.filter((item) => item.status == "available")
+          available: response.data.filter((item) => item.status == "available")
             .length,
-          booked: response.filter((item) => item.status == "booked").length,
+          booked: response.data.filter((item) => item.status == "booked")
+            .length,
           maintenance: response.filter((item) => item.status == "maintenance")
             .length,
         };

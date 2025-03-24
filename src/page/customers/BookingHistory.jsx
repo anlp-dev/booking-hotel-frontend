@@ -39,13 +39,13 @@ import {
   formatDate,
 } from "../../components/function/format";
 import { showMessage } from "../../components/notification/Message";
+import { useAppContext } from "../../context/AppContext";
 const { Title, Text } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const BookingHistory = () => {
-  // const { userId } = useAppContext();
-  const userId = "67d86459885b58e3b1695066";
+  const { userId } = useAppContext();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
@@ -54,7 +54,6 @@ const BookingHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [selectedCancelBooking, setSelectedCancelBooking] = useState(null);
-  const [returnAmount, setReturnAmount] = useState(0);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   // Mock data for bookings history
@@ -125,15 +124,15 @@ const BookingHistory = () => {
     return booking.status === activeTab && matchesSearch;
   });
 
-  const handleOK = (booking) => {
-    // calculateRefund(booking);
-    if (returnAmount > 0) {
-      setIsCancelModalVisible(true);
-      // cancelBookingConfirmed(booking, returnAmount);
-      console.log("returnAmount", returnAmount);
-      console.log("booking", booking);
-    }
-  };
+  // const handleOK = (booking) => {
+  //   // calculateRefund(booking);
+  //   if (returnAmount > 0) {
+  //     setIsCancelModalVisible(true);
+  //     // cancelBookingConfirmed(booking, returnAmount);
+  //     console.log("returnAmount", returnAmount);
+  //     console.log("booking", booking);
+  //   }
+  // };
 
   const handleCancelBooking = (booking) => {
     setSelectedCancelBooking(booking);
@@ -180,13 +179,11 @@ const BookingHistory = () => {
       refundAmount = booking.totalAmount * 0.5;
     }
 
-    setReturnAmount(refundAmount);
-    if (refundAmount > 0) {
-      cancelBookingConfirmed(booking, refundAmount);
-      setIsCancelModalVisible(true);
-    } else {
-      console.log("refundAmount is not greater than 0", refundAmount);
-    }
+    // setReturnAmount(refundAmount);
+    cancelBookingConfirmed(booking, refundAmount);
+    setIsCancelModalVisible(true);
+    console.log("refundAmount is not greater than 0", refundAmount);
+
     // // Proceed with cancellation and refund
   };
 
@@ -206,7 +203,7 @@ const BookingHistory = () => {
     }
   };
 
-  const cancelBookingConfirmed = async (booking, refundAmount) => {
+  const cancelBookingConfirmed = async (booking, refundAmount = 0) => {
     try {
       const response = await BookingService.cancelBooking({
         booking,

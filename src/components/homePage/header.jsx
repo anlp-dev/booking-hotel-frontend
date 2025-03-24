@@ -11,7 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { notifySuccess } from "../../components/notification/ToastNotification.jsx";
 import authService from "../../services/AuthService.jsx";
 import "../../static/css/styles.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { jwtDecode } from "jwt-decode";
+import { useAppContext } from "../../context/AppContext.jsx";
 
 const { Header: AntHeader } = Layout;
 
@@ -20,6 +22,7 @@ function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [lastCheckTime, setLastCheckTime] = useState(0);
+  const { token } = useAppContext();
 
   const checkAuthStatus = async () => {
     try {
@@ -29,10 +32,10 @@ function Header() {
       }
       setLastCheckTime(currentTime);
 
-      if (!authService.isAuthenticated()) {
-        handleLogout(false);
-        return;
-      }
+      // if (!authService.isAuthenticated()) {
+      //   handleLogout(false);
+      //   return;
+      // }
 
       const userData = await authService.getUser();
       if (userData && userData.data) {
@@ -51,9 +54,11 @@ function Header() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-    
+
+    console.log(token);
+
     if (token && username) {
       setIsLoggedIn(true);
       setUser({ username: username });
@@ -79,7 +84,7 @@ function Header() {
   const userMenu = (
     <Menu style={{ width: 150, listStyleType: "none", padding: 15 }}>
       <Menu.Item key="1">
-        <a href="/information/account">Tài khoản</a>
+        <a href="/information/profile">Tài khoản</a>
       </Menu.Item>
       <Menu.Item key="2">
         <a href="/information/payment-history">Lịch sử trả tiền</a>
@@ -190,10 +195,7 @@ function Header() {
       {/* Right section with user actions */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         {isLoggedIn ? (
-          <Dropdown
-            overlay={userMenu}
-            placement="bottomRight"
-          >
+          <Dropdown overlay={userMenu} placement="bottomRight">
             <Space style={{ cursor: "pointer" }}>
               <Avatar icon={<UserOutlined />} />
               <span>{user?.username}</span>

@@ -58,6 +58,14 @@ export default function Dashboard() {
             }
           />
           <Route
+            path="/manageRoom"
+            element={
+              <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
+                <RoomManagement />
+              </RoleBaseRoute>
+            }
+          />
+          <Route
             path="/bookingManagement"
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
@@ -74,7 +82,7 @@ export default function Dashboard() {
             }
           />
           <Route path="/manageUser" element={<ManageUser />} />
-          <Route path="/manageRoom" element={<RoomManagement />} />
+          {/* <Route path="/manageRoom" element={<RoomManagement />} /> */}
         </Routes>
       </Box>
     </Box>
