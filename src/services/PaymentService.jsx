@@ -8,12 +8,14 @@ const PaymentService = {
   
   async getAllPayments() {
     try {
-      const response = await fetchUtils.get(endpoint, false);
-       console.log("Response received:", response);
+      const response = await fetchUtils.get(endpoint);
+       return response;
     } catch (e) {
       throw new Error(e);
     }
   },
+
+
 
   async getUrlVnPay(dataReq) {
     try {
