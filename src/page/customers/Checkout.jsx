@@ -188,7 +188,7 @@ const Checkout = () => {
           bookingData.bankCode = "VNPAYQR";
           break;
         case "ncb":
-          bookingData.bankCode = "VISA";
+          bookingData.bankCode = "NCB";
           break;
         default:
           break;

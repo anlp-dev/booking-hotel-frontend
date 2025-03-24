@@ -38,7 +38,7 @@ import {
   InstagramOutlined,
   TwitterOutlined
 } from '@ant-design/icons';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {useNavigate, useLocation, useRoutes} from 'react-router-dom';
 import styles from '../../static/css/BookingSuccess.module.css';
 import confetti from 'canvas-confetti';
 
@@ -49,8 +49,15 @@ const { useToken } = theme;
 const BookingSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const { token } = useToken();
-  
+
+  const vnpAmount = queryParams.get("vnp_Amount");
+  const vnpBankCode = queryParams.get("vnp_BankCode");
+  const vnpOrderInfo = queryParams.get("vnp_OrderInfo");
+  const vnpTxnRef = queryParams.get("vnp_TxnRef");
+  const vnpTransactionStatus = queryParams.get("vnp_TransactionStatus");
+
   // In a real application, you would get this data from the location state
   // or from an API call using a booking ID
   const bookingData = location.state?.bookingData || {
@@ -350,7 +357,7 @@ const BookingSuccess = () => {
                     <div className={styles.totalAmount}>
                       <Text>Tổng tiền:</Text>
                       <Text strong className={styles.amount}>
-                        {formatCurrency(bookingData.totalAmount)}
+                        {formatCurrency(vnpAmount)}
                       </Text>
                     </div>
                   </Card>

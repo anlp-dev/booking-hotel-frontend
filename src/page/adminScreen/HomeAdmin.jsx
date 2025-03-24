@@ -408,45 +408,6 @@ const HomeAdmin = () => {
                             </StyledCard>
                         </Grid>
 
-                        <Grid item>
-                            <StyledCard>
-                                <CardHeader
-                                    title="System Health"
-                                    subheader="Resource usage"
-                                />
-                                <CardContent>
-                                    <Typography variant="body2" gutterBottom>
-                                        CPU Usage
-                                    </Typography>
-                                    <LinearProgress
-                                        variant="determinate"
-                                        value={70}
-                                        color="primary"
-                                        sx={{ height: 8, borderRadius: 4, mb: 2 }}
-                                    />
-
-                                    <Typography variant="body2" gutterBottom>
-                                        Memory Usage
-                                    </Typography>
-                                    <LinearProgress
-                                        variant="determinate"
-                                        value={45}
-                                        color="secondary"
-                                        sx={{ height: 8, borderRadius: 4, mb: 2 }}
-                                    />
-
-                                    <Typography variant="body2" gutterBottom>
-                                        Storage Usage
-                                    </Typography>
-                                    <LinearProgress
-                                        variant="determinate"
-                                        value={25}
-                                        color="success"
-                                        sx={{ height: 8, borderRadius: 4 }}
-                                    />
-                                </CardContent>
-                            </StyledCard>
-                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
