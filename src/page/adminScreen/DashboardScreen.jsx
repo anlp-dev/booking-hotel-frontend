@@ -47,6 +47,10 @@ export default function Dashboard() {
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
                 <PaymentManagement />
+              </RoleBaseRoute>
+            }
+          />
+          <Route
             path="/manageDiscount"
             element={
               <RoleBaseRoute allowedRoles={["SUPER_ADMIN"]}>
