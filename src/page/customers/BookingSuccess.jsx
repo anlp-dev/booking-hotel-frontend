@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { 
   Layout, 
   Typography, 
@@ -38,9 +38,11 @@ import {
   InstagramOutlined,
   TwitterOutlined
 } from '@ant-design/icons';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {useNavigate, useLocation, useRoutes} from 'react-router-dom';
 import styles from '../../static/css/BookingSuccess.module.css';
 import confetti from 'canvas-confetti';
+import BookingService from "../../services/BookingService.jsx";
+import Loading from "../../components/loading/Loading.jsx"
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
@@ -49,8 +51,55 @@ const { useToken } = theme;
 const BookingSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const { token } = useToken();
-  
+  const [dataBooking, setDataBooking] = useState({});
+  const [dataPayment, setDataPayment] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const vnpAmount = queryParams.get("vnp_Amount");
+  const vnpBankCode = queryParams.get("vnp_BankCode");
+  const vnpOrderInfo = queryParams.get("vnp_OrderInfo");
+  const vnpTxnRef = queryParams.get("vnp_TxnRef");
+  const vnpTransactionStatus = queryParams.get("vnp_TransactionStatus");
+  const vnpResponseCode = queryParams.get("vnp_ResponseCode")
+
+  useEffect( () => {
+    if(vnpTxnRef) {
+      fetchData();
+    }
+  }, []);
+
+  const fetchData = async () => {
+    try{
+      setLoading(true)
+      const response = await BookingService.getBookingByCode(vnpTxnRef);
+      if(response.status === 200){
+        setDataBooking(response.data?.dataBooking);
+        if(vnpResponseCode === "00"){
+          let dataReq = {
+            id: vnpTxnRef,
+            status: "paid"
+          }
+          const resData = await BookingService.updatePaymentStatus(dataReq);
+          if(resData.status === 200){
+            setDataPayment(resData.data)
+          }else{
+            setDataPayment(response.data?.dataPayment);
+          }
+        }
+      }else{
+        console.log("Error")
+      }
+    }catch (e) {
+      console.log(e.message);
+    }finally {
+      setLoading(false)
+    }
+  }
+
+  console.log(dataPayment)
+
   // In a real application, you would get this data from the location state
   // or from an API call using a booking ID
   const bookingData = location.state?.bookingData || {
@@ -129,12 +178,17 @@ const BookingSuccess = () => {
   // Generate QR code URL (in a real app, this would be generated server-side)
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
     JSON.stringify({
-      bookingId: bookingData.bookingId,
-      customerName: bookingData.customerName,
-      checkIn: bookingData.checkIn,
-      checkOut: bookingData.checkOut
+      bookingId: vnpTxnRef,
+      customerName: dataBooking?.user_id?.last_name,
+      checkIn: dataBooking?.check_in,
+      checkOut: dataBooking?.check_out
     })
   )}`;
+
+  function capitalizeFirstLetter(str) {
+    if (!str) return ""; // Kiểm tra chuỗi rỗng hoặc undefined
+    return str.charAt(0).toUpperCase() + str.slice(1) + " Room";
+  }
 
   return (
     <ConfigProvider
@@ -154,6 +208,7 @@ const BookingSuccess = () => {
       }}
     >
       <Layout className={styles.layout}>
+        {loading ? (<Loading/>) : ""}
         <Content className={styles.content}>
           <Row justify="center">
             <Col xs={24} sm={22} md={20} lg={18} xl={16}>
@@ -164,8 +219,8 @@ const BookingSuccess = () => {
                   title={<span className={styles.successTitle}>Đặt phòng thành công!</span>}
                   subTitle={
                     <div className={styles.successSubtitle}>
-                      <p>Mã đặt phòng: <span className={styles.bookingId}>{bookingData.bookingId}</span></p>
-                      <p>Cảm ơn bạn đã đặt phòng tại {hotelData.name}!</p>
+                      <p>Mã đặt phòng: <span className={styles.bookingId}>{dataBooking.code}</span></p>
+                      <p>Cảm ơn bạn đã đặt phòng tại {dataBooking?.room_id?.hotel_id?.name}!</p>
                     </div>
                   }
                   extra={[
@@ -196,7 +251,7 @@ const BookingSuccess = () => {
                 <Row gutter={[24, 24]} align="middle">
                   <Col xs={24} md={8}>
                     <Image
-                      src={hotelData.image}
+                      src={dataBooking?.room_id?.hotel_id?.images[0]}
                       alt={hotelData.name}
                       className={styles.hotelImage}
                       preview={false}
@@ -204,10 +259,10 @@ const BookingSuccess = () => {
                   </Col>
                   <Col xs={24} md={16}>
                     <div className={styles.hotelInfo}>
-                      <Title level={3}>{hotelData.name}</Title>
+                      <Title level={3}>{dataBooking?.room_id?.hotel_id?.name}</Title>
                       <Space>
                         <EnvironmentOutlined />
-                        <Text>{hotelData.address}</Text>
+                        <Text>{dataBooking?.room_id?.hotel_id?.address}</Text>
                       </Space>
                       <div className={styles.ratingContainer}>
                         <StarOutlined className={styles.starIcon} />
@@ -228,12 +283,12 @@ const BookingSuccess = () => {
                   >
                     <div className={styles.roomImageContainer}>
                       <Image
-                        src={hotelData.roomImage}
+                        src={dataBooking?.room_id?.hotel_id?.images[1]}
                         alt={bookingData.roomType}
                         className={styles.roomImage}
                         preview={false}
                       />
-                      <Badge.Ribbon text={bookingData.roomType} color="blue" className={styles.roomTypeBadge} />
+                      <Badge.Ribbon text={capitalizeFirstLetter(dataBooking?.room_id?.type)} color="blue" className={styles.roomTypeBadge} />
                     </div>
                     
                     <Divider />
@@ -243,13 +298,13 @@ const BookingSuccess = () => {
                       items={[
                         {
                           label: 'Nhận phòng',
-                          children: formatDate(bookingData.checkIn),
+                          children: formatDate(dataBooking?.check_in),
                           color: 'green',
                           dot: <CalendarOutlined />
                         },
                         {
                           label: 'Trả phòng',
-                          children: formatDate(bookingData.checkOut),
+                          children: formatDate(dataBooking?.check_out),
                           color: 'red',
                           dot: <CalendarOutlined />
                         },
@@ -282,9 +337,9 @@ const BookingSuccess = () => {
                     <div className={styles.amenitiesContainer}>
                       <Text strong>Tiện nghi phòng:</Text>
                       <div className={styles.amenitiesTags}>
-                        {hotelData.amenities.map((amenity, index) => (
+                        {dataBooking?.room_id?.facility_id?.map((amenity, index) => (
                           <Tag key={index} color="blue" className={styles.amenityTag}>
-                            {amenity}
+                            {amenity?.name}
                           </Tag>
                         ))}
                       </div>
@@ -300,13 +355,13 @@ const BookingSuccess = () => {
                   >
                     <Descriptions column={1} labelStyle={{ fontWeight: 'bold' }}>
                       <Descriptions.Item label="Họ tên">
-                        <UserOutlined className={styles.infoIcon} /> {bookingData.customerName}
+                        <UserOutlined className={styles.infoIcon} /> {dataBooking?.user_id?.first_name} + {dataBooking?.user_id?.last_name}
                       </Descriptions.Item>
                       <Descriptions.Item label="Email">
-                        <MailOutlined className={styles.infoIcon} /> {bookingData.email}
+                        <MailOutlined className={styles.infoIcon} /> {dataBooking?.user_id?.email}
                       </Descriptions.Item>
                       <Descriptions.Item label="Số điện thoại">
-                        <PhoneOutlined className={styles.infoIcon} /> {bookingData.phone}
+                        <PhoneOutlined className={styles.infoIcon} /> {dataBooking?.user_id?.phone}
                       </Descriptions.Item>
                     </Descriptions>
                     
@@ -335,13 +390,13 @@ const BookingSuccess = () => {
                   >
                     <Descriptions column={1} labelStyle={{ fontWeight: 'bold' }}>
                       <Descriptions.Item label="Phương thức thanh toán">
-                        <CreditCardOutlined className={styles.infoIcon} /> {bookingData.paymentMethod}
+                        <CreditCardOutlined className={styles.infoIcon} /> {dataPayment?.method?.toUpperCase()}
                       </Descriptions.Item>
                       <Descriptions.Item label="Mã thanh toán">
-                        <SafetyOutlined className={styles.infoIcon} /> {bookingData.paymentId}
+                        <SafetyOutlined className={styles.infoIcon} /> {dataBooking?.code}
                       </Descriptions.Item>
                       <Descriptions.Item label="Trạng thái">
-                        <Badge status="success" text="Đã thanh toán" />
+                        {dataPayment?.status === "unpaid" ? (<Badge status="error" text="Chưa thanh toán" />) : (<Badge status="success" text="Đã thanh toán" />)}
                       </Descriptions.Item>
                     </Descriptions>
                     
@@ -350,7 +405,7 @@ const BookingSuccess = () => {
                     <div className={styles.totalAmount}>
                       <Text>Tổng tiền:</Text>
                       <Text strong className={styles.amount}>
-                        {formatCurrency(bookingData.totalAmount)}
+                        {dataPayment?.amount?.toLocaleString()} đ
                       </Text>
                     </div>
                   </Card>

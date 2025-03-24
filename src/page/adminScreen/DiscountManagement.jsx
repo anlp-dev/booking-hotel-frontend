@@ -25,7 +25,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Chip,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -41,7 +40,7 @@ import {
 import { styled } from "@mui/material/styles";
 import Loading from "../../components/loading/Loading.jsx";
 import { notifyError, notifySuccess } from "../../components/notification/ToastNotification.jsx";
-import AdminDiscountService from '../../services/AddminDiscountService';
+import AdminDiscountService from '../../services/DiscountService.js';
 const DiscountModal = ({ open, onClose, onSubmit, discount }) => {
   const [code, setCode] = useState("");
   const [discount_percentage, setPercentage] = useState(0);
@@ -52,7 +51,7 @@ const DiscountModal = ({ open, onClose, onSubmit, discount }) => {
   useEffect(() => {
     if (discount) {
       setCode(discount.code);
-      setPercentage(discount.discount_percentage || "");
+      setPercentage(discount.discount_percentage || 0);
       setValidfrom(discount.valid_from || new Date());
       setValidto(discount.valid_to || new Date());
       setStatus(discount.status || "");
@@ -144,14 +143,7 @@ const DiscountModal = ({ open, onClose, onSubmit, discount }) => {
           </FormControl>
 
 
-          {/*          
-          <TextField
-            label="Trạng thái"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            fullWidth
-            margin="normal"
-          /> */}
+         
           <Button type="submit" variant="contained" color="primary">
             {discount ? "Cập nhật" : "Thêm"}
           </Button>
@@ -215,11 +207,11 @@ const DiscountManagement = () => {
     const fetchDiscount = async () => {
       try {
         setIsLoading(true);
-        const discounts = await AdminDiscountService.getDiscount();
+        const discounts = await AdminDiscountService.getAllDiscount();
         setDiscounts(discounts.data);
       } catch (error) {
         notifyError(error.message);
-        console.error("Lỗi khi lấy danh sách vật tư:", error.message);
+        console.error("Lỗi khi lấy danh sách mã giảm giá:", error.message);
       } finally {
         setIsLoading(false);
       }
@@ -227,7 +219,7 @@ const DiscountManagement = () => {
     fetchDiscount();
   }, []);
 
-  // Lọc vật tư dựa trên từ khóa tìm kiếm
+  // Lọc mã giảm giá dựa trên từ khóa tìm kiếm
   const filteredDiscount = discounts.filter(
     (discount) =>
       discount.code.toLowerCase().includes(searchTerm.toLowerCase())
@@ -238,7 +230,7 @@ const DiscountManagement = () => {
     setPage(newPage);
   };
 
-  // Xử lý thay đổi số lượng vật tư mỗi trang
+  // Xử lý thay đổi số lượng mã giảm giá mỗi trang
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -250,7 +242,7 @@ const DiscountManagement = () => {
     setPage(0);
   };
 
-  // Xử lý xóa vật tư
+  // Xử lý xóa mã giảm giá
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa discount này?")) {
       try {
@@ -302,36 +294,7 @@ const DiscountManagement = () => {
     }
   };
 
-  const renderStatusChip = (status) => {
-    let color = 'default';
-
-    switch (role) {
-      case 'active':
-        color = 'primary';
-        break;
-      case 'expired':
-        color = 'secondary';
-        break;
-      case 'disabled':
-        color = 'info';
-        break;
-      default:
-        color = 'default';
-    }
-
-    return (
-      <Chip
-        label={status}
-        color={color}
-        size="small"
-        sx={{
-          borderRadius: '12px',
-          fontWeight: 500,
-          '& .MuiChip-label': { px: 1 }
-        }}
-      />
-    );
-  };
+  
 
   return (
     <Container maxWidth={false}>
@@ -403,7 +366,7 @@ const DiscountManagement = () => {
             </Button>
           </Box>
 
-          {/* Bảng vật tư */}
+          {/* Bảng mã giảm giá */}
           <TableContainer
             component={Paper}
             elevation={0}
@@ -523,7 +486,7 @@ const DiscountManagement = () => {
         </CardContent>
       </StyledCard>
 
-      {/* Modal cho thêm và chỉnh sửa vật tư */}
+      {/* Modal cho thêm và chỉnh sửa mã giảm giá */}
       <DiscountModal
         open={modalOpen}
         onClose={handleCloseModal}

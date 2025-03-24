@@ -224,6 +224,7 @@ const Login = () => {
   const loginGoogle = async (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse?.credential);
+      console.log(decoded)
       let dataReq = {
         email: decoded.email,
       };
@@ -231,6 +232,8 @@ const Login = () => {
       if (resData.status === 200) {
         console.log(resData, "resData");
         const decode = jwtDecode(resData?.data);
+        console.log(resData.data)
+        localStorage.setItem("token", resData?.data)
         localStorage.setItem("role", decode.role);
         const redirectUrl = localStorage.getItem("redirectUrl");
         if (redirectUrl) {
