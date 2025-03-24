@@ -19,6 +19,7 @@ import RouterIcon from '@mui/icons-material/Router';
 import {useLocation} from "react-router-dom";
 import BedroomChildIcon from "@mui/icons-material/BedroomChild";
 import BedIcon from "@mui/icons-material/Bed";
+import DiscountIcon from '@mui/icons-material/Discount';
 
 const mainListItems = [
     {text: 'Trang chủ', icon: <HomeRoundedIcon/>, path: "homeAdmin"},
@@ -29,6 +30,7 @@ const mainListItems = [
     {text: 'Quản lý router', icon: <RouterIcon/>, path: "routeManagement"},
   { text: "Quản lý phòng ở", icon: <BedroomChildIcon />, path: "manageRoom" },
   { text: "Quản lý vật tư", icon: <BedIcon />, path: "manageFacility" },
+  { text: "Quản lý Discount", icon: <DiscountIcon />, path: "manageDiscount" },
 
 ];
 

@@ -56,6 +56,17 @@ const BookingService = {
     }
   },
 
+  async cancelBooking(booking, refundAmount) {
+    try {
+      return await fetchUtils.put(`/booking/cancel-booking`, {
+        booking,
+        refundAmount,
+      });
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  },
+
   async deleteBooking(id) {
     try {
       return await fetchUtils.remove(`/admin/bookings/${id}`);

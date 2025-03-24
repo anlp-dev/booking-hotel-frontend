@@ -1,5 +1,4 @@
 const API_URL = "http://localhost:9999/api";
-const API_URL_PROD = "https://3.106.232.128/api";
 
 const headers = {
   "Content-Type": "application/json",
