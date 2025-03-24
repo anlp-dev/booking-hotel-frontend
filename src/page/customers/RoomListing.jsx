@@ -239,7 +239,7 @@ const RoomListing = () => {
         setIsLoading(true);
         setError(null);
 
-        const roomsResponse = await axios.get("http://localhost:9999/room");
+        const roomsResponse = await axios.get("http://localhost:9999/api/room");
         const roomsData = roomsResponse.data.data; // Directly use rooms data
 
         // Extract all unique facilities from rooms data
@@ -406,7 +406,7 @@ const RoomListing = () => {
   };
 
   const handleRoomClick = (roomId) => {
-    navigate(`/details/${roomId}`);
+    navigate(`/room/${roomId}`);
   };
 
   const toggleFavorite = (event, roomId) => {
