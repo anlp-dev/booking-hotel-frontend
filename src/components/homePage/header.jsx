@@ -173,43 +173,10 @@ function Header() {
                     alt="logo"
                     style={{height: "32px", marginRight: "16px"}}
                 />
-                <Dropdown overlay={tripMenu} placement="bottomLeft">
-                    <Button
-                        type="primary"
-                        style={{
-                            backgroundColor: "#e61e43",
-                            border: "none",
-                            color: "white",
-                        }}
-                    >
-                        <Space>
-                            Đặt chuyến đi
-                            <DownOutlined/>
-                        </Space>
-                    </Button>
-                </Dropdown>
+                
             </div>
 
-            {/* Middle section with links */}
-            <div className="header-links" style={{display: "flex", gap: "24px"}}>
-                <Button style={{color: "black"}} type="link" icon={<HomeOutlined/>}>
-                    Đăng thông tin nơi lưu trú
-                </Button>
-                <Button
-                    style={{color: "black"}}
-                    type="link"
-                    icon={<QuestionCircleOutlined/>}
-                >
-                    Hỗ trợ
-                </Button>
-                <Button
-                    style={{color: "black"}}
-                    type="link"
-                    icon={<CompassOutlined/>}
-                >
-                    Chuyến đi
-                </Button>
-            </div>
+            
 
             {/* Right section with user actions */}
             <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
