@@ -17,7 +17,10 @@ import RoomListing from "./page/customers/RoomListing.jsx";
 import PaymentHistory from "./page/customers/paymentHistory.jsx";
 import RoomDetails from "./page/room/RoomDetails.jsx";
 import LayoutUser from "./page/userInformation/LayoutUser.jsx";
+
 import { AppProvider } from "./context/AppContext.jsx";
+
+import Profile from "./page/customers/Profile.jsx";
 
 function App() {
   return (
@@ -48,6 +51,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/booking-success" element={<BookingSuccess />} />
             <Route path="/booking-history" element={<BookingHistory />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           {/* Catch-all route for undefined routes */}
           <Route path="*" element={<Navigate to="/404" />} />
