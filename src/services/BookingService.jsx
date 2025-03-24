@@ -92,6 +92,22 @@ const BookingService = {
             throw new Error(e.message);
         }
     },
+
+    async getBookingByCode(code) {
+        try{
+            return await fetchUtils.get(`/booking/getByCode/${code}`);
+        }catch (e) {
+            throw new Error(e.message)
+        }
+    },
+
+    async updatePaymentStatus(dataReq){
+        try{
+            return await fetchUtils.post(`/booking/updatePayment`, dataReq);
+        }catch (e) {
+            throw new Error(e.message);
+        }
+    }
 };
 
 export default BookingService; 

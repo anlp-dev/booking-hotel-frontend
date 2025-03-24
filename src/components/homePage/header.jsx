@@ -55,17 +55,33 @@ function Header() {
         const token = localStorage.getItem("token");
         const username = localStorage.getItem("username");
 
-        console.log(token)
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
 
-        const decoded = jwtDecode(token);
-        console.log(decoded)
-        if (decoded.exp * 1000 > Date.now()) {
-            console.log('run now')
-            if (token && username) {
-                setIsLoggedIn(true);
-                setUser({username: username});
-                checkAuthStatus();
+                if (decoded.exp * 1000 > Date.now()) {
+                    if (username) {
+                        setIsLoggedIn(true);
+                        setUser({ username: username });
+                        checkAuthStatus();
+                    }
+                } else {
+                    console.log('Token đã hết hạn');
+                    setIsLoggedIn(false);
+                    setUser(null);
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                }
+            } catch (error) {
+                console.error("Lỗi giải mã token:", error);
+                setIsLoggedIn(false);
+                setUser(null);
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
             }
+        } else {
+            setIsLoggedIn(false);
+            setUser(null);
         }
     }, []);
 
