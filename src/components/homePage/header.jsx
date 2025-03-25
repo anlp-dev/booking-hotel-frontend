@@ -134,24 +134,7 @@ function Header() {
         </Menu>
     );
 
-    const tripMenu = (
-        <Menu
-            items={[
-                {
-                    key: "1",
-                    label: "Khách sạn",
-                },
-                {
-                    key: "2",
-                    label: "Vé máy bay",
-                },
-                {
-                    key: "3",
-                    label: "Tour du lịch",
-                },
-            ]}
-        />
-    );
+    
 
     return (
         <AntHeader

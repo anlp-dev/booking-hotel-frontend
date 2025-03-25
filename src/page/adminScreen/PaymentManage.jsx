@@ -217,7 +217,6 @@ const PaymentManagement = () => {
     try {
       setIsLoading(true);
       const response = await PaymentService.getAllPayments();
-      console.log("response", response);
       setPayments(response.data);
     } catch (error) {
       console.log(error);

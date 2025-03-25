@@ -17,6 +17,7 @@ import {
   Statistic,
   Input,
   Tabs,
+  message,
 } from "antd";
 import {
   HistoryOutlined,
@@ -34,6 +35,7 @@ import {
 } from "@ant-design/icons";
 
 import styles from "../../static/css/BookingHistory.module.css";
+import PaymentService from "../../services/PaymentService";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -47,91 +49,22 @@ const PaymentHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  // Mock data for payment history
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockPayments = [
-        {
-          _id: "PAY-123456",
-          booking_id: {
-            _id: "BK-123456",
-            hotelName: "Luxury Palace Hotel & Spa",
-            roomType: "Deluxe Room",
-            checkIn: "2023-07-15",
-            checkOut: "2023-07-18",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 3500000,
-          payment_date: "2023-07-01T12:30:45",
-          method: "credit_card",
-          status: "paid",
-        },
-        {
-          _id: "PAY-234567",
-          booking_id: {
-            _id: "BK-234567",
-            hotelName: "Grand Riverside Resort",
-            roomType: "Premium Suite",
-            checkIn: "2023-08-10",
-            checkOut: "2023-08-15",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 5200000,
-          payment_date: "2023-07-20T10:15:30",
-          method: "bank_transfer",
-          status: "paid",
-        },
-        {
-          _id: "PAY-345678",
-          booking_id: {
-            _id: "BK-345678",
-            hotelName: "Seaside Paradise Hotel",
-            roomType: "Ocean View Room",
-            checkIn: "2023-06-01",
-            checkOut: "2023-06-05",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 4800000,
-          payment_date: "2023-05-15T09:45:20",
-          method: "paypal",
-          status: "paid",
-        },
-        {
-          _id: "PAY-456789",
-          booking_id: {
-            _id: "BK-456789",
-            hotelName: "Mountain View Resort",
-            roomType: "Mountain Suite",
-            checkIn: "2023-09-20",
-            checkOut: "2023-09-25",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 6300000,
-          payment_date: "2023-08-10T14:25:10",
-          method: "bank_transfer",
-          status: "unpaid",
-        },
-        {
-          _id: "PAY-567890",
-          booking_id: {
-            _id: "BK-567890",
-            hotelName: "City Central Hotel",
-            roomType: "Business Room",
-            checkIn: "2023-05-05",
-            checkOut: "2023-05-07", 
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 1800000,
-          payment_date: "2023-04-20T11:35:55",
-          method: "credit_card",
-          status: "failed",
-        },
-      ];
-
-      setPayments(mockPayments);
-      setLoading(false);
-    }, 1500);
+    const fetchPayment = async () => {
+      try {
+        setLoading(true);
+        const response = await PaymentService.getPaymentsByUserId();
+        console.log("response", response);
+        setPayments(response.data);
+      } catch (error) {
+        console.log(error);
+        message.error("Không thể lấy thông tin payment");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchPayment();
   }, []);
 
   const showModal = (payment) => {
