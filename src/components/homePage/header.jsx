@@ -11,8 +11,11 @@ import {useNavigate} from "react-router-dom";
 import {notifySuccess} from "../../components/notification/ToastNotification.jsx";
 import authService from "../../services/AuthService.jsx";
 import "../../static/css/styles.css";
+
+
 import {useState, useEffect} from "react";
 import {jwtDecode} from "jwt-decode";
+
 
 const {Header: AntHeader} = Layout;
 
@@ -54,6 +57,8 @@ function Header() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const username = localStorage.getItem("username");
+
+        console.log(token)
 
         if (token) {
             try {
@@ -134,8 +139,6 @@ function Header() {
         </Menu>
     );
 
-    
-
     return (
         <AntHeader
             className="header-container"
@@ -148,6 +151,7 @@ function Header() {
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
             }}
         >
+
             {/* Left section with logo and dropdown */}
             <div style={{display: "flex", alignItems: "center"}}>
                 <img
@@ -156,10 +160,10 @@ function Header() {
                     alt="logo"
                     style={{height: "32px", marginRight: "16px"}}
                 />
-                
+
             </div>
 
-            
+
 
             {/* Right section with user actions */}
             <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
@@ -197,6 +201,7 @@ function Header() {
             </div>
         </AntHeader>
     );
+
 }
 
 export default Header;

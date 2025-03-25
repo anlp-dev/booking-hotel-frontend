@@ -76,8 +76,8 @@ function MainContent() {
     const fetchRoom = async () => {
       try {
         const response = await getRoomList();
-        console.log("response", response);
-        setRoom(response.data);
+        console.log("response room list", response);
+        setRoom(response?.data);
       } catch (error) {
         console.log(error);
         message.error("Không thể lấy thông tin phòng");

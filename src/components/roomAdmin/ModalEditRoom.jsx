@@ -34,6 +34,7 @@ const EditRoomDialog = ({ open, onClose, roomData, onEditSuccess }) => {
     console.log("name update", event.target.value);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  console.log("roomData", roomData);
 
   const handleSubmit = async () => {
     try {

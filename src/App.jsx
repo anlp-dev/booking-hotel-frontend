@@ -19,9 +19,11 @@ import RoomDetails from "./page/room/RoomDetails.jsx";
 import LayoutUser from "./page/userInformation/LayoutUser.jsx";
 import Profile from "./page/customers/Profile.jsx";
 
+import { AppProvider } from "./context/AppContext.jsx";
+
 function App() {
   return (
-    <>
+    <AppProvider>
       <ToastNotification />
       <BrowserRouter>
         <Routes>
@@ -54,7 +56,7 @@ function App() {
           <Route path="*" element={<Navigate to="/404" />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </AppProvider>
   );
 }
 
