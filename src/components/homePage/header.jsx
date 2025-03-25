@@ -58,6 +58,8 @@ function Header() {
         const token = localStorage.getItem("token");
         const username = localStorage.getItem("username");
 
+        console.log(token)
+
         if (token) {
             try {
                 const decoded = jwtDecode(token);
@@ -178,10 +180,10 @@ function Header() {
                     alt="logo"
                     style={{height: "32px", marginRight: "16px"}}
                 />
-                
+
             </div>
 
-            
+
 
             {/* Right section with user actions */}
             <div style={{display: "flex", alignItems: "center", gap: "12px"}}>

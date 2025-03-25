@@ -11,9 +11,13 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode(token);
-    setUserId(decodedToken.userId);
-    setUserRole(decodedToken.role);
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      if (decodedToken.exp * 1000 > Date.now()) {
+        setUserId(decodedToken.userId);
+        setUserRole(decodedToken.role);
+      }
+    }
   });
 
   return (
