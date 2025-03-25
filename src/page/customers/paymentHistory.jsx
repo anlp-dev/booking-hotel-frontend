@@ -17,13 +17,13 @@ import {
   Statistic,
   Input,
   Tabs,
+  message,
 } from "antd";
 import {
   HistoryOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
-  CalendarOutlined,
   UserOutlined,
   CreditCardOutlined,
   SearchOutlined,
@@ -32,8 +32,10 @@ import {
   DollarOutlined,
   BankOutlined,
 } from "@ant-design/icons";
+import { jwtDecode } from "jwt-decode";
 
 import styles from "../../static/css/BookingHistory.module.css";
+import PaymentService from "../../services/PaymentService";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -47,91 +49,36 @@ const PaymentHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  // Mock data for payment history
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockPayments = [
-        {
-          _id: "PAY-123456",
-          booking_id: {
-            _id: "BK-123456",
-            hotelName: "Luxury Palace Hotel & Spa",
-            roomType: "Deluxe Room",
-            checkIn: "2023-07-15",
-            checkOut: "2023-07-18",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 3500000,
-          payment_date: "2023-07-01T12:30:45",
-          method: "credit_card",
-          status: "paid",
-        },
-        {
-          _id: "PAY-234567",
-          booking_id: {
-            _id: "BK-234567",
-            hotelName: "Grand Riverside Resort",
-            roomType: "Premium Suite",
-            checkIn: "2023-08-10",
-            checkOut: "2023-08-15",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 5200000,
-          payment_date: "2023-07-20T10:15:30",
-          method: "bank_transfer",
-          status: "paid",
-        },
-        {
-          _id: "PAY-345678",
-          booking_id: {
-            _id: "BK-345678",
-            hotelName: "Seaside Paradise Hotel",
-            roomType: "Ocean View Room",
-            checkIn: "2023-06-01",
-            checkOut: "2023-06-05",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 4800000,
-          payment_date: "2023-05-15T09:45:20",
-          method: "paypal",
-          status: "paid",
-        },
-        {
-          _id: "PAY-456789",
-          booking_id: {
-            _id: "BK-456789",
-            hotelName: "Mountain View Resort",
-            roomType: "Mountain Suite",
-            checkIn: "2023-09-20",
-            checkOut: "2023-09-25",
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 6300000,
-          payment_date: "2023-08-10T14:25:10",
-          method: "bank_transfer",
-          status: "unpaid",
-        },
-        {
-          _id: "PAY-567890",
-          booking_id: {
-            _id: "BK-567890",
-            hotelName: "City Central Hotel",
-            roomType: "Business Room",
-            checkIn: "2023-05-05",
-            checkOut: "2023-05-07", 
-            customerName: "Nguyễn Văn A",
-          },
-          amount: 1800000,
-          payment_date: "2023-04-20T11:35:55",
-          method: "credit_card",
-          status: "failed",
-        },
-      ];
-
-      setPayments(mockPayments);
-      setLoading(false);
-    }, 1500);
+    const fetchPayment = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Không tìm thấy token đăng nhập");
+        }
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId;
+        const response = await PaymentService.getPaymentsByUserId(userId);
+        console.log("response", response.data);
+        
+        if (response && response.data) {
+          console.log("Payment data sample:", response.data[0]);
+          setPayments(response.data);
+        } else {
+          setPayments([]);
+          message.warning("Không tìm thấy lịch sử thanh toán");
+        }
+      } catch (error) {
+        console.log(error);
+        message.error("Không thể lấy thông tin payment");
+        setPayments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchPayment();
   }, []);
 
   const showModal = (payment) => {
@@ -190,6 +137,8 @@ const PaymentHistory = () => {
         return <BankOutlined />;
       case "cash":
         return <DollarOutlined />;
+      case "vnpayqr":
+        return <CreditCardOutlined />;
       default:
         return <CreditCardOutlined />;
     }
@@ -205,16 +154,20 @@ const PaymentHistory = () => {
         return "Chuyển khoản";
       case "cash":
         return "Tiền mặt";
+      case "vnpayqr":
+        return "VNPay QR";
       default:
         return method;
     }
   };
 
   const filteredPayments = payments.filter((payment) => {
+    if (!payment) return false;
+    
     const matchesSearch =
-      payment.booking_id.hotelName.toLowerCase().includes(searchText.toLowerCase()) ||
-      payment.booking_id.roomType.toLowerCase().includes(searchText.toLowerCase()) ||
-      payment._id.toLowerCase().includes(searchText.toLowerCase());
+      (payment.room?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
+      (payment.user?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
+      (payment.id?.toString() || '').includes(searchText.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
     return payment.status === activeTab && matchesSearch;
@@ -223,32 +176,25 @@ const PaymentHistory = () => {
   const columns = [
     {
       title: "Mã thanh toán",
-      dataIndex: "_id",
-      key: "_id",
-      render: (id) => <Text strong>{id}</Text>,
+      dataIndex: "id",
+      key: "id",
+      render: (id) => <Text strong>{id || ''}</Text>,
     },
     {
       title: "Thông tin đặt phòng",
-      dataIndex: "booking_id",
-      key: "booking_id",
-      render: (booking) => (
-        <div className={styles.hotelInfo}>
-          <Text strong>{booking.hotelName}</Text>
-          <div>
-            <Text type="secondary">
-              <UserOutlined /> {booking.customerName}
-            </Text>
+      key: "booking",
+      render: (_, record) => {
+        return (
+          <div className={styles.hotelInfo}>
+            <Text strong>{record.room || ''}</Text>
+            <div>
+              <Text type="secondary">
+                <UserOutlined /> {record.user || ''}
+              </Text>
+            </div>
           </div>
-          <div>
-            <Text type="secondary">
-              Phòng: {booking.roomType}
-            </Text>
-          </div>
-          <div className={styles.dateInfo}>
-            <CalendarOutlined /> {formatDate(booking.checkIn)} - {formatDate(booking.checkOut)}
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Số tiền",
@@ -256,7 +202,7 @@ const PaymentHistory = () => {
       key: "amount",
       render: (amount) => (
         <Text strong className={styles.amount}>
-          {formatCurrency(amount)}
+          {typeof amount === 'number' ? formatCurrency(amount) : '-'}
         </Text>
       ),
     },
@@ -274,7 +220,7 @@ const PaymentHistory = () => {
       title: "Ngày thanh toán",
       dataIndex: "payment_date",
       key: "payment_date",
-      render: (date) => formatDate(date),
+      render: (date) => date ? formatDate(date) : '-',
     },
     {
       title: "Trạng thái",
@@ -378,7 +324,7 @@ const PaymentHistory = () => {
             <Table
               dataSource={filteredPayments}
               columns={columns}
-              rowKey="_id"
+              rowKey="id"
               pagination={{ pageSize: 5 }}
               className={styles.table}
             />
@@ -416,7 +362,7 @@ const PaymentHistory = () => {
           >
             <div className={styles.bookingId}>
               <FileTextOutlined /> Mã thanh toán:{" "}
-              <Text strong>{selectedPayment._id}</Text>
+              <Text strong>{selectedPayment.id || ''}</Text>
             </div>
 
             <Divider />
@@ -429,23 +375,11 @@ const PaymentHistory = () => {
                   className={styles.detailCard}
                 >
                   <Descriptions column={1}>
-                    <Descriptions.Item label="Mã đặt phòng">
-                      {selectedPayment.booking_id._id}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Khách sạn">
-                      {selectedPayment.booking_id.hotelName}
-                    </Descriptions.Item>
                     <Descriptions.Item label="Loại phòng">
-                      {selectedPayment.booking_id.roomType}
+                      {selectedPayment.room || ''}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Ngày nhận phòng">
-                      {formatDate(selectedPayment.booking_id.checkIn)}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Ngày trả phòng">
-                      {formatDate(selectedPayment.booking_id.checkOut)}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Khách hàng">
-                      {selectedPayment.booking_id.customerName}
+                    <Descriptions.Item label="Người dùng">
+                      {selectedPayment.user || ''}
                     </Descriptions.Item>
                   </Descriptions>
                 </Card>
@@ -463,7 +397,7 @@ const PaymentHistory = () => {
                       {getPaymentMethodName(selectedPayment.method)}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày thanh toán">
-                      {formatDate(selectedPayment.payment_date)}
+                      {selectedPayment.payment_date ? formatDate(selectedPayment.payment_date) : '-'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
                       {getStatusTag(selectedPayment.status)}
@@ -476,7 +410,7 @@ const PaymentHistory = () => {
                     <Col span={24}>
                       <Statistic
                         title="Tổng tiền"
-                        value={selectedPayment.amount}
+                        value={selectedPayment.amount || 0}
                         precision={0}
                         formatter={(value) => formatCurrency(value)}
                         className={styles.totalAmount}

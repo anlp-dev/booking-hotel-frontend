@@ -1,20 +1,18 @@
 import apiConfig from "../configs/apiConfig.jsx";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import fetchUtils from "../utils/fetchUtils.jsx";
 
 const endpoint = `/payment`;
 
 const PaymentService = {
-  
   async getAllPayments() {
     try {
       const response = await fetchUtils.get(endpoint);
-       return response;
+      return response;
     } catch (e) {
       throw new Error(e);
     }
   },
-
 
   async deletePayment(id) {
     try {
@@ -24,7 +22,14 @@ const PaymentService = {
     }
   },
 
-
+  async getPaymentsByUserId(userId) {
+    try {
+      const response = await fetchUtils.get(`${endpoint}/user/${userId}`);
+      return response;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  },
 
   async getUrlVnPay(dataReq) {
     try {
