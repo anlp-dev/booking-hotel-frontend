@@ -21,9 +21,6 @@ import Profile from "./page/customers/Profile.jsx";
 
 import { AppProvider } from "./context/AppContext.jsx";
 
-import Profile from "./page/customers/Profile.jsx";
-
-
 function App() {
   return (
     <AppProvider>
