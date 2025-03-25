@@ -232,8 +232,8 @@ const Login = () => {
       if (resData.status === 200) {
         console.log(resData, "resData");
         const decode = jwtDecode(resData?.data);
-        console.log(resData.data)
-        localStorage.setItem("token", resData?.data)
+        console.log(decode, 'decode')
+        localStorage.setItem("token", resData.data)
         localStorage.setItem("role", decode.role);
         const redirectUrl = localStorage.getItem("redirectUrl");
         if (redirectUrl) {

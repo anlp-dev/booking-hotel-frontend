@@ -143,7 +143,7 @@ const DiscountModal = ({ open, onClose, onSubmit, discount }) => {
           </FormControl>
 
 
-         
+
           <Button type="submit" variant="contained" color="primary">
             {discount ? "Cập nhật" : "Thêm"}
           </Button>
@@ -222,7 +222,7 @@ const DiscountManagement = () => {
   // Lọc mã giảm giá dựa trên từ khóa tìm kiếm
   const filteredDiscount = discounts.filter(
     (discount) =>
-      discount.code.toLowerCase().includes(searchTerm.toLowerCase())
+      discount?.code?.toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   // Xử lý thay đổi trang
@@ -294,7 +294,7 @@ const DiscountManagement = () => {
     }
   };
 
-  
+
 
   return (
     <Container maxWidth={false}>
@@ -408,10 +408,10 @@ const DiscountManagement = () => {
                         {discount.discount_percentage || 0}
                       </TableCell>
                       <TableCell>
-                        {new Date(discount.valid_from).toLocaleDateString()}
+                        {new Date(discount.valid_from)?.toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        {new Date(discount.valid_to).toLocaleDateString()}
+                        {new Date(discount.valid_to)?.toLocaleDateString()}
                       </TableCell>
                       <TableCell>
                         {discount.status}
