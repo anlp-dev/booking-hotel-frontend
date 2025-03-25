@@ -76,8 +76,8 @@ function MainContent() {
     const fetchRoom = async () => {
       try {
         const response = await getRoomList();
-        console.log("response", response);
-        setRoom(response);
+        console.log("response room list", response);
+        setRoom(response?.data);
       } catch (error) {
         console.log(error);
         message.error("Không thể lấy thông tin phòng");
@@ -189,7 +189,7 @@ function MainContent() {
             Chốn dừng chân lý tưởng chờ đón bạn
           </Title>
 
-          <Card
+          {/* <Card
             style={{
               padding: "20px",
               backgroundColor: "white",
@@ -251,7 +251,7 @@ function MainContent() {
             >
               Tìm kiếm
             </Button>
-          </Card>
+          </Card> */}
         </div>
       </div>
 
@@ -375,7 +375,7 @@ function MainContent() {
                 <Card
                   style={{ marginLeft: "10px" }}
                   hoverable
-                  onClick={() => navigate(`/room/${item._id}`)}
+                  onClick={() => navigate(`/rooms/${item?.type}`)}
                   cover={
                     <div style={{ height: "210px", overflow: "hidden" }}>
                       <img

@@ -54,6 +54,9 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import BookingService from '../../services/BookingService';
+import AdminService from "../../services/AdminService.jsx";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -164,11 +167,9 @@ const BookingManagement = () => {
     const fetchBookings = async () => {
         setLoading(true);
         try {
-            const response = await BookingService.getAllBookings(page, rowsPerPage, searchTerm);
-            // Assuming the API returns { content: [...bookings], totalElements: number }
-            // If your API has a different structure, adjust accordingly
-            setBookings(response.content || []);
-            setTotalElements(response.totalElements || 0);
+            const response = await AdminService.getBooking();
+            setBookings(response.data || []);
+            setTotalElements(response.data.totalElements || 0);
         } catch (error) {
             console.error('Error fetching bookings:', error);
             setSnackbar({
@@ -180,6 +181,8 @@ const BookingManagement = () => {
             setLoading(false);
         }
     };
+
+    console.log(bookings)
 
     // Initial fetch
     useEffect(() => {
@@ -269,11 +272,11 @@ const BookingManagement = () => {
     // Get status chip color
     const getStatusColor = (status) => {
         switch (status) {
-            case 'CONFIRMED':
+            case 'confirmed':
                 return 'success';
-            case 'PENDING':
+            case 'pending':
                 return 'warning';
-            case 'CANCELLED':
+            case 'cancelled':
                 return 'error';
             default:
                 return 'default';
@@ -482,36 +485,22 @@ const BookingManagement = () => {
     };
 
     // Export bookings to Excel
-    const handleExportToExcel = async () => {
-        setExportLoading(true);
-        try {
-            const blob = await BookingService.exportBookingsToExcel();
-            
-            // Create a download link and trigger download
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `bookings-export-${new Date().toISOString().slice(0, 10)}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-            setSnackbar({
-                open: true,
-                message: 'Xuất dữ liệu thành công',
-                severity: 'success'
-            });
-        } catch (error) {
-            console.error('Error exporting bookings:', error);
-            setSnackbar({
-                open: true,
-                message: 'Lỗi khi xuất dữ liệu: ' + error.message,
-                severity: 'error'
-            });
-        } finally {
-            setExportLoading(false);
-        }
+    const handleExportToExcel = () => {
+        let fileName = "bookings.xlsx"
+
+        // 1️⃣ Chuyển đổi dữ liệu thành worksheet
+        const worksheet = XLSX.utils.json_to_sheet(bookings);
+
+        // 2️⃣ Tạo workbook và thêm worksheet
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Bookings");
+
+        // 3️⃣ Ghi workbook ra file Excel
+        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+
+        // 4️⃣ Tạo blob và lưu file
+        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        saveAs(blob, fileName);
     };
 
     return (
@@ -590,15 +579,15 @@ const BookingManagement = () => {
                                 >
                                     Lọc
                                 </Button>
-                                <Button
-                                    variant="contained"
-                                    color="success"
-                                    startIcon={<AddIcon />}
-                                    onClick={handleOpenCreateDialog}
-                                    sx={{ borderRadius: 3 }}
-                                >
-                                    Thêm mới
-                                </Button>
+                                {/*<Button*/}
+                                {/*    variant="contained"*/}
+                                {/*    color="success"*/}
+                                {/*    startIcon={<AddIcon />}*/}
+                                {/*    onClick={handleOpenCreateDialog}*/}
+                                {/*    sx={{ borderRadius: 3 }}*/}
+                                {/*>*/}
+                                {/*    Thêm mới*/}
+                                {/*</Button>*/}
                                 <Button
                                     variant="contained"
                                     color="info"
@@ -647,13 +636,13 @@ const BookingManagement = () => {
                                 </TableHead>
                                 <TableBody>
                                     {bookings.length > 0 ? (
-                                        bookings.map((booking) => (
-                                            <TableRow key={booking.id} hover>
-                                                <TableCell>{booking.id}</TableCell>
+                                        bookings.map((booking, index) => (
+                                            <TableRow key={booking?._id} hover>
+                                                <TableCell>{index + 1}</TableCell>
                                                 <TableCell>
                                                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                                         <Typography variant="body2" fontWeight="bold">
-                                                            {booking.customerName}
+                                                            {booking?.user_id?.first_name} {booking?.user_id?.last_name}
                                                         </Typography>
                                                         <Typography variant="caption" color="text.secondary">
                                                             {booking.customerEmail}
@@ -663,20 +652,17 @@ const BookingManagement = () => {
                                                         </Typography>
                                                     </Box>
                                                 </TableCell>
-                                                <TableCell>{booking.roomName}</TableCell>
-                                                <TableCell>{formatDate(booking.checkInDate)}</TableCell>
-                                                <TableCell>{formatDate(booking.checkOutDate)}</TableCell>
+                                                <TableCell>{booking?.room_id?.room_number}</TableCell>
+                                                <TableCell>{formatDate(booking?.check_in)}</TableCell>
+                                                <TableCell>{formatDate(booking?.check_out)}</TableCell>
                                                 <TableCell>
-                                                    {new Intl.NumberFormat('vi-VN', {
-                                                        style: 'currency',
-                                                        currency: 'VND'
-                                                    }).format(booking.totalPrice)}
+                                                    {booking?.total_price?.toLocaleString()} đ
                                                 </TableCell>
                                                 <TableCell>
                                                     <Chip
-                                                        label={booking.status === 'CONFIRMED' ? 'Đã xác nhận' : 
-                                                               booking.status === 'PENDING' ? 'Đang chờ' : 'Đã hủy'}
-                                                        color={getStatusColor(booking.status)}
+                                                        label={booking.status === 'confirmed' ? 'Đã xác nhận' :
+                                                               booking.status === 'pending' ? 'Đang chờ' : 'Đã hủy'}
+                                                        color={getStatusColor(booking?.status)}
                                                         size="small"
                                                     />
                                                 </TableCell>

@@ -134,7 +134,6 @@ const Profile = () => {
       setLastCheckTime(currentTime);
 
       if (!authService.isAuthenticated()) {
-        handleLogout(false);
         return;
       }
 
@@ -142,14 +141,12 @@ const Profile = () => {
       if (userData && userData.data) {
         setUser(userData.data);
       } else {
-        handleLogout(false);
       }
     } catch (error) {
       console.error("Auth check failed:", error);
       if (error.message.includes("Too Many Requests")) {
         return;
       }
-      handleLogout(false);
     }
   };
 
@@ -165,19 +162,66 @@ const Profile = () => {
 
 
   // State cho các modal
- 
-  // State cho form data
+  const [openModal, setOpenModal] = useState({
+    name: false,
+    email: false,
+    phone: false,
+    dateOfBirth: false,
+    gender: false,
+    address: false
+  });
 
+  // State cho form data
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName  || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    dateOfBirth: user?.dateOfBirth || "",
+    gender: user?.gender || "",
+    address: user?.address || "",
+    avatar: user?.avatar || "",
+    countryCode: '+84',
+  });
+
+  const [editingField, setEditingField] = useState(null);
 
   // State for image upload dialog and image preview
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const handleEdit = (field) => {
+    setEditingField(field);
+  };
+
+  // Xử lý mở/đóng modal
+  const handleOpenModal = (field) => {
+    // Chuyển field name thành lowercase và loại bỏ khoảng trắng
+    const modalField = field.toLowerCase().replace(/\s+/g, '');
+    setOpenModal(prev => ({ ...prev, [modalField]: true }));
+  };
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [currentField, setCurrentField] = useState('');
   const [tempValue, setTempValue] = useState('');
 
- 
+  const handleCloseModal = (field) => {
+    setOpenModal({ ...openModal, [field]: false });
+  };
+
+  // Xử lý lưu dữ liệu
+
+  const handleCancel = () => {
+    setEditingField(null);
+    // Reset form data to original values
+    setFormData({
+      ...formData,
+      email: user.email,
+      phone: user.phone,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      address: user.address
+    });
+  };
 
   // Handle opening the image dialog
   const handleOpenImageDialog = () => {
@@ -226,28 +270,280 @@ const Profile = () => {
     handleCloseImageDialog();
   };
 
-
-  const InfoItem = ({ label, value, verified, description, field, onEdit }) => (
+  const InfoItem = ({ label, value, verified, description, field }) => (
     <InfoRow>
       <InfoLabel variant="body1">
         {label}
       </InfoLabel>
       <InfoContent>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography variant="body2" sx={{ fontSize: '14px' }}>{value}</Typography>
-          {verified && (
-            <Box
-                    sx={{
-                backgroundColor: 'green',
-                color: 'white',
-                padding: '5px 8px',
-                        borderRadius: '3px',
-                fontSize: '12px',
-                
-              }}
-            >
-              Verified
+        {editingField === field ? (
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <Box sx={{ flex: 1 }}>
+              {/* Name Input */}
+              {field === 'name' && (
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="body2" color="text.primary">
+                        First name(s)
+                      </Typography>
+                    </Box>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '4px',
+                          backgroundColor: '#fff',
+                          fontSize: '14px',
+                        }
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="body2" color="text.primary">
+                        Last name(s)
+                      </Typography>
+                    </Box>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '4px',
+                          backgroundColor: '#fff',
+                          fontSize: '14px',
+                        }
+                      }}
+                    />
+                  </Box>
                 </Box>
+              )}
+
+
+
+              {/* Email Input */}
+              {field === 'email' && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                    <Typography variant="body2" color="text.primary">
+                      Email address
+                    </Typography>
+                    <Typography
+                      component="span"
+                      color="error.main"
+                      sx={{ ml: 0.5, fontSize: '13px' }}
+                    >
+                      *
+                    </Typography>
+                  </Box>
+                  <TextField
+                    fullWidth
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '4px',
+                        backgroundColor: '#fff',
+                        fontSize: '14px',
+                      }
+                    }}
+                  />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                      mt: 0.5,
+                      fontSize: '13px'
+                    }}
+                  >
+                    We'll send a verification link to your new email address – check your inbox.
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Phone Input */}
+              {field === 'phone' && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <FormControl size="small" sx={{ minWidth: 100 }}>
+                    <Select
+                      value={formData.countryCode || '+84'}
+                      onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+                      sx={{
+                        '& .MuiSelect-select': {
+                          display: 'flex',
+                          alignItems: 'center',
+                        }
+                      }}
+                    >
+                      <MenuItem value="+84">
+                        <Box component="span" sx={{ mr: 1 }}>🇻🇳</Box> +84
+                      </MenuItem>
+                      <MenuItem value="+1">
+                        <Box component="span" sx={{ mr: 1 }}>🇺🇸</Box> +1
+                      </MenuItem>
+                      <MenuItem value="+44">
+                        <Box component="span" sx={{ mr: 1 }}>🇬🇧</Box> +44
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    fullWidth
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '4px',
+                        backgroundColor: '#fff',
+                        fontSize: '14px',
+                      }
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* Date of Birth Input */}
+              {field === 'dateofbirth' && (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    value={dayjs(formData.dateOfBirth)}
+                    onChange={(newValue) => setFormData({
+                      ...formData,
+                      dateOfBirth: newValue.format('YYYY-MM-DD')
+                    })}
+                    renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                  />
+                </LocalizationProvider>
+              )}
+
+             {/* Email Input */}
+             {field === 'address' && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                    <Typography variant="body2" color="text.primary">
+                      Address
+                    </Typography>
+                    <Typography
+                      component="span"
+                      color="error.main"
+                      sx={{ ml: 0.5, fontSize: '13px' }}
+                    >
+                      *
+                    </Typography>
+                  </Box>
+                  <TextField
+                    fullWidth
+                    type="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '4px',
+                        backgroundColor: '#fff',
+                        fontSize: '14px',
+                      }
+                    }}
+                  />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                      mt: 0.5,
+                      fontSize: '13px'
+                    }}
+                  >
+                    We'll send a verification link to your new email address – check your inbox.
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Gender Select */}
+              {field === 'gender' && (
+                <FormControl fullWidth size="small">
+                  <Select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  >
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+
+
+            </Box>
+
+            {/* Action Buttons */}
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              alignItems: 'flex-end',
+              minWidth: '60px',
+              mt: 0.5
+            }}>
+              <Button
+                onClick={handleCancel}
+                variant="contained"
+                sx={{
+                  backgroundColor: '#f5f5f5',
+                  color: '#0071c2',
+                  textTransform: 'none',
+                  padding: '4px 12px',
+                  borderRadius: '4px',
+                  fontWeight: 500,
+                  fontSize: '13px',
+                  minWidth: '80px',
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0'
+                  }
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => handleSave(field)}
+                sx={{
+                  backgroundColor: '#0071c2',
+                  color: '#fff',
+                  textTransform: 'none',
+                  padding: '4px 12px',
+                  borderRadius: '4px',
+                  fontWeight: 500,
+                  fontSize: '13px',
+                  minWidth: '80px',
+                  '&:hover': {
+                    backgroundColor: '#005999'
+                  }
+                }}
+              >
+                Save
+              </Button>
+            </Box>
+          </Box>
+        ) : (
+          <>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography variant="body2">{value}</Typography>
+              {verified && (
+                <VerifiedIcon
+                  sx={{
+                    fontSize: 18,
+                    color: '#0071c2'
+                  }}
+                />
               )}
             </Box>
             {description && (
@@ -261,15 +557,32 @@ const Profile = () => {
               >
                 {description}
               </Typography>
+            )}
+          </>
         )}
       </InfoContent>
-      <EditButton onClick={onEdit} sx={{ color: '#0071c2', textTransform: 'none' }}>
+      {!editingField && (
+        <EditButton
+          onClick={() => handleEdit(field)}
+          sx={{
+            color: '#0071c2',
+            fontWeight: 500,
+            fontSize: '13px',
+            textTransform: 'none',
+            padding: '4px 8px',
+            '&:hover': {
+              backgroundColor: 'transparent',
+              textDecoration: 'underline',
+            }
+          }}
+        >
           Edit
         </EditButton>
+      )}
     </InfoRow>
   );
 
-  
+
 
 
   // Hàm mở dialog
@@ -295,7 +608,7 @@ const Profile = () => {
     try {
       const userId = user._id; // Giả sử user object có chứa id
       console.log(first_name, last_name, phone, email, gender, dateOfBirth, address);
-      
+
       if (currentField === 'username') {
         await authService.updateUserName(userId, username);
         setUser({ ...user, username:username });
@@ -679,6 +992,12 @@ const Profile = () => {
           value={user?.gender ? user.gender : "Select your gender"}
           field="gender"
           onEdit={() => handleOpenEditDialog('gender', user?.gender)}
+        />
+
+        <InfoItem
+          label="Password"
+          value="********"
+          onEdit={() => handleOpenModal('password')}
         />
       </ProfilePaper>
     </ProfileContainer>
