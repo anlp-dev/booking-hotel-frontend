@@ -24,7 +24,6 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
-  CalendarOutlined,
   UserOutlined,
   CreditCardOutlined,
   SearchOutlined,
@@ -33,6 +32,7 @@ import {
   DollarOutlined,
   BankOutlined,
 } from "@ant-design/icons";
+import { jwtDecode } from "jwt-decode";
 
 import styles from "../../static/css/BookingHistory.module.css";
 import PaymentService from "../../services/PaymentService";
@@ -53,12 +53,26 @@ const PaymentHistory = () => {
     const fetchPayment = async () => {
       try {
         setLoading(true);
-        const response = await PaymentService.getPaymentsByUserId();
-        console.log("response", response);
-        setPayments(response.data);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Không tìm thấy token đăng nhập");
+        }
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId;
+        const response = await PaymentService.getPaymentsByUserId(userId);
+        console.log("response", response.data);
+        
+        if (response && response.data) {
+          console.log("Payment data sample:", response.data[0]);
+          setPayments(response.data);
+        } else {
+          setPayments([]);
+          message.warning("Không tìm thấy lịch sử thanh toán");
+        }
       } catch (error) {
         console.log(error);
         message.error("Không thể lấy thông tin payment");
+        setPayments([]);
       } finally {
         setLoading(false);
       }
@@ -123,6 +137,8 @@ const PaymentHistory = () => {
         return <BankOutlined />;
       case "cash":
         return <DollarOutlined />;
+      case "vnpayqr":
+        return <CreditCardOutlined />;
       default:
         return <CreditCardOutlined />;
     }
@@ -138,16 +154,20 @@ const PaymentHistory = () => {
         return "Chuyển khoản";
       case "cash":
         return "Tiền mặt";
+      case "vnpayqr":
+        return "VNPay QR";
       default:
         return method;
     }
   };
 
   const filteredPayments = payments.filter((payment) => {
+    if (!payment) return false;
+    
     const matchesSearch =
-      payment.booking_id.hotelName.toLowerCase().includes(searchText.toLowerCase()) ||
-      payment.booking_id.roomType.toLowerCase().includes(searchText.toLowerCase()) ||
-      payment._id.toLowerCase().includes(searchText.toLowerCase());
+      (payment.room?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
+      (payment.user?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
+      (payment.id?.toString() || '').includes(searchText.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
     return payment.status === activeTab && matchesSearch;
@@ -156,32 +176,25 @@ const PaymentHistory = () => {
   const columns = [
     {
       title: "Mã thanh toán",
-      dataIndex: "_id",
-      key: "_id",
-      render: (id) => <Text strong>{id}</Text>,
+      dataIndex: "id",
+      key: "id",
+      render: (id) => <Text strong>{id || ''}</Text>,
     },
     {
       title: "Thông tin đặt phòng",
-      dataIndex: "booking_id",
-      key: "booking_id",
-      render: (booking) => (
-        <div className={styles.hotelInfo}>
-          <Text strong>{booking.hotelName}</Text>
-          <div>
-            <Text type="secondary">
-              <UserOutlined /> {booking.customerName}
-            </Text>
+      key: "booking",
+      render: (_, record) => {
+        return (
+          <div className={styles.hotelInfo}>
+            <Text strong>{record.room || ''}</Text>
+            <div>
+              <Text type="secondary">
+                <UserOutlined /> {record.user || ''}
+              </Text>
+            </div>
           </div>
-          <div>
-            <Text type="secondary">
-              Phòng: {booking.roomType}
-            </Text>
-          </div>
-          <div className={styles.dateInfo}>
-            <CalendarOutlined /> {formatDate(booking.checkIn)} - {formatDate(booking.checkOut)}
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Số tiền",
@@ -189,7 +202,7 @@ const PaymentHistory = () => {
       key: "amount",
       render: (amount) => (
         <Text strong className={styles.amount}>
-          {formatCurrency(amount)}
+          {typeof amount === 'number' ? formatCurrency(amount) : '-'}
         </Text>
       ),
     },
@@ -207,7 +220,7 @@ const PaymentHistory = () => {
       title: "Ngày thanh toán",
       dataIndex: "payment_date",
       key: "payment_date",
-      render: (date) => formatDate(date),
+      render: (date) => date ? formatDate(date) : '-',
     },
     {
       title: "Trạng thái",
@@ -311,7 +324,7 @@ const PaymentHistory = () => {
             <Table
               dataSource={filteredPayments}
               columns={columns}
-              rowKey="_id"
+              rowKey="id"
               pagination={{ pageSize: 5 }}
               className={styles.table}
             />
@@ -349,7 +362,7 @@ const PaymentHistory = () => {
           >
             <div className={styles.bookingId}>
               <FileTextOutlined /> Mã thanh toán:{" "}
-              <Text strong>{selectedPayment._id}</Text>
+              <Text strong>{selectedPayment.id || ''}</Text>
             </div>
 
             <Divider />
@@ -362,23 +375,11 @@ const PaymentHistory = () => {
                   className={styles.detailCard}
                 >
                   <Descriptions column={1}>
-                    <Descriptions.Item label="Mã đặt phòng">
-                      {selectedPayment.booking_id._id}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Khách sạn">
-                      {selectedPayment.booking_id.hotelName}
-                    </Descriptions.Item>
                     <Descriptions.Item label="Loại phòng">
-                      {selectedPayment.booking_id.roomType}
+                      {selectedPayment.room || ''}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Ngày nhận phòng">
-                      {formatDate(selectedPayment.booking_id.checkIn)}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Ngày trả phòng">
-                      {formatDate(selectedPayment.booking_id.checkOut)}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Khách hàng">
-                      {selectedPayment.booking_id.customerName}
+                    <Descriptions.Item label="Người dùng">
+                      {selectedPayment.user || ''}
                     </Descriptions.Item>
                   </Descriptions>
                 </Card>
@@ -396,7 +397,7 @@ const PaymentHistory = () => {
                       {getPaymentMethodName(selectedPayment.method)}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày thanh toán">
-                      {formatDate(selectedPayment.payment_date)}
+                      {selectedPayment.payment_date ? formatDate(selectedPayment.payment_date) : '-'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
                       {getStatusTag(selectedPayment.status)}
@@ -409,7 +410,7 @@ const PaymentHistory = () => {
                     <Col span={24}>
                       <Statistic
                         title="Tổng tiền"
-                        value={selectedPayment.amount}
+                        value={selectedPayment.amount || 0}
                         precision={0}
                         formatter={(value) => formatCurrency(value)}
                         className={styles.totalAmount}
