@@ -17,6 +17,7 @@ import RoomListing from "./page/customers/RoomListing.jsx";
 import PaymentHistory from "./page/customers/paymentHistory.jsx";
 import RoomDetails from "./page/room/RoomDetails.jsx";
 import LayoutUser from "./page/userInformation/LayoutUser.jsx";
+import Profile from "./page/customers/Profile.jsx";
 
 import { AppProvider } from "./context/AppContext.jsx";
 

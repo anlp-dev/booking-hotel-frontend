@@ -19,7 +19,7 @@ const LayoutUser = () => {
     ? "2"
     : currentPath.includes("/information/payment-history")
     ? "3"
-    :  "1";
+    : "1";
 
   // Function to handle menu item clicks
   const handleMenuClick = (e) => {
@@ -78,8 +78,7 @@ const LayoutUser = () => {
           {/* <Route path="profile" element={<UserProfile />} /> */}
           <Route path="booking-history" element={<BookingHistory />} />
           <Route path="payment-history" element={<PaymentHistory />} />
-          <Route path="profile" element={<Profile/>}/>
-          {/* <Route path="*" element={<UserProfile />} /> */}
+          <Route path="profile" element={<Profile />} />
         </Routes>
       </div>
     </div>

@@ -24,6 +24,7 @@ import {
   PhotoCamera as PhotoCameraIcon,
   VerifiedUser as VerifiedIcon,
   Image as ImageIcon,
+  Email,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -32,6 +33,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/AuthService';
+import { notifySuccess } from '../../components/notification/ToastNotification';
 
 // Styled components
 const ProfileContainer = styled(Container)(({ theme }) => ({
@@ -56,7 +58,7 @@ const LargeAvatar = styled(Avatar)(({ theme }) => ({
 const InfoRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'flex-start',
+  alignItems: 'center',
   padding: theme.spacing(2, 0),
   borderBottom: `1px solid ${theme.palette.divider}`,
   '&:last-child': {
@@ -89,8 +91,39 @@ const EditButton = styled(Button)(({ theme }) => ({
 }));
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [lastCheckTime, setLastCheckTime] = useState(0);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");
+  const [first_name, setFirst_name] = useState("");
+  const [last_name, setLast_name] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+
+  useEffect(() => {
+      if (user) {
+        setEmail(user.email);
+        setUsername(user.username || "");
+        setPhone(user.phone || "");
+        setAddress(user.address || "");
+        setAvatar(user.avatar || "");
+        setFirst_name(user.first_name || "");
+        setLast_name(user.last_name || "");
+        setDateOfBirth(user.dateOfBirth);
+      } else {
+        setEmail("");
+        setUsername("");
+        setPhone("");
+        setAddress("");
+        setFirst_name("");
+        setLast_name("");
+        setAvatar("");
+        setDateOfBirth("");
+      }
+    }, [user]);
 
   const checkAuthStatus = async () => {
     try {
@@ -101,7 +134,6 @@ const Profile = () => {
       setLastCheckTime(currentTime);
 
       if (!authService.isAuthenticated()) {
-        handleLogout(false);
         return;
       }
 
@@ -109,27 +141,25 @@ const Profile = () => {
       if (userData && userData.data) {
         setUser(userData.data);
       } else {
-        handleLogout(false);
       }
     } catch (error) {
       console.error("Auth check failed:", error);
       if (error.message.includes("Too Many Requests")) {
         return;
       }
-      handleLogout(false);
     }
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-    
+
     if (token && username) {
       setUser({ username: username });
       checkAuthStatus();
     }
   }, []);
-  
+
 
   // State cho các modal
   const [openModal, setOpenModal] = useState({
@@ -170,6 +200,9 @@ const Profile = () => {
     const modalField = field.toLowerCase().replace(/\s+/g, '');
     setOpenModal(prev => ({ ...prev, [modalField]: true }));
   };
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [currentField, setCurrentField] = useState('');
+  const [tempValue, setTempValue] = useState('');
 
   const handleCloseModal = (field) => {
     setOpenModal({ ...openModal, [field]: false });
@@ -218,9 +251,22 @@ const Profile = () => {
   };
 
   // Handle saving the image
-  const handleSaveImage = () => {
-    // Logic to save the image
-    console.log('Image saved:', selectedImage);
+  const handleSaveImage = async () => {
+    try {
+      const userId = user._id; // Giả sử user object có chứa id
+      console.log(userId, selectedImage)
+      if (!selectedImage) {
+        console.error("No image selected");
+        return;
+      }
+
+
+      await authService.updateAvatar(userId, { selectedImage });
+      setUser({ ...user, avatar: selectedImage });
+      notifySuccess('Avatar updated successfully!');
+    } catch (error) {
+      console.error("Error updating avatar:", error.message);
+    }
     handleCloseImageDialog();
   };
 
@@ -279,7 +325,7 @@ const Profile = () => {
                 </Box>
               )}
 
-              
+
 
               {/* Email Input */}
               {field === 'email' && (
@@ -435,7 +481,7 @@ const Profile = () => {
                 </FormControl>
               )}
 
-            
+
             </Box>
 
             {/* Action Buttons */}
@@ -536,9 +582,72 @@ const Profile = () => {
     </InfoRow>
   );
 
+
+
+
+  // Hàm mở dialog
+  const handleOpenEditDialog = (field, value) => {
+    setCurrentField(field);
+    if (field === 'name') {
+      const [first_name, last_name] = value.split(' ');
+      setLast_name(last_name || '');
+      setFirst_name(first_name || '');
+    } else {
+      setTempValue(value);
+    }
+    setOpenEditDialog(true);
+  };
+
+  // Hàm đóng dialog
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
+
+  // Hàm lưu thông tin
+  const handleSaveEdit = async () => {
+    try {
+      const userId = user._id; // Giả sử user object có chứa id
+      console.log(first_name, last_name, phone, email, gender, dateOfBirth, address);
+
+      if (currentField === 'username') {
+        await authService.updateUserName(userId, username);
+        setUser({ ...user, username:username });
+        notifySuccess("Cập nhật  username thành công");
+      } else if (currentField === 'name') {
+        await authService.updateName(userId, { first_name, last_name });
+        setUser({...user, first_name:first_name, last_name:last_name})
+        notifySuccess("Cập nhật  fullname thành công");
+      } else if (currentField === 'phone') {
+        await authService.updatePhone(userId, { phone });
+        notifySuccess("Cập nhật  phone thành công");
+        setUser({ ...user, phone:phone });
+      } else if (currentField === 'email') {
+        await authService.updateEmail(userId, { email });
+        setUser({ ...user, email:email });
+      } else if (currentField === 'gender') {
+        await authService.updateGender(userId, { gender });
+        setUser({ ...user, gender:gender });
+      } else if (currentField === 'dateofbirth') {
+        await authService.updateDob(userId, { dateOfBirth });
+        setUser({ ...user, dateOfBirth:dateOfBirth });
+      } else if (currentField === 'address') {
+        await authService.updateAddress(userId, { address });
+        setUser({ ...user, address:address });
+      }if (currentField === 'avatar') {
+        await authService.updateAvatar(userId, { avatar });
+        setUser({ ...user, avatar:avatar });
+      }
+
+      notifySuccess(`${currentField.charAt(0).toUpperCase() + currentField.slice(1)} updated successfully!`);
+      } catch (error) {
+      console.error(`Error updating ${currentField}:`, error.message);
+      }
+    setOpenEditDialog(false);
+    };
+
   return (
-    <ProfileContainer maxWidth="lg">
-      <Typography variant="h4" gutterBottom fontWeight="bold">
+    <ProfileContainer maxWidth="lg" style={{ margin: 0 }}>
+      <Typography variant="h4" gutterBottom>
         Personal details
       </Typography>
       <Typography variant="body1" color="text.secondary" gutterBottom>
@@ -602,49 +711,287 @@ const Profile = () => {
           </DialogActions>
         </Dialog>
 
+        {/* Edit Info Dialog */}
+        <Dialog
+          open={openEditDialog}
+          onClose={handleCloseEditDialog}
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle sx={{ backgroundColor: '#f5f5f5', padding: '16px 24px', fontSize: '1.25rem', fontWeight: 'bold' }}>
+            Edit {currentField}
+          </DialogTitle>
+          <DialogContent sx={{ padding: '24px', backgroundColor: '#fafafa' }}>
+            {currentField === 'username' ? (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    Username
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: '#fff',
+                      fontSize: '14px',
+                      padding: '10px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    },
+                    marginBottom: '16px',
+                  }}
+                />
+              </>
+            ) : currentField === 'name' ? (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    First Name
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  value={first_name}
+                  onChange={(e) => setFirst_name(e.target.value)}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: '#fff',
+                      fontSize: '14px',
+                      padding: '10px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    },
+                    marginBottom: '16px',
+                  }}
+                />
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    Last Name
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  value={last_name}
+                  onChange={(e) => setLast_name(e.target.value)}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: '#fff',
+                      fontSize: '14px',
+                      padding: '10px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    },
+                    marginBottom: '16px',
+                  }}
+                />
+              </>
+            ) : currentField === 'dateofbirth' ? (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    Date of Birth
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    value={dayjs(dateOfBirth)}
+                    onChange={(newValue) => setDateOfBirth(newValue.format('YYYY-MM-DD'))}
+                    renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                  />
+                </LocalizationProvider>
+              </>
+            ) : currentField === 'gender' ? (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    Gender
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <FormControl fullWidth size="small" sx={{ marginBottom: '16px' }}>
+                  <InputLabel>Gender</InputLabel>
+                  <Select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    label="Gender"
+                  >
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </>
+            ) : currentField === 'phone' ? (
+              <TextField
+                fullWidth
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                    fontSize: '14px',
+                    padding: '10px',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                  },
+                  marginBottom: '16px',
+                }}
+              />
+            ) : currentField === 'email' ? (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    Email
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: '#fff',
+                      fontSize: '14px',
+                      padding: '10px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    },
+                    marginBottom: '16px',
+                  }}
+                />
+              </>
+            ) : currentField === 'address' ? (
+              <TextField
+                fullWidth
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                    fontSize: '14px',
+                    padding: '10px',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                  },
+                  marginBottom: '16px',
+                }}
+              />
+            ) : (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="body2" color="text.primary">
+                    {currentField.charAt(0).toUpperCase() + currentField.slice(1)}
+                  </Typography>
+                  <Typography component="span" color="error.main" sx={{ ml: 0.5 }}>
+                    *
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  value={tempValue}
+                  onChange={(e) => setTempValue(e.target.value)}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: '#fff',
+                      fontSize: '14px',
+                      padding: '10px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    },
+                    marginBottom: '16px',
+                  }}
+                />
+              </>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ padding: '16px', justifyContent: 'flex-end', backgroundColor: '#f5f5f5' }}>
+            <Button onClick={handleCloseEditDialog} color="primary" sx={{ marginRight: '8px', textTransform: 'none' }}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} color="primary" variant="contained" sx={{ textTransform: 'none' }}>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <InfoItem
-          label="Name"
-          value={user?.lastName}
-          field="name"
+          label="UserName"
+          value={user?.username}
+          field="username"
+          description={"This is your username login."}
+          onEdit={() => handleOpenEditDialog('username', user?.username)}
         />
 
         <InfoItem
-          label="Display name"
-          value={user?.displayName}
-          field="displayname"
+          label="Name"
+          value={user ? `${user.last_name} ${user.first_name}` : 'Add fullname'}
+          field="name"
+          onEdit={() => handleOpenEditDialog('name', `${user.firstName ?? ''} ${user.lastName ?? ''}`)}
         />
 
         <InfoItem
           label="Email address"
-          value={user?.email}
-          verified={user?.emailVerified}
+          value={user ? user.email : "Add email address"}
           description="This is the email address you use to sign in. It's also where we send your booking confirmations."
           field="email"
+          verified={"verified"}
+          onEdit={() => handleOpenEditDialog('email', user?.email)}
         />
 
         <InfoItem
           label="Phone number"
-          value={user?.phone}
+          value={user?.phone ? user.phone : "Add your phone number"}
           description="Properties or attractions you book will use this number if they need to contact you."
           field="phone"
+          onEdit={() => handleOpenEditDialog('phone', user?.phone)}
         />
 
         <InfoItem
           label="Date of birth"
-          value={user?.dateOfBirth}
+          value={user?.dateOfBirth ? user.dateOfBirth : "Your date of birth"}
           field="dateofbirth"
+          onEdit={() => handleOpenEditDialog('dateofbirth', user?.dateOfBirth)}
         />
 
         <InfoItem
-          label="Nationality"
-          value={user?.nationality}
-          field="nationality"
+          label="Address"
+          value={user?.address ? user.address : "Add your address"}
+          field="address"
+          onEdit={() => handleOpenEditDialog('address', user?.address)}
         />
 
         <InfoItem
           label="Gender"
-          value={user?.gender}
+          value={user?.gender ? user.gender : "Select your gender"}
           field="gender"
+          onEdit={() => handleOpenEditDialog('gender', user?.gender)}
         />
 
         <InfoItem
