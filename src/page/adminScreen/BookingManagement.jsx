@@ -135,7 +135,7 @@ const BookingManagement = () => {
         pending: 0,
         cancelled: 0
     });
-    
+
     // New state variables for creating booking
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [availableRooms, setAvailableRooms] = useState([]);
@@ -208,6 +208,7 @@ const BookingManagement = () => {
 
     // Open dialog to update status
     const handleOpenStatusDialog = (booking) => {
+        console.log(booking)
         setSelectedBooking(booking);
         setNewStatus(booking.status);
         setOpenDialog(true);
@@ -224,7 +225,7 @@ const BookingManagement = () => {
         if (!selectedBooking || !newStatus) return;
 
         try {
-            await BookingService.updateBookingStatus(selectedBooking.id, newStatus);
+            await BookingService.updateBookingStatus(selectedBooking._id, newStatus);
             setSnackbar({
                 open: true,
                 message: 'Cập nhật trạng thái đặt phòng thành công',
@@ -354,10 +355,10 @@ const BookingManagement = () => {
                 createdAt: '2023-06-12T10:15:44'
             }
         ];
-        
+
         setBookings(mockData);
         setTotalElements(mockData.length);
-        
+
         const mockStats = {
             total: mockData.length,
             confirmed: mockData.filter(b => b.status === 'CONFIRMED').length,
@@ -413,7 +414,7 @@ const BookingManagement = () => {
             ...newBooking,
             [name]: value
         });
-        
+
         // Clear error for this field if it exists
         if (formErrors[name]) {
             setFormErrors({
@@ -426,37 +427,37 @@ const BookingManagement = () => {
     // Validate booking form
     const validateBookingForm = () => {
         const errors = {};
-        
+
         if (!newBooking.customerName.trim()) {
             errors.customerName = 'Tên khách hàng không được để trống';
         }
-        
+
         if (!newBooking.customerEmail.trim()) {
             errors.customerEmail = 'Email không được để trống';
         } else if (!/\S+@\S+\.\S+/.test(newBooking.customerEmail)) {
             errors.customerEmail = 'Email không hợp lệ';
         }
-        
+
         if (!newBooking.customerPhone.trim()) {
             errors.customerPhone = 'Số điện thoại không được để trống';
         } else if (!/^[0-9]{10,11}$/.test(newBooking.customerPhone)) {
             errors.customerPhone = 'Số điện thoại không hợp lệ';
         }
-        
+
         if (!newBooking.roomId) {
             errors.roomId = 'Vui lòng chọn phòng';
         }
-        
+
         if (!newBooking.checkInDate) {
             errors.checkInDate = 'Vui lòng chọn ngày nhận phòng';
         }
-        
+
         if (!newBooking.checkOutDate) {
             errors.checkOutDate = 'Vui lòng chọn ngày trả phòng';
         } else if (newBooking.checkInDate && new Date(newBooking.checkOutDate) <= new Date(newBooking.checkInDate)) {
             errors.checkOutDate = 'Ngày trả phòng phải sau ngày nhận phòng';
         }
-        
+
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -464,7 +465,7 @@ const BookingManagement = () => {
     // Create new booking
     const handleCreateBooking = async () => {
         if (!validateBookingForm()) return;
-        
+
         try {
             await BookingService.createBooking(newBooking);
             setSnackbar({
@@ -674,8 +675,8 @@ const BookingManagement = () => {
                                                             </IconButton>
                                                         </Tooltip>
                                                         <Tooltip title="Cập nhật trạng thái">
-                                                            <IconButton 
-                                                                size="small" 
+                                                            <IconButton
+                                                                size="small"
                                                                 color="secondary"
                                                                 onClick={() => handleOpenStatusDialog(booking)}
                                                             >
@@ -683,8 +684,8 @@ const BookingManagement = () => {
                                                             </IconButton>
                                                         </Tooltip>
                                                         <Tooltip title="Xóa">
-                                                            <IconButton 
-                                                                size="small" 
+                                                            <IconButton
+                                                                size="small"
                                                                 color="error"
                                                                 onClick={() => handleDeleteBooking(booking.id)}
                                                             >
@@ -730,10 +731,10 @@ const BookingManagement = () => {
                         {selectedBooking && (
                             <>
                                 <Typography variant="body1" gutterBottom>
-                                    <strong>Khách hàng:</strong> {selectedBooking.customerName}
+                                    <strong>Khách hàng:</strong> {selectedBooking?.user_id?.first_name} {selectedBooking?.user_id?.last_name}
                                 </Typography>
                                 <Typography variant="body1" gutterBottom>
-                                    <strong>Phòng:</strong> {selectedBooking.roomName}
+                                    <strong>Phòng:</strong> {selectedBooking?.room_id?.room_number}
                                 </Typography>
                                 <Divider sx={{ my: 2 }} />
                             </>
@@ -745,9 +746,9 @@ const BookingManagement = () => {
                                 label="Trạng thái"
                                 onChange={(e) => setNewStatus(e.target.value)}
                             >
-                                <MenuItem value="CONFIRMED">Đã xác nhận</MenuItem>
-                                <MenuItem value="PENDING">Đang chờ</MenuItem>
-                                <MenuItem value="CANCELLED">Đã hủy</MenuItem>
+                                <MenuItem value="confirmed">Đã xác nhận</MenuItem>
+                                <MenuItem value="pending">Đang chờ</MenuItem>
+                                <MenuItem value="cancelled">Đã hủy</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
