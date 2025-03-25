@@ -189,7 +189,7 @@ function MainContent() {
             Chốn dừng chân lý tưởng chờ đón bạn
           </Title>
 
-          <Card
+          {/* <Card
             style={{
               padding: "20px",
               backgroundColor: "white",
@@ -251,7 +251,7 @@ function MainContent() {
             >
               Tìm kiếm
             </Button>
-          </Card>
+          </Card> */}
         </div>
       </div>
 

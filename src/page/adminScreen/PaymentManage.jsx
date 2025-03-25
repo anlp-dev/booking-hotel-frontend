@@ -212,20 +212,25 @@ const PaymentManagement = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [methodFilter, setMethodFilter] = useState("all");
 
+
+  const fetchPayment = async () => {
+    try {
+      setIsLoading(true);
+      const response = await PaymentService.getAllPayments();
+      console.log("response", response);
+      setPayments(response.data);
+    } catch (error) {
+      console.log(error);
+      message.error("Không thể lấy thông tin payment");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+
   useEffect(() => {
-    const fetchPayment = async () => {
-      try {
-        setIsLoading(true);
-        const response = await PaymentService.getAllPayments();
-        console.log("response", response);
-        setPayments(response.data);
-      } catch (error) {
-        console.log(error);
-        message.error("Không thể lấy thông tin payment");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+ 
     fetchPayment();
   }, []);
 
@@ -301,6 +306,7 @@ const PaymentManagement = () => {
       const response = await PaymentService.deletePayment(paymentId);
       console.log("Xóa payment thành công:", response);
       alert("Xóa payment thành công!");
+      fetchPayment();
     } catch (error) {
       console.error("Lỗi khi xóa payment:", error.message);
       alert("Lỗi khi xóa payment: " + error.message);

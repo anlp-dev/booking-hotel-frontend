@@ -16,6 +16,15 @@ const PaymentService = {
   },
 
 
+  async deletePayment(id) {
+    try {
+      return await fetchUtils.remove(`${endpoint}/${id}`);
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  },
+
+
 
   async getUrlVnPay(dataReq) {
     try {
